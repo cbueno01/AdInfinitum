@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.cbueno01.adinfinitum.PlayerProfileActivity"
+    android:weightSum="1">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/title_player"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:textSize="40dp"
+        android:textIsSelectable="true" />
+
+    <ImageView
+        android:id="@+id/test_image"
+        android:src="@drawable/goku_picture"
+        android:layout_width="179dp"
+        android:layout_height="129dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.03" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/player_name"
+                android:gravity="center"
+                android:textSize="30dp"
+                android:textIsSelectable="true"
+                android:layout_marginRight="20dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/highscore_text"
+                android:gravity="center"
+                android:textSize="30dp"
+                android:textIsSelectable="true"
+                android:layout_marginLeft="20dp" />
+
+    </LinearLayout>
+    <Button
+        android:layout_width="460dp"
+        android:layout_height="wrap_content"
+        android:text="@string/reset_text"
+        android:textSize="28dp"
+        android:textColor="@color/buttonTextColor"
+        android:background="@color/buttonColor"
+        android:layout_gravity="center_horizontal" />
+
+
+</LinearLayout>
