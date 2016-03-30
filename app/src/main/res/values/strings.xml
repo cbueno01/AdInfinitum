@@ -5,4 +5,7 @@
     <string name="player_name">Name: Anonymous</string>
     <string name="highscore_text">HighScore: 0</string>
     <string name="reset_text">Reset</string>
+    <string name="how_to_play">Dismiss the ads by clicking the appropriate area on each as in real life. Clicking the wrong areas may have adverse consequences.</string>
+    <string name="credits">CREATED BY / PROGRAMMED BY\nJoy Alam, Chrystian Bueno, Miguel Chavira</string>
+    <string name="programmer_names">Joy Alam, Chrystian Bueno, Miguel Chavira</string>
 </resources>
