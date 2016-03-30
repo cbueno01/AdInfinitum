@@ -8,4 +8,9 @@
     <string name="how_to_play">Dismiss the ads by clicking the appropriate area on each as in real life. Clicking the wrong areas may have adverse consequences.</string>
     <string name="credits">CREATED BY / PROGRAMMED BY\nJoy Alam, Chrystian Bueno, Miguel Chavira</string>
     <string name="programmer_names">Joy Alam, Chrystian Bueno, Miguel Chavira</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_modes">Modes</string>
+    <string name="settings_difficulty_level">Difficulty Level</string>
+    <string name="settings_sound_fx_volume">Sound FX Volume</string>
+    <string name="settings_soundtrack_volume">Soundtrack Volume</string>
 </resources>
