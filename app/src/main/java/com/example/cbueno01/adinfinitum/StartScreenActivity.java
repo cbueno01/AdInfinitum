@@ -61,4 +61,11 @@ public class StartScreenActivity extends AppCompatActivity {
 //        intent.putExtra(EXTRA_MESSAGE, message);
         startActivity(intent);
     }
+
+    public void goToSettings(View v)
+    {
+        Log.d("Ad Infinitum", "Create Settings Activity");
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
 }

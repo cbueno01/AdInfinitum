@@ -43,7 +43,7 @@
                 android:textSize="28dp"
                 android:textColor="@color/buttonTextColor"
                 android:background="@color/buttonColor"
-                android:onClick="goToPlayerProfile"/>/>
+                android:onClick="goToPlayerProfile"/>
         </TableRow>
         <TableRow android:gravity="center">
             <Button
@@ -53,7 +53,8 @@
                 android:text="Settings"
                 android:textSize="26dp"
                 android:textColor="@color/buttonTextColor"
-                android:background="@color/buttonColor"/>/>
+                android:background="@color/buttonColor"
+                android:onClick="goToSettings"/>
             <Button
                 android:layout_width="150dp"
                 android:layout_height="70dp"
@@ -61,7 +62,7 @@
                 android:text="About"
                 android:textSize="28dp"
                 android:textColor="@color/buttonTextColor"
-                android:background="@color/buttonColor"/>/>
+                android:background="@color/buttonColor"/>
         </TableRow>
     </TableLayout>
 </android.support.design.widget.CoordinatorLayout>

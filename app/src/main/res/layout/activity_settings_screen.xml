@@ -1,47 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    tools:context="com.example.cbueno01.adinfinitum.SettingsActivity"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp">
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/settings_title"
         android:gravity="center"
         android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
         android:textSize="60sp"/>
 
-
-    <LinearLayout
-        android:orientation="horizontal"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_toStartOf="@+id/button_modes"
+            android:layout_toLeftOf="@+id/button_modes"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/settings_modes"
             android:textSize="30sp"/>
 
-    </LinearLayout>
+        <Button
+            android:id="@+id/button_modes"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:text="@string/button_modes_selection"
+            android:textAlignment="center"/>
 
-    <LinearLayout
-        android:orientation="horizontal"
+    </RelativeLayout>
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_toStartOf="@+id/button_difficulty"
+            android:layout_toLeftOf="@+id/button_difficulty"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/settings_difficulty_level"
             android:textSize="30sp"/>
 
-    </LinearLayout>
+        <Button
+            android:id="@+id/button_difficulty"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:text="@string/button_difficulty_selection"
+            android:textAlignment="center"/>
+
+    </RelativeLayout>
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -53,8 +82,8 @@
             android:id="@+id/seekbar_sound_fx_volume"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:min="0"
             android:max="100" >
         </SeekBar>
 
@@ -63,7 +92,8 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -75,8 +105,8 @@
             android:id="@+id/seekbar_soundtrack_volume"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:min="0"
             android:max="100" >
         </SeekBar>
 
