@@ -21,15 +21,11 @@ import android.widget.TextView;
  */
 public class PlayerProfileActivity extends AppCompatActivity {
 
-<<<<<<< HEAD
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-        Log.d("AD INFINITUM", "In new activity");
-=======
     private static final int SELECT_PICTURE = 1;
 
     private String mPlayerName;
     private int mHighScore;
+    private String mImagePath;
 
     // to restore scores
     private SharedPreferences mPrefs;
@@ -42,7 +38,6 @@ public class PlayerProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 //      Log.d("Ad Infinitum", "In player profile activity");
->>>>>>> 1a8abbed7f0ec3797bfe9d0b2748379b03069249
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player_profile_screen);
 
@@ -79,11 +74,28 @@ public class PlayerProfileActivity extends AppCompatActivity {
     public void readData() {
         mPlayerName =  mPrefs.getString("pref_reset_profile", "Anonymous");
         mHighScore = mPrefs.getInt("mHighScore", 0);
+        mImagePath = mPrefs.getString("pref_reset_picture", null);
     }
 
     public void displayViews() {
         mNameTextView.setText("Name: " + mPlayerName);
         mHighScoreTextView.setText("High Score: " + mHighScore);
+
+        if(mImagePath == null)
+        {
+            mImageView.setImageResource(R.drawable.goku_picture);
+        }
+        else
+        {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 4;
+            Bitmap bmp = BitmapFactory.decodeFile(mImagePath, options);
+            if (bmp == null)
+                mImageView.setImageResource(R.drawable.goku_picture);
+            else
+                mImageView.setImageBitmap(bmp);
+        }
+
     }
 
     public void getPicture(View v) {
@@ -105,6 +117,10 @@ public class PlayerProfileActivity extends AppCompatActivity {
 
                 Bitmap bmp = BitmapFactory.decodeFile(selectedImagePath, options);
                 mImageView.setImageBitmap(bmp);
+
+                SharedPreferences.Editor ed = mPrefs.edit();
+                ed.putString("pref_reset_picture", selectedImagePath);
+                ed.apply();
             }
         }
     }

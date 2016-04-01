@@ -10,9 +10,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.sileria.android.event.PrefsSeekBarListener;
-import com.sileria.android.view.SeekBarPreference;
-
 public class SettingsActivity extends PreferenceActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
