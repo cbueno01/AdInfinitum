@@ -16,13 +16,26 @@
         android:textSize="40dp"
         android:textIsSelectable="true" />
 
-    <ImageView
-        android:id="@+id/test_image"
-        android:src="@drawable/goku_picture"
-        android:layout_width="179dp"
-        android:layout_height="129dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="0.03" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal|bottom">
+
+        <ImageView
+            android:id="@+id/player_image"
+            android:src="@drawable/goku_picture"
+            android:layout_width="158dp"
+            android:layout_height="114dp"
+            android:layout_gravity="center_horizontal" />
+
+        <ImageView
+            android:src="@drawable/gallery_icon"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:clickable="true"
+            android:onClick="getPicture"/>
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -31,6 +44,7 @@
         android:layout_marginTop="20dp">
 
             <TextView
+                android:id="@+id/player_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/player_name"
@@ -40,6 +54,7 @@
                 android:layout_marginRight="20dp" />
 
             <TextView
+                android:id="@+id/high_score"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/highscore_text"
