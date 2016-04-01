@@ -34,7 +34,8 @@
                 android:text="Play"
                 android:textSize="28dp"
                 android:textColor="@color/buttonTextColor"
-                android:background="@color/buttonColor"/>
+                android:background="@color/buttonColor"
+                android:onClick="goToGame"/>
             <Button
                 android:layout_width="150dp"
                 android:layout_height="70dp"
@@ -62,7 +63,8 @@
                 android:text="About"
                 android:textSize="28dp"
                 android:textColor="@color/buttonTextColor"
-                android:background="@color/buttonColor"/>
+                android:background="@color/buttonColor"
+                android:onClick="goToAbout"/>
         </TableRow>
     </TableLayout>
 </android.support.design.widget.CoordinatorLayout>

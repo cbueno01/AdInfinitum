@@ -52,6 +52,12 @@ public class StartScreenActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void goToGame(View v){
+        Log.d("AD INFINITUM", "Create Settings Activity");
+        Intent intent = new Intent(this, AdInfinitumActivity.class);
+        startActivity(intent);
+    }
+
     public void goToPlayerProfile(View v)
     {
         Log.d("AD INFINITUM", "Trying to create new activity");
@@ -67,5 +73,13 @@ public class StartScreenActivity extends AppCompatActivity {
         Log.d("AD INFINITUM", "Create Settings Activity");
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
+    }
+
+    public void goToAbout (View v)
+    {
+        Log.d("AD INFINITUM", "Attempt to create About Activity");
+        Intent intent = new Intent(this, AboutScreenActivity.class);
+        startActivity(intent);
+
     }
 }
