@@ -18,7 +18,7 @@ public class AboutScreenActivity extends AppCompatActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("Ad Infinitum", "In new activity");
+        Log.d("AD INFINITUM", "In new activity");
         super.onCreate(savedInstanceState);
 //        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_player_profile_screen);

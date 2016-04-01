@@ -54,7 +54,7 @@ public class StartScreenActivity extends AppCompatActivity {
 
     public void goToPlayerProfile(View v)
     {
-        Log.d("Ad Infinitum", "Trying to create new activity");
+        Log.d("AD INFINITUM", "Trying to create new activity");
         Intent intent = new Intent(this, PlayerProfileActivity.class);
 //        EditText editText = (EditText) findViewById(R.id.edit_message);
 //        String message = editText.getText().toString();
@@ -64,7 +64,7 @@ public class StartScreenActivity extends AppCompatActivity {
 
     public void goToSettings(View v)
     {
-        Log.d("Ad Infinitum", "Create Settings Activity");
+        Log.d("AD INFINITUM", "Create Settings Activity");
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference
+        android:title="@string/settings_title"
+        android:key="@string/settings_title"
+        android:layout="@layout/settings_title_item" />
+
+    <ListPreference
+        android:key="pref_modes"
+        android:title="Gameplay Mode"
+        android:summary=""
+        android:defaultValue="@string/mode_continuous"
+        android:entries="@array/modes"
+        android:entryValues="@array/modes"/>
+
+    <ListPreference
+        android:key="pref_difficulty_level"
+        android:title="Difficulty Level"
+        android:summary=""
+        android:defaultValue="@string/difficulty_level_medium"
+        android:entries="@array/difficulty_level"
+        android:entryValues="@array/difficulty_level"/>
+
+    <SwitchPreference
+        android:key="pref_sound_fx"
+        android:title="Sound FX Volume"
+        android:defaultValue="@bool/default_soundfx_state"/>
+
+    <SwitchPreference
+        android:key="pref_soundtrack"
+        android:title="Soundtrack Volume"
+        android:defaultValue="@bool/default_soundtrack_state"/>
+
+<!--    <com.sileria.android.view.SeekBarPreference
+        android:key="pref_sound_fx"
+        android:title="Sound FX Volume"
+        android:defaultValue="50"
+        />
+
+    <com.sileria.android.view.SeekBarPreference
+        android:key="pref_soundtrack"
+        android:title="Soundtrack Volume"
+        android:defaultValue="@string/default_sound"
+        />-->
+
+    <EditTextPreference
+        android:key="pref_reset_profile"
+        android:title="Reset Profile"
+        android:defaultValue="@string/default_profile_name"/>
+
+</PreferenceScreen>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="modes">
+        <item>@string/mode_continuous</item>
+        <item>@string/mode_rounds</item>
+    </string-array>
+
+    <string-array name="difficulty_level">
+        <item>@string/difficulty_level_easy</item>
+        <item>@string/difficulty_level_medium</item>
+        <item>@string/difficulty_level_overload</item>
+    </string-array>
+</resources>
