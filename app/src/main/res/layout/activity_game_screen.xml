@@ -1,28 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAccent">
+    android:background="@color/colorAccent"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/player_score"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="20dp"
-        android:gravity="center_horizontal"
-        android:text="score"
-        android:textSize="20dp" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/time_elapsed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="20dp"
-        android:gravity="left"
-        android:text="0"
-        android:textSize="20dp"
-        android:textStyle="bold" />
+        <TextView
+            android:id="@+id/player_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginLeft="5dp"
+            android:gravity="center_horizontal"
+            android:text="@string/player_score"
+            android:textSize="20dp"
+            android:textColor="@color/inGameTextColor" />
+
+        <TextView
+            android:id="@+id/time_elapsed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="2dp"
+            android:layout_marginRight="5dp"
+            android:gravity="right"
+            android:text="@string/time_elapsed"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="@color/inGameTextColor" />
+
+    </RelativeLayout>
 
 </LinearLayout>
