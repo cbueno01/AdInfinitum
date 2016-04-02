@@ -55,8 +55,8 @@ public class GameView extends View {
         for(Ad ad : adList) {
 //            int picId = getResources().getIdentifier(ad.getFileName(), "drawable", getContext().getPackageName());
             Bitmap img = ad.getBitmap();
-            if(img == null)
-                Log.d("Ad Infinitum", "AdList size: " + adList.size());
+//            if(img == null)
+//            Log.d("Ad Infinitum", "x: " + ad.getX() + " y: " + ad.getY() + " width: " + ad.getWidth() + " height: " + ad.getHeight());
 
             Rect mImageRect = new Rect(ad.getX(), ad.getY(), (ad.getX() + ad.getWidth()), (ad.getY() + ad.getHeight()));
 

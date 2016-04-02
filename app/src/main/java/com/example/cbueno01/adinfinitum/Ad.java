@@ -23,34 +23,34 @@ public class Ad {
 
     //CONSTRUCTOR
     public Ad(int ID, Bitmap b, int w, int h, int _x, int _y, float scale) {
-        this.width = w;
-        this.height = h;
-        this.x = _x;
-        this.y = _y;
-        this.imageID = ID;
-        this.bmp = b;
-        this.scaleFactor = scale;
-        this.pointage = 1;
+        width = w;
+        height = h;
+        x = _x;
+        y = _y;
+        imageID = ID;
+        bmp = b;
+        scaleFactor = scale;
+        pointage = 1;
     }
 
 
     public int getX() {
-        return this.x;
+        return x;
     }
 
     public int getY() {
-        return this.y;
+        return y;
     }
 
-    public int getWidth() { return Math.round(this.width * scaleFactor); }
+    public int getWidth() { return Math.round(width * scaleFactor); }
 
     public int getHeight() {
-        return Math.round(this.height * scaleFactor);
+        return Math.round(height * scaleFactor);
     }
 
-    public long getPointage() { return this.pointage; }
+    public long getPointage() { return pointage; }
 
-    public int getImageID() { return this.imageID; }
+    public int getImageID() { return imageID; }
 
-    public Bitmap getBitmap() { return this.bmp; }
+    public Bitmap getBitmap() { return bmp; }
 }

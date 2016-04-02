@@ -83,8 +83,8 @@ public class AdInfinitumActivity extends Activity {
 
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        int screenHeight = displaymetrics.heightPixels;
-        int screenWidth = displaymetrics.widthPixels;
+        screenHeight = displaymetrics.heightPixels;
+        screenWidth = displaymetrics.widthPixels;
 
         mGame = new AdInfinitumGame();
 
@@ -124,17 +124,22 @@ public class AdInfinitumActivity extends Activity {
 
     public void startGame() {
         ArrayList<Integer> imageID = getImageIDs();
-        BitmapFactory.Options dimensions = new BitmapFactory.Options();
-        dimensions.inJustDecodeBounds = true;
-        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), (imageID.get(0)).intValue(), dimensions);
-        int width = dimensions.outWidth;
-        int height = dimensions.outHeight;
-        int i = 0;
+//        Log.d("Ad Infinitum", "Resource2: " + imageID.get(0));
 
+        BitmapFactory.Options dimensions = new BitmapFactory.Options();
+//        dimensions.inJustDecodeBounds = true;
+        dimensions.inScaled = false;
+        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), imageID.get(0), dimensions);
+        int width = mBitmap.getWidth();
+        int height = mBitmap.getHeight();
+//        Log.d("Ad Infinitum", "width: " + width + " height: " + height);
+        int i = 0;
+//        Log.d("Ad Infinitum", "screenwidth: " + screenWidth + " screenheight: " + screenHeight);
         while(i < 10) {
 
-            int x = rand.nextInt();
-            int y = rand.nextInt();
+            int x = rand.nextInt(screenWidth);
+            int y = rand.nextInt(screenHeight);
+//            Log.d("Ad Infinitum", "x: " + x + " y: " + y);
             if(x + width < screenWidth && y + height < screenHeight) {
                 Ad ad = new Ad(imageID.get(0), mBitmap, width, height, x, y, 1);
                 mGame.addAd(ad);
@@ -147,16 +152,18 @@ public class AdInfinitumActivity extends Activity {
 
     private ArrayList<Integer> getImageIDs() {
         String[] adNames = getResources().getStringArray(R.array.advertisements);
-        Log.d("Ad Infinitum", "Image name: " + adNames[0]);
         ArrayList<Integer> imageIDs = new ArrayList<>();
         // Strings for spinner are upper case with spaces.
         // Corresponding drawable is all lower case with _ for spaces.
         for (String name : adNames) {
             name = name.toLowerCase();
             name = name.replace(" ", "_");
+//            Log.d("Ad Infinitum", "Image name1: " + getResources().getIdentifier(name, "drawable", getPackageName()));
+//            Log.d("Ad Infinitum", "Image name2: " + getResources().getIdentifier("soccer_add", "drawable", getPackageName()));
             imageIDs.add(getResources().getIdentifier(name, "drawable", getPackageName()));
         }
 
+//        Log.d("Ad Infinitum", "Resource: " + imageIDs.get(0));
         return imageIDs;
     }
 
