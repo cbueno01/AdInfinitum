@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <array name="advertisements">
+    <string-array name="advertisements">
         <item>@drawable/soccer_add</item>
-    </array>
+    </string-array>
 
 </resources>

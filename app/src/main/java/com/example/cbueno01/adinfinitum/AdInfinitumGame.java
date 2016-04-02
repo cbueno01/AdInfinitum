@@ -4,6 +4,8 @@ import android.text.format.Time;
 import android.widget.Chronometer;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Random;
 import java.util.Timer;
 
@@ -23,9 +25,7 @@ public class AdInfinitumGame {
 
     private Random mRand;
 
-    private Timer timer;
-    private Time time;
-    private Chronometer chronometer;
+    private GregorianCalendar time;
 
     private long mScore;
 
@@ -45,9 +45,14 @@ public class AdInfinitumGame {
         // Seed the random number generator
         mRand = new Random();
         activeAds = new ArrayList<Ad>();
+        time = new GregorianCalendar();
+
 
     }//end Constructor
 
+    public void addAd (Ad ad) {
+        activeAds.add(ad);
+    }
 
     //GETTERS AND SETTERS:
     public DifficultyLevel getDifficultyLevel() {

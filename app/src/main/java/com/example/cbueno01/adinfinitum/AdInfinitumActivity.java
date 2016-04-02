@@ -1,24 +1,32 @@
 package com.example.cbueno01.adinfinitum;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.HashMap;
+import java.util.Random;
 
 /**
  * Created by Squash on 4/1/2016.
@@ -33,6 +41,8 @@ public class AdInfinitumActivity extends Activity {
     //static final int DIALOG_ABOUT_ID = 2;
     //static final int DIALOG_CLEAR_SCORES = 3;
 
+    private int screenWidth;
+    private int screenHeight;
 
     // for pausing game
     private Handler mPauseHandler;
@@ -43,6 +53,10 @@ public class AdInfinitumActivity extends Activity {
 
     // game logic
     private AdInfinitumGame mGame;
+    private GameView mGameView;
+
+    // random Gen
+    private Random rand;
 
     // Various text displayed
     private TextView mInfoTextView;
@@ -63,30 +77,87 @@ public class AdInfinitumActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_start_screen);
-        //setContentView(R.layout.gameStart);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.activity_game_screen);
 
-        mPrefs = getSharedPreferences("ttt_prefs", MODE_PRIVATE);
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        int screenHeight = displaymetrics.heightPixels;
+        int screenWidth = displaymetrics.widthPixels;
+
+        mGame = new AdInfinitumGame();
+
+        mGameView = (GameView) findViewById(R.id.game);
+        mGameView.setGame(mGame);
+
+        rand = new Random();
+
+//        View decorView = getWindow().getDecorView();
+//        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+//        decorView.setSystemUiVisibility(uiOptions);
+//        ActionBar actionBar = getActionBar();
+//        actionBar.hide();
+
+//        mPrefs = getSharedPreferences("ttt_prefs", MODE_PRIVATE);
 
 //        setTextViewInfo();
 //        readScores();
 //        displayScores();
 
-        mGame = new AdInfinitumGame();
+        startGame();
 
 
         // Listen for touches on the board
         //mBoardView.setOnTouchListener(mTouchListener);
 
-        mPauseHandler = new Handler();
+//        mPauseHandler = new Handler();
 
-        Log.d(TAG, "value of savedInstanceState: " + savedInstanceState);
+//        Log.d(TAG, "value of savedInstanceState: " + savedInstanceState);
 //        if(savedInstanceState == null)
 //            startFromScratch();
 //        else
 //            restoreGame(savedInstanceState);
 
 
+    }
+
+    public void startGame() {
+        ArrayList<Integer> imageID = getImageIDs();
+        BitmapFactory.Options dimensions = new BitmapFactory.Options();
+        dimensions.inJustDecodeBounds = true;
+        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), (imageID.get(0)).intValue(), dimensions);
+        int width = dimensions.outWidth;
+        int height = dimensions.outHeight;
+        int i = 0;
+
+        while(i < 10) {
+
+            int x = rand.nextInt();
+            int y = rand.nextInt();
+            if(x + width < screenWidth && y + height < screenHeight) {
+                Ad ad = new Ad(imageID.get(0), mBitmap, width, height, x, y, 1);
+                mGame.addAd(ad);
+                i++;
+            }
+        }
+
+        mGameView.invalidate();
+    }
+
+    private ArrayList<Integer> getImageIDs() {
+        String[] adNames = getResources().getStringArray(R.array.advertisements);
+        Log.d("Ad Infinitum", "Image name: " + adNames[0]);
+        ArrayList<Integer> imageIDs = new ArrayList<>();
+        // Strings for spinner are upper case with spaces.
+        // Corresponding drawable is all lower case with _ for spaces.
+        for (String name : adNames) {
+            name = name.toLowerCase();
+            name = name.replace(" ", "_");
+            imageIDs.add(getResources().getIdentifier(name, "drawable", getPackageName()));
+        }
+
+        return imageIDs;
     }
 
 
@@ -265,13 +336,13 @@ public class AdInfinitumActivity extends Activity {
 //        }
 //    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-
-        getMenuInflater().inflate(R.menu.menu_start_screen, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        super.onCreateOptionsMenu(menu);
+//
+//        getMenuInflater().inflate(R.menu.menu_start_screen, menu);
+//        return true;
+//    }
 
 
 //    private void resetScore() {
@@ -309,18 +380,6 @@ public class AdInfinitumActivity extends Activity {
 //            return false;
 //        }
 //    };
-//
-//    private void getImageIDs() {
-//        String[] teamNames = getResources().getStringArray(R.array.advertisements);
-//        imageIDs = new ArrayList<>();
-//        // Strings for spinner are upper case with spaces.
-//        // Corresponding drawable is all lower case with _ for spaces.
-//        for (String name : teamNames) {
-//            name = name.toLowerCase();
-//            name = name.replace(" ", "_");
-//            imageIDs.add(getResources().getIdentifier(name, "drawable", getPackageName()));
-//        }
-//    }
 //
 //    public void pickRandom(View v) {
 //        Spinner spinner = (Spinner) findViewById(R.id.football_club_spinner);
