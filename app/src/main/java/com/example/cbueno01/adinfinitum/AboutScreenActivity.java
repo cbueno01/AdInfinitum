@@ -21,7 +21,7 @@ public class AboutScreenActivity extends AppCompatActivity{
         Log.d("AD INFINITUM", "In new activity");
         super.onCreate(savedInstanceState);
 //        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_player_profile_screen);
+        setContentView(R.layout.activity_about_screen);
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
 
