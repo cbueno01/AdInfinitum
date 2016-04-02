@@ -34,7 +34,11 @@ public class AdInfinitumGame {
         Easy, Medium, AdOverload
     }
 
-    ;
+    public void upDateGame() {
+        if(!isGameOver()) {
+
+        }
+    }
 
     // Current difficulty level
 // get this from SETTINGS
@@ -78,13 +82,10 @@ public class AdInfinitumGame {
     }//end clearBoard method
 
 
-    public int checkForGameOver() {
+    public boolean isGameOver() {
 
-        if (activeAds.size() > MAX_ADS_ONSCREEN) {
-            return 1;
-        }
+       return activeAds.size() >= MAX_ADS_ONSCREEN;
 
-        return 0;
     }//end checkForWinner method
 
 

@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -55,6 +56,9 @@ public class AdInfinitumActivity extends Activity {
     private AdInfinitumGame mGame;
     private GameView mGameView;
 
+    // game loop
+    private GameLoop mGameLoop;
+
     // random Gen
     private Random rand;
 
@@ -92,20 +96,12 @@ public class AdInfinitumActivity extends Activity {
         mGameView.setGame(mGame);
 
         rand = new Random();
+//        mGameLoop = new GameLoop(mGameView, 30, mGame);
 
-//        View decorView = getWindow().getDecorView();
-//        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-//        decorView.setSystemUiVisibility(uiOptions);
-//        ActionBar actionBar = getActionBar();
-//        actionBar.hide();
 
 //        mPrefs = getSharedPreferences("ttt_prefs", MODE_PRIVATE);
 
-//        setTextViewInfo();
-//        readScores();
-//        displayScores();
-
-        startGame();
+//        startGame();
 
 
         // Listen for touches on the board
@@ -122,24 +118,74 @@ public class AdInfinitumActivity extends Activity {
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        GameLoop2 game = new GameLoop2();
+        game.execute(1);
+//        if(!mGameLoop.isRunning()) {
+//            mGameLoop.start();
+//        }
+    }
+
+    private class GameLoop2 extends AsyncTask<Integer, Void, Void> {
+
+
+//        private Bitmap image;
+
+//        private ColorShader shader;
+
+        public GameLoop2() {
+//            shader = useColors ? colors : grays;
+        }
+
+        @Override
+        protected Void doInBackground(Integer... args) {
+            Log.d("Ad Infinitum", "isOver: " + mGame.isGameOver() + " fps: " + args[0]);
+            while (!mGame.isGameOver()) {
+
+                // sleep for a short time between frames of animation
+                try {
+                    int fps = args[0];
+                    Thread.sleep(1000 / fps);
+                    mGame.upDateGame();
+                } catch (InterruptedException ie) {}
+
+                startGame();
+                publishProgress();
+            }
+            return null;
+        }
+
+        protected void onProgressUpdate(Void ...Progress) {
+            mGameView.invalidate();
+        }
+
+        protected void onPostExecute() {
+
+        }
+
+
+    }
+
     public void startGame() {
         ArrayList<Integer> imageID = getImageIDs();
-//        Log.d("Ad Infinitum", "Resource2: " + imageID.get(0));
+        Log.d("Ad Infinitum", "Resource2: " + imageID.get(0));
 
         BitmapFactory.Options dimensions = new BitmapFactory.Options();
 //        dimensions.inJustDecodeBounds = true;
         dimensions.inScaled = false;
-        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), imageID.get(0), dimensions);
-        int width = mBitmap.getWidth();
-        int height = mBitmap.getHeight();
-//        Log.d("Ad Infinitum", "width: " + width + " height: " + height);
         int i = 0;
-//        Log.d("Ad Infinitum", "screenwidth: " + screenWidth + " screenheight: " + screenHeight);
-        while(i < 10) {
+        Log.d("Ad Infinitum", "screenwidth: " + screenWidth + " screenheight: " + screenHeight);
+        while (i < 1) {
 
-            int x = rand.nextInt(screenWidth);
-            int y = rand.nextInt(screenHeight);
-//            Log.d("Ad Infinitum", "x: " + x + " y: " + y);
+            Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), imageID.get(0), dimensions);
+            int width = mBitmap.getWidth();
+            int height = mBitmap.getHeight();
+            int x = rand.nextInt(screenWidth - width);
+            int y = rand.nextInt(screenHeight - height);
+            Log.d("Ad Infinitum", "x: " + x + " y: " + y);
+            Log.d("Ad Infinitum", "width: " + width + " height: " + height);
             if(x + width < screenWidth && y + height < screenHeight) {
                 Ad ad = new Ad(imageID.get(0), mBitmap, width, height, x, y, 1);
                 mGame.addAd(ad);
@@ -147,7 +193,6 @@ public class AdInfinitumActivity extends Activity {
             }
         }
 
-        mGameView.invalidate();
     }
 
     private ArrayList<Integer> getImageIDs() {
