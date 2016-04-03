@@ -2,8 +2,10 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#444444</color>
-    <color name="buttonColor">#FF0000</color>
-    <color name="buttonTextColor">#FFFF00</color>
+    <color name="colorBackground">#444444</color>
+    <color name="buttonColor">#831616</color>
+    <color name="buttonTextColor">#e1a902</color>
     <color name="inGameTextColor">#FFFFFF</color>
+    <color name="primary_material_light_1">#f44336</color>
+    <color name="primary_material_light_2">#545454</color>
 </resources>

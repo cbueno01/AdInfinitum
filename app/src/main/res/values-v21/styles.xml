@@ -6,4 +6,8 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
+
+    <style name="materialLight2" parent="android:Theme.Material.Light.NoActionBar" >
+        <item name="android:colorPrimary">@color/primary_material_light_2</item>
+    </style>
 </resources>

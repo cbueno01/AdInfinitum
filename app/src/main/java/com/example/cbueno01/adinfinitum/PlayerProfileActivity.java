@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -39,6 +41,8 @@ public class PlayerProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 //      Log.d("Ad Infinitum", "In player profile activity");
         super.onCreate(savedInstanceState);
+//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_player_profile_screen);
 
          mPrefs = getSharedPreferences("preferences", MODE_PRIVATE);

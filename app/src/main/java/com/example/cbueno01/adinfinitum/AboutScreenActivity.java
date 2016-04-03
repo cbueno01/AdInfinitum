@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 
 /**
  * Created by Squash on 3/30/2016.
@@ -21,6 +22,8 @@ public class AboutScreenActivity extends AppCompatActivity{
         Log.d("AD INFINITUM", "In new activity");
         super.onCreate(savedInstanceState);
 //        requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_about_screen);
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
