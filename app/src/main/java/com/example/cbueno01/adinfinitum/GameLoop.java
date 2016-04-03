@@ -80,7 +80,7 @@ public class GameLoop {
                 // sleep for a short time between frames of animation
                 try {
                     Thread.sleep(1000 / fps);
-                    mGame.upDateGame();
+//                    mGame.upDateGame();
                 } catch (InterruptedException ie) {
                     isRunning = false;
                 }

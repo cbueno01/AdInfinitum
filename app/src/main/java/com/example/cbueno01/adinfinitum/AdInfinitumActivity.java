@@ -11,6 +11,7 @@ import android.media.SoundPool;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -26,6 +27,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -45,6 +47,13 @@ public class AdInfinitumActivity extends Activity {
     private int screenWidth;
     private int screenHeight;
 
+    // time reference
+    private long mStartTime;
+    private long mElapsedTime;
+    private long mAdTime;
+//    private long mTimeDifference;
+    private long mTimeOfLastAd;
+
     // for pausing game
     private Handler mPauseHandler;
     private Runnable myRunnable;
@@ -54,7 +63,6 @@ public class AdInfinitumActivity extends Activity {
 
     // game logic
     private AdInfinitumGame mGame;
-    private GameView mGameView;
 
     // game loop
     private GameLoop mGameLoop;
@@ -63,7 +71,7 @@ public class AdInfinitumActivity extends Activity {
     private Random rand;
 
     // Various text displayed
-    private TextView mInfoTextView;
+    private GameView mGameView;
     private TextView mTimeTextView;
     private TextView mScoreTextView;
 
@@ -92,10 +100,14 @@ public class AdInfinitumActivity extends Activity {
 
         mGame = new AdInfinitumGame();
 
+        mTimeTextView = (TextView) findViewById(R.id.time_elapsed);
+        mScoreTextView = (TextView) findViewById(R.id.player_score);
         mGameView = (GameView) findViewById(R.id.game);
         mGameView.setGame(mGame);
 
         rand = new Random();
+        mAdTime = 2000;
+//        mTime = new GregorianCalendar();
 //        mGameLoop = new GameLoop(mGameView, 30, mGame);
 
 
@@ -121,11 +133,11 @@ public class AdInfinitumActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
+        mStartTime = System.nanoTime() / 1000000;
+        mElapsedTime = 0;
+        mTimeOfLastAd = 0;
         GameLoop2 game = new GameLoop2();
-        game.execute(1);
-//        if(!mGameLoop.isRunning()) {
-//            mGameLoop.start();
-//        }
+        game.execute(30);
     }
 
     private class GameLoop2 extends AsyncTask<Integer, Void, Void> {
@@ -143,15 +155,15 @@ public class AdInfinitumActivity extends Activity {
         protected Void doInBackground(Integer... args) {
             Log.d("Ad Infinitum", "isOver: " + mGame.isGameOver() + " fps: " + args[0]);
             while (!mGame.isGameOver()) {
+                mElapsedTime = (System.nanoTime() / 1000000) - mStartTime;
+                int fps = args[0];
 
-                // sleep for a short time between frames of animation
                 try {
-                    int fps = args[0];
                     Thread.sleep(1000 / fps);
-                    mGame.upDateGame();
+//                    mGame.upDateGame();
                 } catch (InterruptedException ie) {}
 
-                startGame();
+                updateGame();
                 publishProgress();
             }
             return null;
@@ -159,6 +171,8 @@ public class AdInfinitumActivity extends Activity {
 
         protected void onProgressUpdate(Void ...Progress) {
             mGameView.invalidate();
+//            String formatted = String.format("%03d", num);
+            mTimeTextView.setText(String.format("%04d", (int)(mElapsedTime / 1000)));
         }
 
         protected void onPostExecute() {
@@ -168,30 +182,41 @@ public class AdInfinitumActivity extends Activity {
 
     }
 
-    public void startGame() {
-        ArrayList<Integer> imageID = getImageIDs();
-        Log.d("Ad Infinitum", "Resource2: " + imageID.get(0));
+    public void updateGame() {
+//        Log.d("Ad Infinitum", "mAdTime: " + mAdTime + " mTimeDifference: " + mTimeDifference + " mElapsedTime: " + mElapsedTime);
+        if(mAdTime < (System.nanoTime() / 1000000) - mTimeOfLastAd)
+        {
+            ArrayList<Integer> imageID = getImageIDs();
+    //        Log.d("Ad Infinitum", "Resource2: " + imageID.get(0));
 
-        BitmapFactory.Options dimensions = new BitmapFactory.Options();
-//        dimensions.inJustDecodeBounds = true;
-        dimensions.inScaled = false;
-        int i = 0;
-        Log.d("Ad Infinitum", "screenwidth: " + screenWidth + " screenheight: " + screenHeight);
-        while (i < 1) {
+            BitmapFactory.Options dimensions = new BitmapFactory.Options();
+    //        dimensions.inJustDecodeBounds = true;
+            dimensions.inScaled = false;
+//            int i = 0;
+    //        Log.d("Ad Infinitum", "screenwidth: " + screenWidth + " screenheight: " + screenHeight);
 
-            Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), imageID.get(0), dimensions);
-            int width = mBitmap.getWidth();
-            int height = mBitmap.getHeight();
-            int x = rand.nextInt(screenWidth - width);
-            int y = rand.nextInt(screenHeight - height);
-            Log.d("Ad Infinitum", "x: " + x + " y: " + y);
-            Log.d("Ad Infinitum", "width: " + width + " height: " + height);
-            if(x + width < screenWidth && y + height < screenHeight) {
-                Ad ad = new Ad(imageID.get(0), mBitmap, width, height, x, y, 1);
-                mGame.addAd(ad);
-                i++;
+            float scalingFactor = rand.nextFloat() + rand.nextInt(1) + (float)0.3333;
+
+            while (true) {
+                Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), imageID.get(0), dimensions);
+                int width = mBitmap.getWidth();
+                int height = mBitmap.getHeight();
+                int x = rand.nextInt(screenWidth - width);
+                int y = rand.nextInt(screenHeight - height);
+                //        Log.d("Ad Infinitum", "x: " + x + " y: " + y);
+                //        Log.d("Ad Infinitum", "width: " + width + " height: " + height);
+                if (x + width < screenWidth && y + height < screenHeight) {
+                    Ad ad = new Ad(imageID.get(0), mBitmap, width, height, x, y, scalingFactor);
+                    mGame.addAd(ad);
+                    break;
+                }
             }
+            mTimeOfLastAd = System.nanoTime() / 1000000;
         }
+//        else
+//        {
+//            mTimeDifference += mElapsedTime - mTimeDifference;
+//        }
 
     }
 

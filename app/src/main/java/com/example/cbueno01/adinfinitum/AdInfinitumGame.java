@@ -25,8 +25,6 @@ public class AdInfinitumGame {
 
     private Random mRand;
 
-    private GregorianCalendar time;
-
     private long mScore;
 
     // The game's difficulty levels
@@ -34,11 +32,11 @@ public class AdInfinitumGame {
         Easy, Medium, AdOverload
     }
 
-    public void upDateGame() {
-        if(!isGameOver()) {
-
-        }
-    }
+//    public void upDateGame() {
+//        if(!isGameOver()) {
+//
+//        }
+//    }
 
     // Current difficulty level
 // get this from SETTINGS
@@ -49,7 +47,7 @@ public class AdInfinitumGame {
         // Seed the random number generator
         mRand = new Random();
         activeAds = new ArrayList<Ad>();
-        time = new GregorianCalendar();
+//        time = new GregorianCalendar();
 
 
     }//end Constructor
