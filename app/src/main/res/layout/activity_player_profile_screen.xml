@@ -73,7 +73,8 @@
         android:layout_marginTop="10dp"
         android:textColor="@color/buttonTextColor"
         android:background="@color/buttonColor"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:onClick="resetScore"/>
 
 
 </LinearLayout>

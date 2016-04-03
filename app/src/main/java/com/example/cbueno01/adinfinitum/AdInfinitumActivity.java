@@ -88,6 +88,9 @@ public class AdInfinitumActivity extends Activity {
     private HashMap<Integer, Integer> mSoundIDMap;
     private boolean mSoundOn;
 
+    // canceling the game loop
+    private boolean mIsCancelled;
+
     // to restore scores
     private SharedPreferences mPrefs;
 
@@ -114,10 +117,10 @@ public class AdInfinitumActivity extends Activity {
 
         rand = new Random();
         mAdTime = 500;
+        mPrefs = getSharedPreferences("preferences", MODE_PRIVATE);
         startGame();
 //        mScore = 0;
 //        mTime = new GregorianCalendar();
-//        mGameLoop = new GameLoop(mGameView, 30, mGame);
 
 
 //        mPrefs = getSharedPreferences("ttt_prefs", MODE_PRIVATE);
@@ -145,14 +148,21 @@ public class AdInfinitumActivity extends Activity {
         startGame();
     }
 
-    private class GameLoop2 extends AsyncTask<Integer, Void, Void> {
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d("Ad Infinitum", "Got to onStop.");
+        mGameLoop.cancel(true);
+    }
+
+    private class GameLoop extends AsyncTask<Integer, Void, Void> {
 
 
 //        private Bitmap image;
 
 //        private ColorShader shader;
 
-        public GameLoop2() {
+        public GameLoop() {
 //            shader = useColors ? colors : grays;
         }
 
@@ -160,12 +170,14 @@ public class AdInfinitumActivity extends Activity {
         protected Void doInBackground(Integer... args) {
             Log.d("Ad Infinitum", "isOver: " + mGame.isGameOver() + " fps: " + args[0]);
             while (!mGame.isGameOver()) {
+                if (mGameLoop.isCancelled())
+                    return null;
+
                 mElapsedTime = (System.nanoTime() / 1000000) - mStartTime;
                 int fps = args[0];
 
                 try {
                     Thread.sleep(1000 / fps);
-//                    mGame.upDateGame();
                 } catch (InterruptedException ie) {}
 
                 updateGame();
@@ -182,7 +194,16 @@ public class AdInfinitumActivity extends Activity {
         }
 
         protected void onPostExecute(Void result) {
-            showDialog(DIALOG_REPLAY_ID);
+            Log.d("Ad Infinitum", "is onPostExecute");
+            SharedPreferences.Editor ed = mPrefs.edit();
+            long highscore = mPrefs.getLong("pref_high_score", 0);
+            if(highscore < mScore) {
+                ed.putLong("pref_high_score", mScore);
+                ed.apply();
+            }
+
+            if(!mGameLoop.isCancelled())
+                showDialog(DIALOG_REPLAY_ID);
         }
     }
 
@@ -296,8 +317,8 @@ public class AdInfinitumActivity extends Activity {
         mTimeTextView.setText(R.string.time_elapsed);
         mScoreTextView.setText(R.string.player_score);
         mStartTime = System.nanoTime() / 1000000;
-        GameLoop2 game = new GameLoop2();
-        game.execute(30);
+        mGameLoop = new GameLoop();
+        mGameLoop.execute(30);
 
     }
 

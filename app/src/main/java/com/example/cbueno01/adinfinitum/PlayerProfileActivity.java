@@ -26,7 +26,7 @@ public class PlayerProfileActivity extends AppCompatActivity {
     private static final int SELECT_PICTURE = 1;
 
     private String mPlayerName;
-    private int mHighScore;
+    private long mHighScore;
     private String mImagePath;
 
     // to restore scores
@@ -77,7 +77,7 @@ public class PlayerProfileActivity extends AppCompatActivity {
 
     public void readData() {
         mPlayerName =  mPrefs.getString("pref_reset_profile", "Anonymous");
-        mHighScore = mPrefs.getInt("mHighScore", 0);
+        mHighScore = mPrefs.getLong("pref_high_score", 0);
         mImagePath = mPrefs.getString("pref_reset_picture", null);
     }
 
@@ -87,7 +87,7 @@ public class PlayerProfileActivity extends AppCompatActivity {
 
         if(mImagePath == null)
         {
-            mImageView.setImageResource(R.drawable.goku_picture);
+            mImageView.setImageResource(R.drawable.sheeple);
         }
         else
         {
@@ -95,11 +95,18 @@ public class PlayerProfileActivity extends AppCompatActivity {
             options.inSampleSize = 4;
             Bitmap bmp = BitmapFactory.decodeFile(mImagePath, options);
             if (bmp == null)
-                mImageView.setImageResource(R.drawable.goku_picture);
+                mImageView.setImageResource(R.drawable.sheeple);
             else
                 mImageView.setImageBitmap(bmp);
         }
 
+    }
+
+    public void resetScore(View v) {
+        mHighScoreTextView.setText("HighScore: 0");
+        SharedPreferences.Editor ed = mPrefs.edit();
+        ed.putLong("pref_high_score", 0);
+        ed.apply();
     }
 
     public void getPicture(View v) {
