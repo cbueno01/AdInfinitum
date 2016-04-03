@@ -2,6 +2,9 @@ package com.example.cbueno01.adinfinitum;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -37,6 +40,9 @@ import java.util.Random;
 public class AdInfinitumActivity extends Activity {
 
     private static final String TAG = "AdInfinitumActivity";
+    private static final double mBase = .1;
+    private static final double mConstant = 10000;
+    private static final int DIALOG_REPLAY_ID = 1;
 
     // for preferences
     //static final int DIALOG_DIFFICULTY_ID = 0;
@@ -98,15 +104,18 @@ public class AdInfinitumActivity extends Activity {
         screenHeight = displaymetrics.heightPixels;
         screenWidth = displaymetrics.widthPixels;
 
-        mGame = new AdInfinitumGame();
+//        mGame = new AdInfinitumGame();
 
         mTimeTextView = (TextView) findViewById(R.id.time_elapsed);
         mScoreTextView = (TextView) findViewById(R.id.player_score);
         mGameView = (GameView) findViewById(R.id.game);
-        mGameView.setGame(mGame);
+//        mGameView.setGame(mGame);
+        mGameView.setOnTouchListener(mTouchListener);
 
         rand = new Random();
-        mAdTime = 2000;
+        mAdTime = 500;
+        startGame();
+//        mScore = 0;
 //        mTime = new GregorianCalendar();
 //        mGameLoop = new GameLoop(mGameView, 30, mGame);
 
@@ -133,11 +142,7 @@ public class AdInfinitumActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        mStartTime = System.nanoTime() / 1000000;
-        mElapsedTime = 0;
-        mTimeOfLastAd = 0;
-        GameLoop2 game = new GameLoop2();
-        game.execute(30);
+        startGame();
     }
 
     private class GameLoop2 extends AsyncTask<Integer, Void, Void> {
@@ -166,20 +171,20 @@ public class AdInfinitumActivity extends Activity {
                 updateGame();
                 publishProgress();
             }
+
+//            showDialog(DIALOG_REPLAY_ID);
             return null;
         }
 
         protected void onProgressUpdate(Void ...Progress) {
+            mTimeTextView.setText(String.format("%04d", (int) (mElapsedTime / 1000)));
+            mScoreTextView.setText(String.format("%07d", mScore));
             mGameView.invalidate();
-//            String formatted = String.format("%03d", num);
-            mTimeTextView.setText(String.format("%04d", (int)(mElapsedTime / 1000)));
         }
 
         protected void onPostExecute() {
 
         }
-
-
     }
 
     public void updateGame() {
@@ -205,20 +210,16 @@ public class AdInfinitumActivity extends Activity {
                 int x = rand.nextInt(screenWidth - width);
                 int y = rand.nextInt(screenHeight - height);
                 //        Log.d("Ad Infinitum", "x: " + x + " y: " + y);
-                //        Log.d("Ad Infinitum", "width: " + width + " height: " + height);
                 if (x + width < screenWidth && y + height < screenHeight) {
-                    Ad ad = new Ad(imageID.get(index), mBitmap, width, height, x, y, scalingFactor);
+                    long points = (long)(mBase * (mConstant - (4 * (width + height) * scalingFactor)));
+                    Ad ad = new Ad(imageID.get(index), mBitmap, width, height, x, y, scalingFactor, points);
+                    Log.d("Ad Infinitum", "points: " + ad.getPointage());
                     mGame.addAd(ad);
                     break;
                 }
             }
             mTimeOfLastAd = System.nanoTime() / 1000000;
         }
-//        else
-//        {
-//            mTimeDifference += mElapsedTime - mTimeDifference;
-//        }
-
     }
 
     private ArrayList<Integer> getImageIDs() {
@@ -236,6 +237,69 @@ public class AdInfinitumActivity extends Activity {
 
 //        Log.d("Ad Infinitum", "Resource: " + imageIDs.get(0));
         return imageIDs;
+    }
+
+    // Listen for touches on the board
+    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+        public boolean onTouch(View v, MotionEvent event) {
+            if(!mGame.isGameOver())
+            {
+                Log.d("Ad Infinitum", "Score: " + mScore);
+
+                ArrayList<Ad> activeAds = mGame.getActiveAds();
+                int arraySize = activeAds.size();
+
+                // Determine which cell was touched
+                int x = (int) event.getX();
+                int y = (int) event.getY();
+//            int pos = row * 3 + col;
+
+                for(int i = arraySize - 1; i >= 0; i--) {
+                    Ad currentAd = activeAds.get(i);
+
+                    if(currentAd.isPointInAd(x, y)) {
+                        activeAds.remove(i);
+                        mScore += currentAd.getPointage();
+                        break;
+                    }
+                }
+            }
+
+            // So we aren't notified of continued events when finger is moved
+            return false;
+        }
+    };
+
+//    @Override
+//    protected Dialog onCreateDialog(int id) {
+////        Dialog dialog = null;
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//
+//        builder.setMessage(R.string.play_again).setCancelable(false)
+//                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int id) {
+//                        startGame();
+//                    }
+//                })
+//                .setNegativeButton(R.string.no, null);
+//
+//        return builder.create();
+//    }
+
+    public void startGame()
+    {
+        mGame = new AdInfinitumGame();
+        mGameView.setGame(mGame);
+        mGameView.setOnTouchListener(mTouchListener);
+        mScore = 0;
+        mElapsedTime = 0;
+        mTimeOfLastAd = 0;
+        mTimeTextView.setText(R.string.time_elapsed);
+        mScoreTextView.setText(R.string.player_score);
+        mStartTime = System.nanoTime() / 1000000;
+        GameLoop2 game = new GameLoop2();
+        game.execute(30);
+
     }
 
 
