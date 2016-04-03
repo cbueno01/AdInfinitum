@@ -196,9 +196,10 @@ public class AdInfinitumActivity extends Activity {
     //        Log.d("Ad Infinitum", "screenwidth: " + screenWidth + " screenheight: " + screenHeight);
 
             float scalingFactor = rand.nextFloat() + rand.nextInt(1) + (float)0.3333;
+            int index = rand.nextInt(imageID.size());
+            Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), imageID.get(index), dimensions);
 
             while (true) {
-                Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), imageID.get(0), dimensions);
                 int width = mBitmap.getWidth();
                 int height = mBitmap.getHeight();
                 int x = rand.nextInt(screenWidth - width);
@@ -206,7 +207,7 @@ public class AdInfinitumActivity extends Activity {
                 //        Log.d("Ad Infinitum", "x: " + x + " y: " + y);
                 //        Log.d("Ad Infinitum", "width: " + width + " height: " + height);
                 if (x + width < screenWidth && y + height < screenHeight) {
-                    Ad ad = new Ad(imageID.get(0), mBitmap, width, height, x, y, scalingFactor);
+                    Ad ad = new Ad(imageID.get(index), mBitmap, width, height, x, y, scalingFactor);
                     mGame.addAd(ad);
                     break;
                 }
