@@ -16,7 +16,7 @@ public class Ad {
     private int y;
     private int width;
     private int height;
-    private float scaleFactor;
+//    private float scaleFactor;
     private int imageID;
     private Bitmap bmp;
     private int rightX;
@@ -24,17 +24,17 @@ public class Ad {
 
 
     //CONSTRUCTOR
-    public Ad(int ID, Bitmap b, int w, int h, int _x, int _y, float scale, long points) {
+    public Ad(int ID, Bitmap b, int w, int h, int _x, int _y, long points) {
         width = w;
         height = h;
         x = _x;
         y = _y;
         imageID = ID;
         bmp = b;
-        scaleFactor = scale;
+//        scaleFactor = scale;
         pointage = 1;
-        rightX = x + (int)(width * scaleFactor);
-        bottomY = y + (int)(height * scaleFactor);
+        rightX = x + width;
+        bottomY = y + height;
         pointage = points;
     }
 
@@ -47,9 +47,9 @@ public class Ad {
         return y;
     }
 
-    public int getWidth() { return Math.round(width * scaleFactor); }
+    public int getWidth() { return width; }
 
-    public int getHeight() { return Math.round(height * scaleFactor); }
+    public int getHeight() { return height; }
 
     public long getPointage() { return pointage; }
 

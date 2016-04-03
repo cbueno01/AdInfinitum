@@ -172,7 +172,6 @@ public class AdInfinitumActivity extends Activity {
                 publishProgress();
             }
 
-//            showDialog(DIALOG_REPLAY_ID);
             return null;
         }
 
@@ -182,8 +181,8 @@ public class AdInfinitumActivity extends Activity {
             mGameView.invalidate();
         }
 
-        protected void onPostExecute() {
-
+        protected void onPostExecute(Void result) {
+            showDialog(DIALOG_REPLAY_ID);
         }
     }
 
@@ -200,19 +199,19 @@ public class AdInfinitumActivity extends Activity {
 //            int i = 0;
     //        Log.d("Ad Infinitum", "screenwidth: " + screenWidth + " screenheight: " + screenHeight);
 
-            float scalingFactor = rand.nextFloat() + rand.nextInt(1) + (float)0.3333;
             int index = rand.nextInt(imageID.size());
             Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), imageID.get(index), dimensions);
 
             while (true) {
-                int width = mBitmap.getWidth();
-                int height = mBitmap.getHeight();
-                int x = rand.nextInt(screenWidth - width);
-                int y = rand.nextInt(screenHeight - height);
+                float scalingFactor = rand.nextFloat() + rand.nextInt(1) + (float)0.3333;
+                int width = (int)(mBitmap.getWidth() * scalingFactor);
+                int height = (int)(mBitmap.getHeight() * scalingFactor);
+                int x = rand.nextInt(Math.abs(screenWidth - width) + 1);
+                int y = rand.nextInt(Math.abs(screenHeight - height) + 1);
                 //        Log.d("Ad Infinitum", "x: " + x + " y: " + y);
                 if (x + width < screenWidth && y + height < screenHeight) {
                     long points = (long)(mBase * (mConstant - (4 * (width + height) * scalingFactor)));
-                    Ad ad = new Ad(imageID.get(index), mBitmap, width, height, x, y, scalingFactor, points);
+                    Ad ad = new Ad(imageID.get(index), mBitmap, width, height, x, y, points);
                     Log.d("Ad Infinitum", "points: " + ad.getPointage());
                     mGame.addAd(ad);
                     break;
@@ -270,21 +269,21 @@ public class AdInfinitumActivity extends Activity {
         }
     };
 
-//    @Override
-//    protected Dialog onCreateDialog(int id) {
-////        Dialog dialog = null;
-//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//
-//        builder.setMessage(R.string.play_again).setCancelable(false)
-//                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        startGame();
-//                    }
-//                })
-//                .setNegativeButton(R.string.no, null);
-//
-//        return builder.create();
-//    }
+    @Override
+    protected Dialog onCreateDialog(int id) {
+//        Dialog dialog = null;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setMessage(R.string.play_again).setCancelable(false)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        startGame();
+                    }
+                })
+                .setNegativeButton(R.string.no, null);
+
+        return builder.create();
+    }
 
     public void startGame()
     {
