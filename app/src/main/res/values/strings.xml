@@ -12,7 +12,7 @@
     <string name="time_elapsed">0000</string>
     <string name="play_again">Play Again?</string>
     <string name="give_up">Give Up</string>
-    <string name="yes">Yes</string>
+    <string name="okay">Okay</string>
     <string name="no">No</string>
 
     <!-- Strings related to About -->
