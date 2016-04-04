@@ -13,6 +13,7 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
@@ -40,7 +41,7 @@ import java.util.Random;
 public class AdInfinitumActivity extends Activity {
 
     private static final String TAG = "AdInfinitumActivity";
-    private static final double mBase = .1;
+    private static final double mBase = .4;
     private static final double mConstant = 10000;
     private static final int DIALOG_REPLAY_ID = 1;
 
@@ -53,7 +54,7 @@ public class AdInfinitumActivity extends Activity {
     private int screenWidth;
     private int screenHeight;
 
-    // time reference
+    // time references in milliseconds
     private long mStartTime;
     private long mElapsedTime;
     private long mAdTime;
@@ -80,13 +81,17 @@ public class AdInfinitumActivity extends Activity {
     private GameView mGameView;
     private TextView mTimeTextView;
     private TextView mScoreTextView;
+    private TextView mCountdownTextView;
 
     private boolean mGameOver;
 
     // for all the sounds  we play
     private SoundPool mSounds;
     private HashMap<Integer, Integer> mSoundIDMap;
-    private boolean mSoundOn;
+    private boolean mSoundEffectsOn;
+    private int dismissAdID1;
+    private int dismissAdID2;
+    private int gameOverID;
 
     // canceling the game loop
     private boolean mIsCancelled;
@@ -111,12 +116,13 @@ public class AdInfinitumActivity extends Activity {
 
         mTimeTextView = (TextView) findViewById(R.id.time_elapsed);
         mScoreTextView = (TextView) findViewById(R.id.player_score);
+        mCountdownTextView = (TextView) findViewById(R.id.countdown);
         mGameView = (GameView) findViewById(R.id.game);
 //        mGameView.setGame(mGame);
         mGameView.setOnTouchListener(mTouchListener);
 
         rand = new Random();
-        mAdTime = 500;
+        mAdTime = 1000;
         mPrefs = getSharedPreferences("preferences", MODE_PRIVATE);
         startGame();
 //        mScore = 0;
@@ -145,7 +151,25 @@ public class AdInfinitumActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
+        mSounds = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);
+        // 2 = maximum sounds ot play at the same time,
+        // AudioManager.STREAM_MUSIC is the stream type typically used for games
+        // 0 is the "the sample-rate converter quality. Currently has no effect. Use 0 for the default."
+        dismissAdID1 = mSounds.load(this, R.raw.synth1, 1);
+        // Context, id of resource, priority (currently no effect)
+        dismissAdID2 = mSounds.load(this, R.raw.synth2, 1);
+        gameOverID = mSounds.load(this, R.raw.wicked_laugh, 1);
         startGame();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if(mSounds != null) {
+            mSounds.release();
+            mSounds = null;
+        }
     }
 
     @Override
@@ -169,6 +193,7 @@ public class AdInfinitumActivity extends Activity {
         @Override
         protected Void doInBackground(Integer... args) {
             Log.d("Ad Infinitum", "isOver: " + mGame.isGameOver() + " fps: " + args[0]);
+
             while (!mGame.isGameOver()) {
                 if (mGameLoop.isCancelled())
                     return null;
@@ -189,7 +214,8 @@ public class AdInfinitumActivity extends Activity {
 
         protected void onProgressUpdate(Void ...Progress) {
             mTimeTextView.setText(String.format("%04d", (int) (mElapsedTime / 1000)));
-            mScoreTextView.setText(String.format("%07d", mScore));
+//            mScoreTextView.setText(String.format("%07d", mScore));
+            mScoreTextView.setText("" + mScore);
             mGameView.invalidate();
         }
 
@@ -202,14 +228,18 @@ public class AdInfinitumActivity extends Activity {
                 ed.apply();
             }
 
-            if(!mGameLoop.isCancelled())
+            if(!mGameLoop.isCancelled()) {
                 showDialog(DIALOG_REPLAY_ID);
+                mSounds.play(gameOverID, 1, 1, 1, 0, 1);
+            }
         }
     }
 
     public void updateGame() {
 //        Log.d("Ad Infinitum", "mAdTime: " + mAdTime + " mTimeDifference: " + mTimeDifference + " mElapsedTime: " + mElapsedTime);
-        if(mAdTime < (System.nanoTime() / 1000000) - mTimeOfLastAd)
+
+        // AD GENERATION ALGORITHM
+        if(mAdTime - ( mElapsedTime / 128) < (System.nanoTime() / 1000000) - mTimeOfLastAd)
         {
             ArrayList<Integer> imageID = getImageIDs();
     //        Log.d("Ad Infinitum", "Resource2: " + imageID.get(0));
@@ -224,13 +254,14 @@ public class AdInfinitumActivity extends Activity {
             Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), imageID.get(index), dimensions);
 
             while (true) {
-                float scalingFactor = rand.nextFloat() + rand.nextInt(1) + (float)0.3333;
+                float scalingFactor = rand.nextFloat() + rand.nextInt(1) + (float)0.6;
                 int width = (int)(mBitmap.getWidth() * scalingFactor);
                 int height = (int)(mBitmap.getHeight() * scalingFactor);
                 int x = rand.nextInt(Math.abs(screenWidth - width) + 1);
                 int y = rand.nextInt(Math.abs(screenHeight - height) + 1);
                 //        Log.d("Ad Infinitum", "x: " + x + " y: " + y);
                 if (x + width < screenWidth && y + height < screenHeight) {
+                    // AD POINTAGE ALGORITHM
                     long points = (long)(mBase * (mConstant - (4 * (width + height) * scalingFactor)));
                     Ad ad = new Ad(imageID.get(index), mBitmap, width, height, x, y, points);
                     Log.d("Ad Infinitum", "points: " + ad.getPointage());
@@ -279,6 +310,7 @@ public class AdInfinitumActivity extends Activity {
 
                     if(currentAd.isPointInAd(x, y)) {
                         activeAds.remove(i);
+                        mSounds.play(dismissAdID2, 1, 1, 1, 0, 1);
                         mScore += currentAd.getPointage();
                         break;
                     }
@@ -312,20 +344,53 @@ public class AdInfinitumActivity extends Activity {
 
     public void startGame()
     {
+
         mGame = new AdInfinitumGame();
         mGameView.setGame(mGame);
-        mGameView.setOnTouchListener(mTouchListener);
+        mCountdownTextView.setEnabled(false);
         mScore = 0;
         mElapsedTime = 0;
         mTimeOfLastAd = 0;
         mTimeTextView.setText(R.string.time_elapsed);
-        mScoreTextView.setText(R.string.player_score);
-        mStartTime = System.nanoTime() / 1000000;
-        mGameLoop = new GameLoop();
-        mGameLoop.execute(30);
+        mScoreTextView.setText(R.string.default_score);
+        mGameView.invalidate();
+
+        mCountdownTextView.setVisibility(View.VISIBLE);
+        new CountDownTimer(3200, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                mCountdownTextView.setText(" " + millisUntilFinished / 1000);
+            }
+
+            public void onFinish() {
+                mCountdownTextView.setVisibility(View.GONE);
+                mGameView.setOnTouchListener(mTouchListener);
+                mStartTime = System.nanoTime() / 1000000;
+                mGameLoop = new GameLoop();
+                mGameLoop.execute(30);
+            }
+        }.start();
 
     }
 
+    private void countdown() {
+        Handler handler = new Handler();
+        // Countdown to let player prepare
+        for (int i = 3; i > 0; i--) {
+
+//            final int num = i;
+//            handler.postDelayed(new Runnable() {
+//                public void run() {
+//                    mCountdownTextView.setText("" + num);
+//                }
+//            }, 1000);
+            mCountdownTextView.setText("" + i);
+//            try {
+//                Thread.;
+//            } catch (InterruptedException ie) {
+//            }
+        }
+    }
 
 //    private void readScores() {
 //        // Restore the scores
@@ -393,18 +458,6 @@ public class AdInfinitumActivity extends Activity {
 //        mSoundOn = mPrefs.getBoolean("sound", true);
 //    }
 //
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//
-//        Log.d(TAG, "in onPause");
-//
-//        if(mSounds != null) {
-//            mSounds.release();
-//            mSounds = null;
-//        }
-//    }
 //
 //    @Override
 //    protected void onStop() {

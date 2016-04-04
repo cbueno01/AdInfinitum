@@ -1,14 +1,14 @@
 <resources>
     <string name="app_name">AD INFINITUM</string>
     <string name="action_settings">Settings</string>
-    <string name="title_player">Profile</string>
+    <string name="title_player">PROFILE</string>
     <string name="player_name">Name: Sheeple</string>
     <string name="highscore_text">HighScore: 0</string>
     <string name="reset_text">Reset</string>
 
 
     <!-- Strings related to Game Play -->
-    <string name="player_score">0000000</string>
+    <string name="default_score">0</string>
     <string name="time_elapsed">0000</string>
     <string name="play_again">Play Again?</string>
     <string name="give_up">Give Up</string>
@@ -16,7 +16,7 @@
     <string name="no">No</string>
 
     <!-- Strings related to About -->
-    <string name="how_to_play">HOW TO:\nDismiss the ads by clicking the appropriate area. Clicking the wrong areas may have negative consequences.\nWill YOU give up when faced with ad-versity? </string>
+    <string name="how_to_play">HOW TO:\nDismiss the ads by clicking within their area. Clicking the wrong areas may have negative consequences.\nWill YOU give up in the face of ad-versity? </string>
     <string name="credits">CREATED BY / PROGRAMMED BY\n\nJoy Alam, Chrystian Bueno, Miguel Chavira</string>
     <string name="programmer_names">Joy Alam, Chrystian Bueno, Miguel Chavira</string>
 
@@ -35,8 +35,8 @@
     <string name="mode_rounds">Rounds</string>
     <string name="difficulty_level_easy">Easy</string>
     <string name="difficulty_level_medium">Medium</string>
-    <string name="difficulty_level_overload">Ad Overload</string>
-    <string name="default_profile_name">Default Player</string>
+    <string name="difficulty_level_overload">Overload</string>
+    <string name="default_profile_name">Sheeple</string>
     <!--<string name="default_sound">50</string>
     <string name="max_sound">100</string>-->
     <bool name="default_soundfx_state">true</bool>

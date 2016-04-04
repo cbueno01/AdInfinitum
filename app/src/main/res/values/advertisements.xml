@@ -3,10 +3,11 @@
     <string-array name="advertisements">
         <item>lego</item>
         <item>sauber</item>
-        <item>snake_bite</item>
-        <item>soccer_add</item>
+        <item>evilcorp</item>
+        <item>infected</item>
+        <item>not_joke</item>
         <item>timotei</item>
-        <item>utopolis</item>
+        <item>stop_popup</item>
     </string-array>
 
 </resources>

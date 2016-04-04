@@ -21,8 +21,8 @@
             android:layout_marginTop="2dp"
             android:layout_marginLeft="5dp"
             android:gravity="center_horizontal"
-            android:text="@string/player_score"
-            android:textSize="20dp"
+            android:text="@string/default_score"
+            android:textSize="20sp"
             android:textColor="@color/inGameTextColor" />
 
         <TextView
@@ -34,10 +34,19 @@
             android:layout_marginRight="5dp"
             android:gravity="right"
             android:text="@string/time_elapsed"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@color/inGameTextColor" />
 
+        <TextView
+            android:id="@+id/countdown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="3"
+            android:textSize="175sp"
+            android:textStyle="bold"
+            android:textColor="@color/buttonTextColor"/>
 
     </RelativeLayout>
 
