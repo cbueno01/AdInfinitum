@@ -295,13 +295,17 @@ public class AdInfinitumActivity extends Activity {
 //        Dialog dialog = null;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        builder.setMessage(R.string.play_again).setCancelable(false)
+        builder.setMessage(R.string.give_up).setCancelable(false)
                 .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        AdInfinitumActivity.this.finish();
+                    }
+                })
+                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         startGame();
                     }
-                })
-                .setNegativeButton(R.string.no, null);
+                });
 
         return builder.create();
     }

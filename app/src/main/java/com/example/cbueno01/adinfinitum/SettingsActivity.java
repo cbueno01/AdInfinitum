@@ -17,7 +17,7 @@ public class SettingsActivity extends PreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("AD INFINITUM", "In Settings");
         super.onCreate(savedInstanceState);
-//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 //        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getPreferenceManager().setSharedPreferencesName("preferences");
         addPreferencesFromResource(R.xml.preferences);

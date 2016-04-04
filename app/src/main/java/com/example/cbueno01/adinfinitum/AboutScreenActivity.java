@@ -1,5 +1,6 @@
 package com.example.cbueno01.adinfinitum;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,15 +16,14 @@ import android.view.WindowManager;
 /**
  * Created by Squash on 3/30/2016.
  */
-public class AboutScreenActivity extends AppCompatActivity{
+public class AboutScreenActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("AD INFINITUM", "In new activity");
+        Log.d("AD INFINITUM", "In About activity");
         super.onCreate(savedInstanceState);
-//        requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_about_screen);
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);

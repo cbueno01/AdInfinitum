@@ -1,5 +1,6 @@
 package com.example.cbueno01.adinfinitum;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -21,7 +22,7 @@ import android.widget.TextView;
 /**
  * Created by cbueno01 on 3/29/16.
  */
-public class PlayerProfileActivity extends AppCompatActivity {
+public class PlayerProfileActivity extends Activity {
 
     private static final int SELECT_PICTURE = 1;
 
@@ -41,6 +42,8 @@ public class PlayerProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 //      Log.d("Ad Infinitum", "In player profile activity");
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 //        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 //        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_player_profile_screen);
