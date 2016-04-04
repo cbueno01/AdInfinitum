@@ -79,7 +79,7 @@ public class PlayerProfileActivity extends Activity {
     }
 
     public void readData() {
-        mPlayerName =  mPrefs.getString("pref_reset_profile", "Anonymous");
+        mPlayerName =  mPrefs.getString("pref_reset_profile", "Sheeple");
         mHighScore = mPrefs.getLong("pref_high_score", 0);
         mImagePath = mPrefs.getString("pref_reset_picture", null);
     }

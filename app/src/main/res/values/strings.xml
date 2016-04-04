@@ -11,7 +11,7 @@
     <string name="default_score">0</string>
     <string name="time_elapsed">0000</string>
     <string name="play_again">Play Again?</string>
-    <string name="give_up">Give Up</string>
+    <string name="give_up">Give Up,</string>
     <string name="okay">Okay</string>
     <string name="no">No</string>
 

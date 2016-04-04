@@ -49,7 +49,7 @@ public class SettingsActivity extends PreferenceActivity {
         Log.d("AD INFINITUM", "Difficulty pref");
         final ListPreference difficultyLevelPref = (ListPreference) findPreference("pref_difficulty_level");
         String difficulty = prefs.getString("pref_difficulty_level",
-                getResources().getString(R.string.difficulty_level_medium));
+                getResources().getString(R.string.difficulty_level_easy));
         difficultyLevelPref.setSummary((CharSequence) difficulty);
         difficultyLevelPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
