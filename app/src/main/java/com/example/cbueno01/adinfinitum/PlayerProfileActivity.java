@@ -16,6 +16,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -36,7 +38,7 @@ public class PlayerProfileActivity extends Activity {
     private TextView mNameTextView;
     private TextView mHighScoreTextView;
     private ImageView mImageView;
-
+    private TextView mTitleTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +78,13 @@ public class PlayerProfileActivity extends Activity {
         mNameTextView = (TextView) findViewById(R.id.player_name);
         mHighScoreTextView = (TextView) findViewById(R.id.high_score);
         mImageView = (ImageView) findViewById(R.id.player_image);
+        mTitleTextView = (TextView) findViewById(R.id.profile_title);
+
+        Animation blinkAnimation = AnimationUtils.loadAnimation(this, R.anim.blink);
+        Animation blinkAnimation2 = AnimationUtils.loadAnimation(this, R.anim.blink2);
+        mTitleTextView.startAnimation(blinkAnimation);
+        mNameTextView.startAnimation(blinkAnimation2);
+        mHighScoreTextView.startAnimation(blinkAnimation2);
     }
 
     public void readData() {

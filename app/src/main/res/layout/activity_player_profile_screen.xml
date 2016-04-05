@@ -5,10 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.cbueno01.adinfinitum.PlayerProfileActivity"
-    android:background="@color/colorBackground"
+    android:background="@drawable/blank_pop_up"
     android:weightSum="1">
 
     <TextView
+        android:id="@+id/profile_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/title_player"

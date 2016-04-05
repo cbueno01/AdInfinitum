@@ -2,7 +2,7 @@
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     android:interpolator="@android:anim/linear_interpolator">
     <scale
-        android:duration="1000"
+        android:duration="2000"
         android:fromXScale="1.0"
         android:fromYScale="1.0"
         android:pivotX="50%"
@@ -12,14 +12,14 @@
         android:toYScale="1.04" />
 
     <scale
-        android:duration="3000"
-        android:startOffset="1500"
+        android:duration="4000"
+        android:startOffset="2000"
         android:fromXScale="1.04"
         android:fromYScale="1.04"
         android:pivotX="50%"
         android:pivotY="80%"
         android:repeatCount="infinite"
         android:repeatMode="reverse"
-        android:toXScale=".86"
-        android:toYScale=".86" />
+        android:toXScale=".89"
+        android:toYScale=".89" />
 </set>

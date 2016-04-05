@@ -27,8 +27,8 @@ public class StartScreenActivity extends Activity {
 //    // whether service is bounded or not
     private boolean mIsBound;
 
-//    private TextView title;
-//    private Animation animScaleC;
+    private TextView title;
+    private Animation animScaleC;
 
     private Button btnPlay;
     private Animation animScaleBR;
@@ -51,8 +51,8 @@ public class StartScreenActivity extends Activity {
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_start_screen);
 
-        //animScaleBR = AnimationUtils.loadAnimation(this, R.anim.anim_scale_fromc);
-        //title = (TextView)findViewById(R.id.title);
+        animScaleC = AnimationUtils.loadAnimation(this, R.anim.anim_scale_fromc);
+        title = (TextView)findViewById(R.id.title);
 
         animScaleBR = AnimationUtils.loadAnimation(this, R.anim.anim_scale_frombr);
         btnPlay = (Button)findViewById(R.id.play);
@@ -60,10 +60,10 @@ public class StartScreenActivity extends Activity {
         animScaleBL = AnimationUtils.loadAnimation(this, R.anim.anim_scale_frombl);
         btnProfile = (Button)findViewById(R.id.profile);
 
-        animScaleTR = AnimationUtils.loadAnimation(this, R.anim.anim_scale_frombr);
+        animScaleTR = AnimationUtils.loadAnimation(this, R.anim.anim_scale_fromtr);
         btnSettings = (Button)findViewById(R.id.settings);
 
-        animScaleTL = AnimationUtils.loadAnimation(this, R.anim.anim_scale_frombr);
+        animScaleTL = AnimationUtils.loadAnimation(this, R.anim.anim_scale_fromtl);
         btnAbout = (Button)findViewById(R.id.about);
 
         mPrefs = getSharedPreferences("preferences", MODE_PRIVATE);
@@ -120,7 +120,7 @@ public class StartScreenActivity extends Activity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         if(hasFocus){
-            //title.startAnimation(animScaleC);
+            title.startAnimation(animScaleC);
             btnPlay.startAnimation(animScaleBR);
             btnProfile.startAnimation(animScaleBL);
             btnSettings.startAnimation(animScaleTR);
