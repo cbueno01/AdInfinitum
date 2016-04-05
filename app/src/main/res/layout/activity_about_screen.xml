@@ -1,46 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.cbueno01.adinfinitum.AboutActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/colorBackground"
+    android:id="@+id/about_rl"
     >
 
     <TextView
+        android:id="@+id/about_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
         android:layout_gravity="center"
+        android:layout_centerHorizontal="true"
+        android:onClick="onClick"
+        android:clickable="true"
         android:text="ABOUT"
         android:textStyle="bold"
         android:textSize="60sp"
         android:textColor="@color/buttonTextColor"/>
 
     <TextView
+        android:id="@+id/how_to_play"
         android:background="@drawable/blank_pop_up"
         android:layout_width="500dp"
         android:layout_height="100dp"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
         android:gravity="top|center"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/about_title"
+        android:alpha=".8"
+        android:onClick="OnClick"
+        android:clickable="true"
         android:text="@string/how_to_play"
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@color/primary_material_light_1"/>
 
     <TextView
+        android:id="@+id/credits"
         android:background="@drawable/blank_pop_up"
         android:layout_width="wrap_content"
         android:layout_height="100dp"
-        android:layout_gravity="center"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="10dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/how_to_play"
         android:gravity="top|center"
+        android:alpha=".8"
+        android:onClick="OnClick"
+        android:clickable="true"
         android:text="@string/credits"
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@color/primary_material_light_1"/>
 
-</LinearLayout>
+</RelativeLayout>

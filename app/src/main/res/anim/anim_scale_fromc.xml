@@ -2,24 +2,24 @@
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     android:interpolator="@android:anim/linear_interpolator">
     <scale
-        android:duration="1300"
+        android:duration="1000"
         android:fromXScale="1.0"
         android:fromYScale="1.0"
         android:pivotX="50%"
         android:pivotY="80%"
         android:repeatCount="0"
-        android:toXScale="1.05"
-        android:toYScale="1.05" />
+        android:toXScale="1.04"
+        android:toYScale="1.04" />
 
     <scale
-        android:duration="2600"
-        android:startOffset="1300"
-        android:fromXScale="1.05"
-        android:fromYScale="1.05"
+        android:duration="3000"
+        android:startOffset="1500"
+        android:fromXScale="1.04"
+        android:fromYScale="1.04"
         android:pivotX="50%"
         android:pivotY="80%"
         android:repeatCount="infinite"
         android:repeatMode="reverse"
-        android:toXScale=".94"
-        android:toYScale=".94" />
+        android:toXScale=".86"
+        android:toYScale=".86" />
 </set>
