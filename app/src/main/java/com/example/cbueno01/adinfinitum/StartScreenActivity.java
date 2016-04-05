@@ -2,6 +2,7 @@ package com.example.cbueno01.adinfinitum;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,9 +19,10 @@ public class StartScreenActivity extends Activity {
 
 //    BackgroundSound mBackgroundSound = new BackgroundSound();
 //    private boolean startedSoundOnce = false;
+    private SharedPreferences mPrefs;
 
     // bounded service
-    private static MusicService mBoundService;
+    private static MusicService mMusicService;
 //
 //    // whether service is bounded or not
     private boolean mIsBound;
@@ -39,6 +41,8 @@ public class StartScreenActivity extends Activity {
 
     private Button btnAbout;
     private Animation animScaleTL;
+
+    private boolean mIsSoundOn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +65,8 @@ public class StartScreenActivity extends Activity {
 
         animScaleTL = AnimationUtils.loadAnimation(this, R.anim.anim_scale_frombr);
         btnAbout = (Button)findViewById(R.id.about);
+
+        mPrefs = getSharedPreferences("preferences", MODE_PRIVATE);
 
 //        btnScale.startAnimation(animScale);
 //        btnScale.setOnClickListener(new Button.OnClickListener(){
@@ -140,11 +146,24 @@ public class StartScreenActivity extends Activity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if(mIsSoundOn)
+        {
+            Intent svc=new Intent(this, MusicService.class);
+            stopService(svc); //OR stopService(svc);
+        }
 //        doUnbindService();
     }
 
     public void onResume() {
         super.onResume();
+
+        mIsSoundOn = mPrefs.getBoolean("pref_soundtrack", true);
+
+        if(mIsSoundOn)
+        {
+            Intent svc=new Intent(this, MusicService.class);
+            startService(svc); //OR stopService(svc);
+        }
 //        StartScreenActivity.getService().musicStart();
 //        if (mBackgroundSound.isCancelled())
 //        if (mBackgroundSound.getStatus() == AsyncTask.Status.FINISHED)

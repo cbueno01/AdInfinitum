@@ -358,23 +358,4 @@ public class AdInfinitumActivity extends Activity {
         }.start();
 
     }
-
-    private void countdown() {
-        Handler handler = new Handler();
-        // Countdown to let player prepare
-        for (int i = 3; i > 0; i--) {
-
-//            final int num = i;
-//            handler.postDelayed(new Runnable() {
-//                public void run() {
-//                    mCountdownTextView.setText("" + num);
-//                }
-//            }, 1000);
-            mCountdownTextView.setText("" + i);
-//            try {
-//                Thread.;
-//            } catch (InterruptedException ie) {
-//            }
-        }
-    }
 }

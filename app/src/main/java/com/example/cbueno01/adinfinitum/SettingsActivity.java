@@ -1,5 +1,6 @@
 package com.example.cbueno01.adinfinitum;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -84,14 +85,16 @@ public class SettingsActivity extends PreferenceActivity {
         //show the sound fx volume
         Log.d("AD INFINITUM", "Sound FX Volume Settings");
         final SwitchPreference soundfxPref = (SwitchPreference) findPreference("pref_sound_fx");
-        Boolean soundfxState = prefs.getBoolean("pref_soundfx",
+        final Boolean soundfxState = prefs.getBoolean("pref_soundfx",
                 getResources().getBoolean(R.bool.default_soundfx_state));
         Log.d("AD INFINITUM", soundfxState.toString());
         soundfxPref.setChecked(soundfxState);
         soundfxPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                soundfxPref.setChecked((Boolean) newValue);
+//                Log.d("Ad Infinitum", "Changing soundfxState to: " + newValue);
+                soundfxPref.setChecked((boolean) newValue);
+
                 return true;
             }
         });
@@ -106,6 +109,16 @@ public class SettingsActivity extends PreferenceActivity {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 soundtrackPref.setChecked((Boolean) newValue);
+
+                if((boolean) newValue) {
+                    Intent svc = new Intent(getApplicationContext(), MusicService.class);
+                    startService(svc);
+                }
+                else
+                {
+                    Intent svc = new Intent(getApplicationContext(), MusicService.class);
+                    stopService(svc);
+                }
                 return true;
             }
         });
