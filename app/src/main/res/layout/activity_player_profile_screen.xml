@@ -43,7 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:layout_marginTop="15dp">
+        android:layout_marginTop="7dp">
 
             <TextView
                 android:id="@+id/player_name"
@@ -51,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/player_name"
                 android:gravity="center"
-                android:textSize="30dp"
+                android:textSize="25sp"
                 android:textIsSelectable="true"
                 android:textColor="@color/buttonTextColor"
                 android:layout_marginRight="20dp" />
@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/highscore_text"
                 android:gravity="center"
-                android:textSize="30dp"
+                android:textSize="25sp"
                 android:textIsSelectable="true"
                 android:textColor="@color/buttonTextColor"
                 android:layout_marginLeft="20dp" />
@@ -74,6 +74,7 @@
         android:text="@string/reset_text"
         android:textSize="28dp"
         android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:textColor="@color/buttonTextColor"
         android:background="@color/buttonColor"
         android:layout_gravity="center_horizontal"

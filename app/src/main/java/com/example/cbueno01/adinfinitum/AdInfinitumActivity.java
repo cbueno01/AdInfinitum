@@ -41,7 +41,7 @@ import java.util.Random;
 public class AdInfinitumActivity extends Activity {
 
     private static final String TAG = "AdInfinitumActivity";
-    private static final double mBase = .4;
+    private static final double mBase = .27;
     private static final double mConstant = 10000;
     private static final int DIALOG_REPLAY_ID = 1;
 
@@ -230,14 +230,16 @@ public class AdInfinitumActivity extends Activity {
 
             if (!mGameLoop.isCancelled() && mTimerFinish) {
                 showDialog(DIALOG_REPLAY_ID);
-                mSounds.play(gameOverID, 1, 1, 1, 0, 1);
+                if (mSoundEffectsOn) {
+                    mSounds.play(gameOverID, 1, 1, 1, 0, 1);
+                }
             }
         }
     }
 
     public void updateGame() {
         // AD GENERATION ALGORITHM
-        if (mAdTime - (mElapsedTime / 128) < (System.nanoTime() / 1000000) - mTimeOfLastAd) {
+        if (mAdTime - (mElapsedTime / (300 / mDifficulty)) < (System.nanoTime() / 1000000) - mTimeOfLastAd) {
             ArrayList<Integer> imageID = getImageIDs();
             BitmapFactory.Options dimensions = new BitmapFactory.Options();
             dimensions.inScaled = false;
@@ -253,7 +255,7 @@ public class AdInfinitumActivity extends Activity {
                 int y = rand.nextInt(Math.abs(screenHeight - height) + 1);
                 if (x + width < screenWidth && y + height < screenHeight) {
                     // AD POINTAGE ALGORITHM
-                    long points = (long) (mBase * (mConstant - (4 * (width + height) * scalingFactor)));
+                    long points = (long) (mBase * mDifficulty * (mConstant - (4 * (width + height) * scalingFactor)));
                     Ad ad = new Ad(imageID.get(index), mBitmap, width, height, x, y, points);
                     Log.d("Ad Infinitum", "points: " + ad.getPointage());
                     mGame.addAd(ad);
@@ -296,7 +298,9 @@ public class AdInfinitumActivity extends Activity {
 
                     if (currentAd.isPointInAd(x, y)) {
                         activeAds.remove(i);
-                        mSounds.play(dismissAdID2, 1, 1, 1, 0, 1);
+                        if (mSoundEffectsOn) {
+                            mSounds.play(dismissAdID2, 1, 1, 1, 0, 1);
+                        }
                         mScore += currentAd.getPointage();
                         break;
                     }
