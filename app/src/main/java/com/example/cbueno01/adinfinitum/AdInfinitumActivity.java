@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.AsyncTask;
@@ -254,10 +255,14 @@ public class AdInfinitumActivity extends Activity {
                 int x = rand.nextInt(Math.abs(screenWidth - width) + 1);
                 int y = rand.nextInt(Math.abs(screenHeight - height) + 1);
                 if (x + width < screenWidth && y + height < screenHeight) {
+                    Point boxLeftTop = new Point((rand.nextInt(Math.abs(width - 50)) + x), (rand.nextInt(Math.abs(height - 50)) + y));
+//                    Log.d(TAG, "X; " + (width + x - boxLeftTop.x) + "  Y: " + (height + y - boxLeftTop.y));
+                    Point boxBottomRight = new Point((rand.nextInt(Math.abs(width + x - boxLeftTop.x - 50)) + boxLeftTop.x + 50), (rand.nextInt(Math.abs(height + y - boxLeftTop.y - 50)) + boxLeftTop.y + 50));
+
                     // AD POINTAGE ALGORITHM
                     long points = (long) (mBase * mDifficulty * (mConstant - (4 * (width + height) * scalingFactor)));
-                    Ad ad = new Ad(imageID.get(index), mBitmap, width, height, x, y, points);
-                    Log.d("Ad Infinitum", "points: " + ad.getPointage());
+                    Ad ad = new Ad(imageID.get(index), mBitmap, width, height, new Point(x, y), boxLeftTop, boxBottomRight, points);
+//                    Log.d("Ad Infinitum", "points: " + ad.getPointage());
                     mGame.addAd(ad);
                     break;
                 }
