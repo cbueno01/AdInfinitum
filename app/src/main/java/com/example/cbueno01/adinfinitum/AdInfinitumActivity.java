@@ -289,10 +289,11 @@ public class AdInfinitumActivity extends Activity {
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         public boolean onTouch(View v, MotionEvent event) {
             if (!mGame.isGameOver()) {
-                Log.d("Ad Infinitum", "Score: " + mScore);
+//                Log.d("Ad Infinitum", "Score: " + mScore);
 
                 ArrayList<Ad> activeAds = mGame.getActiveAds();
                 int arraySize = activeAds.size();
+                boolean missClicked = true;
 
                 // Determine which cell was touched
                 int x = (int) event.getX();
@@ -301,7 +302,8 @@ public class AdInfinitumActivity extends Activity {
                 for (int i = arraySize - 1; i >= 0; i--) {
                     Ad currentAd = activeAds.get(i);
 
-                    if (currentAd.isPointInAd(x, y)) {
+                    if (currentAd.isPointInBlock(x, y)) {
+                        missClicked = false;
                         activeAds.remove(i);
                         if (mSoundEffectsOn) {
                             mSounds.play(dismissAdID2, 1, 1, 1, 0, 1);
@@ -309,6 +311,18 @@ public class AdInfinitumActivity extends Activity {
                         mScore += currentAd.getPointage();
                         break;
                     }
+
+                    else if (currentAd.isPointInAd(x, y)) {
+                        break;
+                    }
+                }
+
+                // Lose points from missing an ad.
+                if (missClicked) {
+                    if (mScore < 1000)
+                        mScore = 0;
+                    else
+                        mScore -= 1000;
                 }
             }
 

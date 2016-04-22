@@ -67,5 +67,7 @@ public class Ad {
 
     public Bitmap getBitmap() { return bmp; }
 
-    public boolean isPointInAd(int _x, int _y) { return (_x >= boxTopLeft.x && _x <= boxBottomRight.x) && (_y >= boxTopLeft.y && _y <= boxBottomRight.y); }
+    public boolean isPointInBlock(int _x, int _y) { return (_x >= boxTopLeft.x && _x <= boxBottomRight.x) && (_y >= boxTopLeft.y && _y <= boxBottomRight.y); }
+
+    public boolean isPointInAd(int _x, int _y) { return (_x >= topLeft.x && _x <= bottomRight.x) && (_y >= topLeft.y && _y <= bottomRight.y); }
 }
