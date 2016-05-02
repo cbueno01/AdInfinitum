@@ -14,6 +14,8 @@
     <string name="give_up">Give Up,</string>
     <string name="okay">Okay</string>
     <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="keep_going">Continue?</string>
 
     <!-- Strings related to About -->
     <string name="how_to_play">HOW TO:\nDismiss the ads by clicking within their area. Clicking the wrong areas may have negative consequences.\nWill YOU give up in the face of ad-versity? </string>
