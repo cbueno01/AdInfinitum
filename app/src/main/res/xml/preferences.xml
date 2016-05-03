@@ -53,9 +53,4 @@
         android:defaultValue="@string/default_sound"
         />-->
 
-    <EditTextPreference
-        android:key="pref_reset_profile"
-        android:title="Reset Profile"
-        android:defaultValue="@string/default_profile_name"/>
-
 </PreferenceScreen>

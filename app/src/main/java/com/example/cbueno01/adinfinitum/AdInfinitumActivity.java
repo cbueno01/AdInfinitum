@@ -144,7 +144,7 @@ public class AdInfinitumActivity extends Activity {
     public void onResume() {
         super.onResume();
         // Setting game preferences
-        mPlayerName = mPrefs.getString("pref_reset_profile", "Sheeple");
+        mPlayerName = mPrefs.getString("pref_profile_name", "<Player>");
         mSoundEffectsOn = mPrefs.getBoolean("pref_soundfx", true);
         String difficultyLevel = mPrefs.getString("pref_difficulty_level", getResources().getString(R.string.difficulty_level_easy));
         String[] levels = getResources().getStringArray(R.array.difficulty_level);

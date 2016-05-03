@@ -1,9 +1,15 @@
 package com.example.cbueno01.adinfinitum;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Rect;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -26,6 +32,10 @@ public class StartScreenActivity extends Activity {
 //
 //    // whether service is bounded or not
     private boolean mIsBound;
+
+    private Context mContext;
+    private CoordinatorLayout mCL;
+    private StarFieldView mSFV;
 
     private TextView title;
     private Animation animScaleC;
@@ -51,22 +61,148 @@ public class StartScreenActivity extends Activity {
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_start_screen);
 
-        animScaleC = AnimationUtils.loadAnimation(this, R.anim.anim_scale_fromc);
-        title = (TextView)findViewById(R.id.title);
-
-        animScaleBR = AnimationUtils.loadAnimation(this, R.anim.anim_scale_frombr);
-        btnPlay = (Button)findViewById(R.id.play);
-
-        animScaleBL = AnimationUtils.loadAnimation(this, R.anim.anim_scale_frombl);
-        btnProfile = (Button)findViewById(R.id.profile);
-
-        animScaleTR = AnimationUtils.loadAnimation(this, R.anim.anim_scale_fromtr);
-        btnSettings = (Button)findViewById(R.id.settings);
-
-        animScaleTL = AnimationUtils.loadAnimation(this, R.anim.anim_scale_fromtl);
-        btnAbout = (Button)findViewById(R.id.about);
+//        animScaleC = AnimationUtils.loadAnimation(this, R.anim.anim_scale_fromc);
+//        title = (TextView)findViewById(R.id.title);
+//
+//        animScaleBR = AnimationUtils.loadAnimation(this, R.anim.anim_scale_frombr);
+//        btnPlay = (Button)findViewById(R.id.play);
+//
+//        animScaleBL = AnimationUtils.loadAnimation(this, R.anim.anim_scale_frombl);
+//        btnProfile = (Button)findViewById(R.id.profile);
+//
+//        animScaleTR = AnimationUtils.loadAnimation(this, R.anim.anim_scale_fromtr);
+//        btnSettings = (Button)findViewById(R.id.settings);
+//
+//        animScaleTL = AnimationUtils.loadAnimation(this, R.anim.anim_scale_fromtl);
+//        btnAbout = (Button)findViewById(R.id.about);
 
         mPrefs = getSharedPreferences("preferences", MODE_PRIVATE);
+
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        Rect viewBounds = new Rect(0, 0, displaymetrics.heightPixels, displaymetrics.widthPixels);
+
+        mSFV.init();
+
+
+//        AttributeSet as = new AttributeSet() {
+//            @Override
+//            public int getAttributeCount() {
+//                return 0;
+//            }
+//
+//            @Override
+//            public String getAttributeName(int index) {
+//                return null;
+//            }
+//
+//            @Override
+//            public String getAttributeValue(int index) {
+//                return null;
+//            }
+//
+//            @Override
+//            public String getAttributeValue(String namespace, String name) {
+//                return null;
+//            }
+//
+//            @Override
+//            public String getPositionDescription() {
+//                return null;
+//            }
+//
+//            @Override
+//            public int getAttributeNameResource(int index) {
+//                return 0;
+//            }
+//
+//            @Override
+//            public int getAttributeListValue(String namespace, String attribute, String[] options, int defaultValue) {
+//                return 0;
+//            }
+//
+//            @Override
+//            public boolean getAttributeBooleanValue(String namespace, String attribute, boolean defaultValue) {
+//                return false;
+//            }
+//
+//            @Override
+//            public int getAttributeResourceValue(String namespace, String attribute, int defaultValue) {
+//                return 0;
+//            }
+//
+//            @Override
+//            public int getAttributeIntValue(String namespace, String attribute, int defaultValue) {
+//                return 0;
+//            }
+//
+//            @Override
+//            public int getAttributeUnsignedIntValue(String namespace, String attribute, int defaultValue) {
+//                return 0;
+//            }
+//
+//            @Override
+//            public float getAttributeFloatValue(String namespace, String attribute, float defaultValue) {
+//                return 0;
+//            }
+//
+//            @Override
+//            public int getAttributeListValue(int index, String[] options, int defaultValue) {
+//                return 0;
+//            }
+//
+//            @Override
+//            public boolean getAttributeBooleanValue(int index, boolean defaultValue) {
+//                return false;
+//            }
+//
+//            @Override
+//            public int getAttributeResourceValue(int index, int defaultValue) {
+//                return 0;
+//            }
+//
+//            @Override
+//            public int getAttributeIntValue(int index, int defaultValue) {
+//                return 0;
+//            }
+//
+//            @Override
+//            public int getAttributeUnsignedIntValue(int index, int defaultValue) {
+//                return 0;
+//            }
+//
+//            @Override
+//            public float getAttributeFloatValue(int index, float defaultValue) {
+//                return 0;
+//            }
+//
+//            @Override
+//            public String getIdAttribute() {
+//                return null;
+//            }
+//
+//            @Override
+//            public String getClassAttribute() {
+//                return null;
+//            }
+//
+//            @Override
+//            public int getIdAttributeResourceValue(int defaultValue) {
+//                return 0;
+//            }
+//
+//            @Override
+//            public int getStyleAttribute() {
+//                return 0;
+//            }
+//        }
+
+        mContext = getApplicationContext();
+        StarFieldView mSFV= new StarFieldView(mContext, viewBounds);
+        mCL = (CoordinatorLayout) findViewById(R.id.start_screen_layout);
+
+//        mCL.setBackground(mSFV);
+//        mCL.setBackground();
 
 //        btnScale.startAnimation(animScale);
 //        btnScale.setOnClickListener(new Button.OnClickListener(){
@@ -120,11 +256,11 @@ public class StartScreenActivity extends Activity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         if(hasFocus){
-            title.startAnimation(animScaleC);
-            btnPlay.startAnimation(animScaleBR);
-            btnProfile.startAnimation(animScaleBL);
-            btnSettings.startAnimation(animScaleTR);
-            btnAbout.startAnimation(animScaleTL);
+//            title.startAnimation(animScaleC);
+//            btnPlay.startAnimation(animScaleBR);
+//            btnProfile.startAnimation(animScaleBL);
+//            btnSettings.startAnimation(animScaleTR);
+//            btnAbout.startAnimation(animScaleTL);
         }
     }
 
@@ -141,6 +277,13 @@ public class StartScreenActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    protected void onProgressUpdate(Void... Progress) {
+//        mTimeTextView.setText(String.format("%04d", (int) (mElapsedTime / 1000)));
+//            mScoreTextView.setText(String.format("%07d", mScore));
+//        mScoreTextView.setText("" + mScore);
+        mSFV.invalidate();
     }
 
     @Override
@@ -175,6 +318,57 @@ public class StartScreenActivity extends Activity {
 //        StartScreenActivity.getService().musicPause();
 //        mBackgroundSound.cancel(true);
     }
+
+
+//    private class StarFieldLoop extends AsyncTask<Integer, Void, Void> {
+//
+//        public StarFieldLoop() {
+//        }
+//
+//        @Override
+//        protected Void doInBackground(Integer... args) {
+//            while (true) {
+//
+//                mElapsedTime = (System.nanoTime() / 1000000) - mStartTime;
+//                int fps = args[0];
+//
+//                try {
+//                    Thread.sleep(1000 / fps);
+//                } catch (InterruptedException ie) {
+//                }
+//
+//                updateGame();
+//                publishProgress();
+//            }
+//
+//            return null;
+//        }
+//
+//        protected void onProgressUpdate(Void... Progress) {
+//            mTimeTextView.setText(String.format("%04d", (int) (mElapsedTime / 1000)));
+////            mScoreTextView.setText(String.format("%07d", mScore));
+//            mScoreTextView.setText("" + mScore);
+//            mGameView.invalidate();
+//        }
+//
+//        protected void onPostExecute(Void result) {
+//            SharedPreferences.Editor ed = mPrefs.edit();
+//            long highscore = mPrefs.getLong("pref_high_score", 0);
+//            if (highscore < mScore) {
+//                ed.putLong("pref_high_score", mScore);
+//                ed.apply();
+//            }
+//
+//            if (!mGameLoop.isCancelled() && mTimerFinish) {
+//                showDialog(DIALOG_REPLAY_ID);
+//                if (mSoundEffectsOn) {
+//                    mSounds.play(gameOverID, 1, 1, 1, 0, 1);
+//                }
+//            }
+//        }
+//    }
+
+
 
     public void goToGame(View v){
         Log.d("AD INFINITUM", "Create Settings Activity");

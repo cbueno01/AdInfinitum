@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.cbueno01.adinfinitum.PlayerProfileActivity"
     android:background="@drawable/blank_pop_up"
-    android:weightSum="1">
+    android:orientation="vertical"
+    android:weightSum="1"
+    tools:context="com.example.cbueno01.adinfinitum.PlayerProfileActivity">
 
     <TextView
         android:id="@+id/profile_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
         android:text="@string/title_player"
         android:textColor="@color/buttonTextColor"
-        android:gravity="center"
-        android:layout_marginTop="10dp"
-        android:textSize="40dp"
-        android:textIsSelectable="true" />
+        android:textIsSelectable="true"
+        android:textSize="40sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,60 +26,110 @@
 
         <ImageView
             android:id="@+id/player_image"
-            android:src="@drawable/sheeple"
-            android:layout_width="190dp"
-            android:layout_height="180dp"
-            android:layout_gravity="center_horizontal" />
+            android:layout_width="200dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/sheeple" />
 
         <ImageView
-            android:src="@drawable/camera"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:clickable="true"
-            android:onClick="getPicture"/>
-
+            android:onClick="getPicture"
+            android:src="@drawable/camera" />
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:clickable="true"
+            android:onClick="takePicture"
+            android:src="@drawable/camera" />
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
         android:gravity="center_horizontal"
-        android:layout_marginTop="7dp">
+        android:layout_gravity="center_horizontal">
 
-            <TextView
-                android:id="@+id/player_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/player_name"
-                android:gravity="center"
-                android:textSize="25sp"
-                android:textIsSelectable="true"
-                android:textColor="@color/buttonTextColor"
-                android:layout_marginRight="20dp" />
+        <TextView
+            android:id="@+id/high_score_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:clickable="true"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:text="@string/high_score_text"
+            android:textColor="@color/buttonTextColor"
+            android:textIsSelectable="true"
+            android:textSize="20sp" />
 
-            <TextView
-                android:id="@+id/high_score"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/highscore_text"
-                android:gravity="center"
-                android:textSize="25sp"
-                android:textIsSelectable="true"
-                android:textColor="@color/buttonTextColor"
-                android:layout_marginLeft="20dp" />
+        <EditText
+            android:id="@+id/player_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:gravity="center_horizontal"
+            android:layout_gravity="center_horizontal"
+            android:hint="Enter Name"
+            android:inputType="text"
+            android:textColor="@color/buttonTextColor"
+            android:textIsSelectable="true"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/total_time_played"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:gravity="center"
+            android:text="@string/playtime"
+            android:textColor="@color/buttonTextColor"
+            android:textIsSelectable="true"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/longest_game_played"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:gravity="center"
+            android:text="@string/longest_game"
+            android:textColor="@color/buttonTextColor"
+            android:textIsSelectable="true"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/most_rounds_beaten"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:gravity="center"
+            android:text="@string/most_rounds"
+            android:textColor="@color/buttonTextColor"
+            android:textIsSelectable="true"
+            android:textSize="20sp" />
 
     </LinearLayout>
+
     <Button
         android:layout_width="460dp"
         android:layout_height="wrap_content"
-        android:text="@string/reset_text"
-        android:textSize="28dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:textColor="@color/buttonTextColor"
-        android:background="@color/buttonColor"
         android:layout_gravity="center_horizontal"
-        android:onClick="resetScore"/>
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/buttonColor"
+        android:onClick="resetScore"
+        android:text="@string/reset_text"
+        android:textColor="@color/buttonTextColor"
+        android:textSize="25dp" />
 
 
 </LinearLayout>

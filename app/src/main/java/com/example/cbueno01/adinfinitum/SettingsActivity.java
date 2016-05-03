@@ -64,24 +64,6 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
-        //show the current profile name summary
-        Log.d("AD INFINITUM", "Profile Pref");
-        final Preference profileNamePref = (Preference) findPreference("pref_reset_profile");
-        String profileName = prefs.getString("pref_reset_profile",
-                getResources().getString(R.string.default_profile_name));
-        profileNamePref.setSummary(profileName);
-        profileNamePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                profileNamePref.setSummary((CharSequence) newValue);
-
-                SharedPreferences.Editor ed = prefs.edit();
-                ed.putString("pref_reset_profile", newValue.toString());
-                ed.apply();
-                return true;
-            }
-        });
-
         //show the sound fx volume
         Log.d("AD INFINITUM", "Sound FX Volume Settings");
         final SwitchPreference soundfxPref = (SwitchPreference) findPreference("pref_sound_fx");

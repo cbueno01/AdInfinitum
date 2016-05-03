@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="high_scores">
+        <item>@string/high_score_one</item>
+        <item>@string/high_score_two</item>
+        <item>@string/high_score_three</item>
+        <item>@string/high_score_four</item>
+        <item>@string/high_score_five</item>
+        <item>@string/high_score_six</item>
+        <item>@string/high_score_seven</item>
+        <item>@string/high_score_eight</item>
+        <item>@string/high_score_nine</item>
+        <item>@string/high_score_ten</item>
+    </string-array>
+</resources>
