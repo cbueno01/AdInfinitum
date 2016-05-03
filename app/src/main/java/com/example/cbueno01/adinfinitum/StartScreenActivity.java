@@ -82,6 +82,11 @@ public class StartScreenActivity extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         Rect viewBounds = new Rect(0, 0, displaymetrics.heightPixels, displaymetrics.widthPixels);
 
+        mContext = getApplicationContext();
+        mSFV= new StarFieldView(mContext, viewBounds);
+        mCL = (CoordinatorLayout) findViewById(R.id.start_screen_layout);
+
+//        mSFV = new StarFieldView();
         mSFV.init();
 
 
@@ -197,9 +202,6 @@ public class StartScreenActivity extends Activity {
 //            }
 //        }
 
-        mContext = getApplicationContext();
-        StarFieldView mSFV= new StarFieldView(mContext, viewBounds);
-        mCL = (CoordinatorLayout) findViewById(R.id.start_screen_layout);
 
 //        mCL.setBackground(mSFV);
 //        mCL.setBackground();
