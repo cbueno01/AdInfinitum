@@ -1,12 +1,15 @@
 package com.example.cbueno01.adinfinitum;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.CoordinatorLayout;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -212,8 +215,9 @@ public class StartScreenActivity extends Activity {
 //            public void onClick(View arg0) {
 //                arg0.startAnimation(animScale);
 //            }});
-//        Intent svc=new Intent(this, MusicService.class);
-//        startService(svc);
+        Intent svc=new Intent(this, MusicService.class);
+        bindService(svc, sCon, Context.BIND_AUTO_CREATE);
+//        mMusicService.resumeMusic();
 //        doBindService();
 
 
@@ -291,10 +295,12 @@ public class StartScreenActivity extends Activity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (mIsBound) {
+            unbindService(sCon);
+            mIsBound = false;
+        }
 //        if(mIsSoundOn)
 //        {
-//            Intent svc=new Intent(this, MusicService.class);
-//            stopService(svc); //OR stopService(svc);
 //        }
 //        doUnbindService();
     }
@@ -414,17 +420,20 @@ public class StartScreenActivity extends Activity {
 //        }
 //    }
 //
-//    private ServiceConnection sCon =new ServiceConnection(){
-//
-//        public void onServiceConnected(ComponentName name, IBinder
-//                binder) {
-//            mBoundService = (MusicService.ServiceBinder).getService();
-//        }
-//
-//        public void onServiceDisconnected(ComponentName name) {
-//            mBoundService = null;
-//        }
-//    };
+    private ServiceConnection sCon = new ServiceConnection(){
+
+        public void onServiceConnected(ComponentName name, IBinder
+                binder) {
+            MusicService.ServiceBinder mBinder = (MusicService.ServiceBinder) binder;
+            mMusicService = mBinder.getService();
+            mIsBound = true;
+        }
+
+        public void onServiceDisconnected(ComponentName name) {
+            mMusicService = null;
+            mIsBound = false;
+        }
+    };
 //
 //    void doBindService(){
 //        bindService(new Intent(this,MusicService.class),
