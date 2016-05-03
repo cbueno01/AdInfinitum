@@ -45,6 +45,7 @@ public class AdInfinitumActivity extends Activity {
     private static final double mBase = .27;
     private static final double mConstant = 10000;
     private static final int DIALOG_REPLAY_ID = 1;
+    private static final int DIALOG_CONTINUE_ID = 2;
 
     // Preference variables
     private int mDifficulty;
@@ -98,6 +99,13 @@ public class AdInfinitumActivity extends Activity {
     private int dismissAdID2;
     private int gameOverID;
 
+    // Game mode
+    private String mGameMode;
+
+    // Time amount of round if round mode
+    private int mTimeOfRound;
+    private boolean mLostRound;
+
     // to restore scores
     private SharedPreferences mPrefs;
 
@@ -126,7 +134,8 @@ public class AdInfinitumActivity extends Activity {
         rand = new Random();
         mAdTime = 1000;
         mPrefs = getSharedPreferences("preferences", MODE_PRIVATE);
-        startGame();
+
+//        startGame();
 
 
 //        mPauseHandler = new Handler();
@@ -146,6 +155,7 @@ public class AdInfinitumActivity extends Activity {
         // Setting game preferences
         mPlayerName = mPrefs.getString("pref_profile_name", "<Player>");
         mSoundEffectsOn = mPrefs.getBoolean("pref_soundfx", true);
+        mGameMode = mPrefs.getString("pref_modes", getResources().getString(R.string.mode_continuous));
         String difficultyLevel = mPrefs.getString("pref_difficulty_level", getResources().getString(R.string.difficulty_level_easy));
         String[] levels = getResources().getStringArray(R.array.difficulty_level);
 
@@ -166,7 +176,10 @@ public class AdInfinitumActivity extends Activity {
         // Context, id of resource, priority (currently no effect)
         dismissAdID2 = mSounds.load(this, R.raw.synth2, 1);
         gameOverID = mSounds.load(this, R.raw.wicked_laugh, 1);
-        startGame();
+        if (mGameMode.equals(getResources().getString(R.string.mode_continuous)))
+            startGame(0, 0);
+        else
+            startGame(0, 10000);
     }
 
     @Override
@@ -188,10 +201,11 @@ public class AdInfinitumActivity extends Activity {
             mTimerFinish = false;
     }
 
-    private class GameLoop extends AsyncTask<Integer, Void, Void> {
+    private abstract class GameLoop extends AsyncTask<Integer, Void, Void> {}
 
-        public GameLoop() {
-        }
+    private class ContinuousGameLoop extends GameLoop {
+
+        public ContinuousGameLoop() {}
 
         @Override
         protected Void doInBackground(Integer... args) {
@@ -230,10 +244,66 @@ public class AdInfinitumActivity extends Activity {
             }
 
             if (!mGameLoop.isCancelled() && mTimerFinish) {
-                showDialog(DIALOG_REPLAY_ID);
                 if (mSoundEffectsOn) {
                     mSounds.play(gameOverID, 1, 1, 1, 0, 1);
                 }
+                showDialog(DIALOG_REPLAY_ID);
+            }
+        }
+    }
+
+    private class RoundGameLoop extends GameLoop {
+
+        public RoundGameLoop() {}
+
+        @Override
+        protected Void doInBackground(Integer... args) {
+            int fps = args[0];
+            while (!mGame.isGameOver() && mTimeOfRound - mElapsedTime > 0) {
+                if (mGameLoop.isCancelled() || !mTimerFinish) {
+                    return null;
+                }
+
+                mElapsedTime = (System.nanoTime() / 1000000) - mStartTime;
+
+                try {
+                    Thread.sleep(1000 / fps);
+                } catch (InterruptedException ie) {}
+
+                updateGame();
+                publishProgress();
+            }
+
+            if (mGame.isGameOver())
+                mLostRound = true;
+
+//            Log.d(TAG, "isGameOver: " + !mGame.isGameOver() + " Enough Time: " + (mTimeOfRound - mElapsedTime > 0));
+            return null;
+        }
+
+        protected void onProgressUpdate(Void... Progress) {
+            mTimeTextView.setText(String.format("%04d", (mTimeOfRound - (int) mElapsedTime) / 1000));
+//            mScoreTextView.setText(String.format("%07d", mScore));
+            mScoreTextView.setText("" + mScore);
+            mGameView.invalidate();
+        }
+
+        protected void onPostExecute(Void result) {
+            SharedPreferences.Editor ed = mPrefs.edit();
+            long highscore = mPrefs.getLong("pref_high_score", 0);
+            if (highscore < mScore) {
+                ed.putLong("pref_high_score", mScore);
+                ed.apply();
+            }
+
+            if (!mGameLoop.isCancelled() && mTimerFinish) {
+                if (mSoundEffectsOn) {
+                    mSounds.play(gameOverID, 1, 1, 1, 0, 1);
+                }
+                if (mLostRound)
+                    showDialog(DIALOG_REPLAY_ID);
+                else
+                    showDialog(DIALOG_CONTINUE_ID);
             }
         }
     }
@@ -335,33 +405,59 @@ public class AdInfinitumActivity extends Activity {
     protected Dialog onCreateDialog(int id) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        builder.setMessage( getResources().getString(R.string.give_up) + " " + mPlayerName).setCancelable(false)
-                .setPositiveButton(R.string.okay, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        AdInfinitumActivity.this.finish();
-                    }
-                })
-                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        startGame();
-                    }
-                });
+        switch (id)
+        {
+            case DIALOG_REPLAY_ID:
+            {
+                builder.setMessage( getResources().getString(R.string.give_up) + " " + mPlayerName).setCancelable(false)
+                        .setPositiveButton(R.string.okay, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                AdInfinitumActivity.this.finish();
+                            }
+                        })
+                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                startGame(0, 10000);
+                            }
+                        });
+                break;
+            }
+
+            case DIALOG_CONTINUE_ID:
+            {
+                builder.setMessage( getResources().getString(R.string.keep_going)).setCancelable(false)
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                startGame(mScore, (mTimeOfRound + 5000));
+                            }
+                        })
+                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                AdInfinitumActivity.this.finish();
+                            }
+                        });
+                break;
+            }
+        }
+
 
         return builder.create();
     }
 
-    public void startGame() {
+    public void startGame(long startingScore, int time) {
 
         mGame = new AdInfinitumGame();
         mGameView.setGame(mGame);
         mCountdownTextView.setEnabled(false);
-        mScore = 0;
+        mScore = startingScore;
         mElapsedTime = 0;
         mTimeOfLastAd = 0;
+        mTimeOfRound = time;
         mTimerFinish = true;
+        mLostRound = false;
         mGameLoop = null;
-        mTimeTextView.setText(R.string.time_elapsed);
-        mScoreTextView.setText(R.string.default_score);
+        mTimeTextView.setText(String.format("%04d", (time) / 1000));
+        mScoreTextView.setText("" + startingScore);
         mGameView.invalidate();
 
         mCountdownTextView.setVisibility(View.VISIBLE);
@@ -375,7 +471,10 @@ public class AdInfinitumActivity extends Activity {
                 mCountdownTextView.setVisibility(View.GONE);
                 mGameView.setOnTouchListener(mTouchListener);
                 mStartTime = System.nanoTime() / 1000000;
-                mGameLoop = new GameLoop();
+                if (mGameMode.equals(getResources().getString(R.string.mode_continuous)))
+                    mGameLoop = new ContinuousGameLoop();
+                else
+                    mGameLoop = new RoundGameLoop();
                 mGameLoop.execute(30);
             }
         }.start();
