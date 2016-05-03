@@ -1,7 +1,10 @@
 package com.example.cbueno01.adinfinitum;
 
+import android.app.KeyguardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -15,7 +18,16 @@ import android.view.WindowManager;
 
 public class SettingsActivity extends PreferenceActivity {
 
+    private SharedPreferences prefs;
+
+    private MediaPlayer mp;
+    private boolean mIsButtonSoundOn;
+    private boolean mIsSoundtrackOn;
+
     protected void onCreate(Bundle savedInstanceState) {
+
+        mp = MediaPlayer.create(this, R.raw.button_click);
+
         Log.d("AD INFINITUM", "In Settings");
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -23,11 +35,9 @@ public class SettingsActivity extends PreferenceActivity {
         getPreferenceManager().setSharedPreferencesName("preferences");
         addPreferencesFromResource(R.xml.preferences);
 
+        prefs = getSharedPreferences("preferences", MODE_PRIVATE);
 
-        final SharedPreferences prefs =
-                getSharedPreferences("preferences", MODE_PRIVATE);
-
-        //show game mode setting summary
+        //game mode setting
         Log.d("AD INFINITUM", "Game mode pref");
         final ListPreference gameModePref = (ListPreference) findPreference("pref_modes");
         String mode = prefs.getString("pref_modes",
@@ -37,6 +47,7 @@ public class SettingsActivity extends PreferenceActivity {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 gameModePref.setSummary((CharSequence) newValue);
+                playButtonSound();
                 // Since we are handling the pref, we must save it
                 SharedPreferences.Editor ed = prefs.edit();
                 ed.putString("pref_modes", newValue.toString());
@@ -46,7 +57,7 @@ public class SettingsActivity extends PreferenceActivity {
         });
 
 
-        //show difficulty levels setting summary
+        //difficulty levels setting
         Log.d("AD INFINITUM", "Difficulty pref");
         final ListPreference difficultyLevelPref = (ListPreference) findPreference("pref_difficulty_level");
         String difficulty = prefs.getString("pref_difficulty_level",
@@ -56,6 +67,7 @@ public class SettingsActivity extends PreferenceActivity {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 difficultyLevelPref.setSummary((CharSequence) newValue);
+                playButtonSound();
                 // Since we are handling the pref, we must save it
                 SharedPreferences.Editor ed = prefs.edit();
                 ed.putString("difficulty_level", newValue.toString());
@@ -63,6 +75,59 @@ public class SettingsActivity extends PreferenceActivity {
                 return true;
             }
         });
+
+        //soundtrack choice
+        Log.d("AD INFINITUM", "Soundtrack Pref");
+        final ListPreference soundtrackPref = (ListPreference) findPreference("pref_soundtrack");
+        String soundtrack = prefs.getString("pref_soundtrack",
+                getResources().getString(R.string.default_soundtrack));
+        soundtrackPref.setSummary( soundtrack);
+        soundtrackPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                playButtonSound();
+
+                soundtrackPref.setSummary((CharSequence) newValue);
+
+                Log.d("AD INFINITUM", (String) newValue);
+
+                SharedPreferences.Editor ed = prefs.edit();
+                ed.putString("pref_soundtrack", newValue.toString());
+                ed.apply();
+
+                if ( mIsSoundtrackOn) {
+                    Intent svc = new Intent(getApplicationContext(), MusicService.class);
+                    stopService(svc);
+
+                    Intent svc1 = new Intent(getApplicationContext(), MusicService.class);
+                    startService(svc1);
+                }
+
+
+                return true;
+            }
+        });
+
+
+        /*//show the current profile name summary
+        Log.d("AD INFINITUM", "Profile Pref");
+        final Preference profileNamePref = (Preference) findPreference("pref_reset_profile");
+        String profileName = prefs.getString("pref_reset_profile",
+                getResources().getString(R.string.default_profile_name));
+        profileNamePref.setSummary(profileName);
+        profileNamePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                profileNamePref.setSummary((CharSequence) newValue);
+                playButtonSound();
+
+                SharedPreferences.Editor ed = prefs.edit();
+                ed.putString("pref_reset_profile", newValue.toString());
+                ed.apply();
+                return true;
+            }
+        });
+*/
 
         //show the sound fx volume
         Log.d("AD INFINITUM", "Sound FX Volume Settings");
@@ -75,6 +140,8 @@ public class SettingsActivity extends PreferenceActivity {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
 //                Log.d("Ad Infinitum", "Changing soundfxState to: " + newValue);
+                playButtonSound();
+
                 soundfxPref.setChecked((boolean) newValue);
                 SharedPreferences.Editor ed = prefs.edit();
                 ed.putBoolean("pref_soundfx", (boolean) newValue);
@@ -85,19 +152,19 @@ public class SettingsActivity extends PreferenceActivity {
 
             //show the soundtrack volume
         Log.d("AD INFINITUM", "Soundtrack Volume Settings");
-        final SwitchPreference soundtrackPref = (SwitchPreference) findPreference("pref_soundtrack");
-        Boolean soundtrackState = prefs.getBoolean("pref_soundtrack",
+        final SwitchPreference soundtrackSoundPref = (SwitchPreference) findPreference("pref_soundtrack_sound");
+        Boolean soundtrackSoundState = prefs.getBoolean("pref_soundtrack_sound",
                 getResources().getBoolean(R.bool.default_soundtrack_state));
-        soundtrackPref.setChecked(soundtrackState);
-        soundtrackPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        soundtrackSoundPref.setChecked(soundtrackSoundState);
+        soundtrackSoundPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                soundtrackPref.setChecked((Boolean) newValue);
-                SharedPreferences.Editor ed = prefs.edit();
-                ed.putBoolean("pref_soundtrack", (boolean) newValue);
-                ed.apply();
+                mIsSoundtrackOn = (Boolean) newValue;
+                playButtonSound();
 
-                if((boolean) newValue) {
+                soundtrackSoundPref.setChecked(mIsSoundtrackOn);
+
+                if(mIsSoundtrackOn) {
                     Intent svc = new Intent(getApplicationContext(), MusicService.class);
                     startService(svc);
                 }
@@ -106,9 +173,40 @@ public class SettingsActivity extends PreferenceActivity {
                     Intent svc = new Intent(getApplicationContext(), MusicService.class);
                     stopService(svc);
                 }
+
+                SharedPreferences.Editor ed = prefs.edit();
+                ed.putBoolean("pref_soundtrack_sound", mIsSoundtrackOn);
+                ed.apply();
+
                 return true;
             }
         });
+
+        //button sounds
+        Log.d("AD INFINITUM", "Button Sounds Settings");
+        final SwitchPreference soundButtonPref = (SwitchPreference) findPreference("pref_sound_button");
+        mIsButtonSoundOn = prefs.getBoolean("pref_sound_button",
+                getResources().getBoolean(R.bool.default_sound_button_state));
+
+        soundButtonPref.setChecked(mIsButtonSoundOn);
+        soundButtonPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+                playButtonSound();
+
+                soundButtonPref.setChecked((boolean) newValue);
+
+                SharedPreferences.Editor ed = prefs.edit();
+                ed.putBoolean("pref_sound_button", (boolean) newValue);
+                ed.apply();
+
+                mIsButtonSoundOn = (boolean) newValue;
+
+                return true;
+            }
+        });
+
 
 /*        //show the seek bar sound fx summary
         Log.d("AD INFINITUM", "Sound FX Pref");
@@ -128,6 +226,29 @@ public class SettingsActivity extends PreferenceActivity {
         // prefs.addPreference(botsPref );
         soundtrackPref.setOnPreferenceChangeListener( new PrefsSeekBarListener( soundtrackPref) );*/
 
+        mIsSoundtrackOn = prefs.getBoolean("pref_soundtrack_sound", true);
+        KeyguardManager myKM = (KeyguardManager) this.getSystemService(Context.KEYGUARD_SERVICE);
+        if( myKM.inKeyguardRestrictedInputMode()) {
+            //it is locked
+            if(mIsSoundtrackOn) {
+                Intent svc = new Intent(this, MusicService.class);
+                stopService(svc);
+            }
+        } else {
+            //it is not locked
+            if(mIsSoundtrackOn) {
+                Intent svc = new Intent(this, MusicService.class);
+                startService(svc);
+            }
+        }
+    }
+
+    private void playButtonSound() {
+        Log.d("AD INFINITUM", "In playButtonSound");
+        if (mIsButtonSoundOn) {
+            //play button sound
+            mp.start();
+        }
     }
 
     @Override
