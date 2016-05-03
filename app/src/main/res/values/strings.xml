@@ -27,6 +27,7 @@
     <string name="settings_difficulty_level">Difficulty Level</string>
     <string name="settings_sound_fx_volume">Sound FX Volume</string>
     <string name="settings_soundtrack_volume">Soundtrack Volume</string>
+    <string name="settings_sound_button">Button Sound</string>
     <string name="button_modes_selection">Continuous</string>
     <string name="button_difficulty_selection">Insane</string>
     <string name="title_activity_settings">Settings</string>
@@ -37,8 +38,10 @@
     <string name="difficulty_level_medium">Medium</string>
     <string name="difficulty_level_overload">Overload</string>
     <string name="default_profile_name">Sheeple</string>
+    <string name="default_soundtrack">Rave</string>
     <!--<string name="default_sound">50</string>
     <string name="max_sound">100</string>-->
     <bool name="default_soundfx_state">true</bool>
     <bool name="default_soundtrack_state">true</bool>
+    <bool name="default_sound_button_state">true</bool>
 </resources>

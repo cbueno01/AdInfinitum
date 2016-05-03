@@ -29,15 +29,19 @@
         android:defaultValue="@bool/default_soundfx_state"/>
 
     <SwitchPreference
-        android:key="pref_soundtrack"
+        android:key="pref_soundtrack_sound"
         android:title="Soundtrack Enabled"
         android:defaultValue="@bool/default_soundtrack_state"/>
 
+    <SwitchPreference
+        android:key="pref_sound_button"
+        android:title="Button Sounds"
+        android:defaultValue="@bool/default_sound_button_state"/>
+
     <ListPreference
-        android:key="pref_soundtrack_choice"
+        android:key="pref_soundtrack"
         android:title="Soundtrack"
         android:summary=""
-        android:defaultValue="@string/difficulty_level_medium"
         android:entries="@array/soundtracks"
         android:entryValues="@array/soundtracks"/>
 
@@ -53,9 +57,9 @@
         android:defaultValue="@string/default_sound"
         />-->
 
-    <EditTextPreference
+    <!--<EditTextPreference
         android:key="pref_reset_profile"
         android:title="Reset Profile"
-        android:defaultValue="@string/default_profile_name"/>
+        android:defaultValue="@string/default_profile_name"/>-->
 
 </PreferenceScreen>
