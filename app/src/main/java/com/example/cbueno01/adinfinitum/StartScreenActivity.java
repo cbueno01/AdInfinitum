@@ -35,7 +35,7 @@ public class StartScreenActivity extends Activity {
 
     private Context mContext;
     private CoordinatorLayout mCL;
-    private StarFieldView mSFV;
+//    private StarFieldView mSFV;
 
     private TextView title;
     private Animation animScaleC;
@@ -82,7 +82,7 @@ public class StartScreenActivity extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         Rect viewBounds = new Rect(0, 0, displaymetrics.heightPixels, displaymetrics.widthPixels);
 
-        mSFV.init();
+//        mSFV.init();
 
 
 //        AttributeSet as = new AttributeSet() {
@@ -198,7 +198,7 @@ public class StartScreenActivity extends Activity {
 //        }
 
         mContext = getApplicationContext();
-        StarFieldView mSFV= new StarFieldView(mContext, viewBounds);
+//        StarFieldView mSFV= new StarFieldView(mContext, viewBounds);
         mCL = (CoordinatorLayout) findViewById(R.id.start_screen_layout);
 
 //        mCL.setBackground(mSFV);
@@ -283,17 +283,17 @@ public class StartScreenActivity extends Activity {
 //        mTimeTextView.setText(String.format("%04d", (int) (mElapsedTime / 1000)));
 //            mScoreTextView.setText(String.format("%07d", mScore));
 //        mScoreTextView.setText("" + mScore);
-        mSFV.invalidate();
+//        mSFV.invalidate();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(mIsSoundOn)
-        {
-            Intent svc=new Intent(this, MusicService.class);
-            stopService(svc); //OR stopService(svc);
-        }
+//        if(mIsSoundOn)
+//        {
+//            Intent svc=new Intent(this, MusicService.class);
+//            stopService(svc); //OR stopService(svc);
+//        }
 //        doUnbindService();
     }
 
@@ -302,11 +302,11 @@ public class StartScreenActivity extends Activity {
 
         mIsSoundOn = mPrefs.getBoolean("pref_soundtrack", true);
 
-        if(mIsSoundOn)
-        {
-            Intent svc=new Intent(this, MusicService.class);
-            startService(svc); //OR stopService(svc);
-        }
+//        if(mIsSoundOn)
+//        {
+//            Intent svc=new Intent(this, MusicService.class);
+//            startService(svc); //OR stopService(svc);
+//        }
 //        StartScreenActivity.getService().musicStart();
 //        if (mBackgroundSound.isCancelled())
 //        if (mBackgroundSound.getStatus() == AsyncTask.Status.FINISHED)

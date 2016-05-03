@@ -67,7 +67,7 @@ public class SettingsActivity extends PreferenceActivity {
         //show the sound fx volume
         Log.d("AD INFINITUM", "Sound FX Volume Settings");
         final SwitchPreference soundfxPref = (SwitchPreference) findPreference("pref_sound_fx");
-        final Boolean soundfxState = prefs.getBoolean("pref_soundfx",
+        Boolean soundfxState = prefs.getBoolean("pref_soundfx",
                 getResources().getBoolean(R.bool.default_soundfx_state));
         Log.d("AD INFINITUM", soundfxState.toString());
         soundfxPref.setChecked(soundfxState);
@@ -93,6 +93,9 @@ public class SettingsActivity extends PreferenceActivity {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 soundtrackPref.setChecked((Boolean) newValue);
+                SharedPreferences.Editor ed = prefs.edit();
+                ed.putBoolean("pref_soundtrack", (boolean) newValue);
+                ed.apply();
 
                 if((boolean) newValue) {
                     Intent svc = new Intent(getApplicationContext(), MusicService.class);
