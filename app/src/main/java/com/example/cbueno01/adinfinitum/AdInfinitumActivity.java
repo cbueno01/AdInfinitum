@@ -1,11 +1,9 @@
 package com.example.cbueno01.adinfinitum;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,23 +14,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -68,6 +58,8 @@ public class AdInfinitumActivity extends Activity {
     private long mAdTime;
     //    private long mTimeDifference;
     private long mTimeOfLastAd;
+
+    private int mCurrentInterval;
 
     // for pausing game
     private Handler mPauseHandler;
@@ -171,7 +163,7 @@ public class AdInfinitumActivity extends Activity {
     public void onResume() {
         super.onResume();
         // Setting game preferences
-        mPlayerName = mPrefs.getString("pref_profile_name", "<Player>");
+        mPlayerName = mProfs.getString("pref_profile_name", "<Player>");
         mSoundEffectsOn = mPrefs.getBoolean("pref_soundfx", true);
         mGameMode = mPrefs.getString("pref_modes", getResources().getString(R.string.mode_continuous));
         String difficultyLevel = mPrefs.getString("pref_difficulty_level", getResources().getString(R.string.difficulty_level_easy));
@@ -247,9 +239,9 @@ public class AdInfinitumActivity extends Activity {
         }
 
         protected void onProgressUpdate(Void... Progress) {
-            mTimeTextView.setText(String.format("%04d", (int) (mElapsedTime / 1000)));
+            mTimeTextView.setText("Time Elapsed: " + String.format("%s04d", (int) (mElapsedTime / 1000)));
 //            mScoreTextView.setText(String.format("%07d", mScore));
-            mScoreTextView.setText("Score:"  + mScore);
+            mScoreTextView.setText("Score: "  + mScore);
             mGameView.invalidate();
         }
 
@@ -267,7 +259,7 @@ public class AdInfinitumActivity extends Activity {
                 Arrays.sort(highScores);
                 StringBuilder sb = new StringBuilder();
 
-                for (int i = length; i > 0; --i) {
+                for (int i = length - 1; i > 0; --i) {
                     sb.append(highScores[i] + ",");
                 }
                 sb.append(highScores[0]);
@@ -329,7 +321,7 @@ public class AdInfinitumActivity extends Activity {
         protected void onProgressUpdate(Void... Progress) {
             mTimeTextView.setText(String.format("%04d", (mTimeOfRound - (int) mElapsedTime) / 1000));
 //            mScoreTextView.setText(String.format("%07d", mScore));
-            mScoreTextView.setText("" + mScore);
+            mScoreTextView.setText("Score: " + mScore);
             mGameView.invalidate();
         }
 
@@ -347,7 +339,7 @@ public class AdInfinitumActivity extends Activity {
                 Arrays.sort(highScores);
                 StringBuilder sb = new StringBuilder();
 
-                for (int i = length; i > 0; --i) {
+                for (int i = length - 1; i > 0; --i) {
                     sb.append(highScores[i] + ",");
                 }
                 sb.append(highScores[0]);
@@ -357,12 +349,13 @@ public class AdInfinitumActivity extends Activity {
             }
 
             if (mMostRoundsBeaten < mRoundNumber) {
-                mMostRoundsBeaten = (int) mRoundNumber;
+                mMostRoundsBeaten = mRoundNumber;
                 ed.putString("pref_most_rounds", "" + mMostRoundsBeaten);
                 ed.apply();
             }
 
-            mTotalTimePlayed += mElapsedTime;
+            long elapsedSeconds = (mElapsedTime / 1000);
+            mTotalTimePlayed += elapsedSeconds;
             ed.putString("pref_total_time", "" + mTotalTimePlayed);
             ed.apply();
 
@@ -379,8 +372,16 @@ public class AdInfinitumActivity extends Activity {
     }
 
     public void updateGame() {
-        // AD GENERATION ALGORITHM
-        if (mAdTime - (mElapsedTime / (300 / mDifficulty)) < (System.nanoTime() / 1000000) - mTimeOfLastAd) {
+        // AD GENERATION FREQUENCY ALGORITHM
+
+        // calculate how many discrete difficulty intervals have passed in current game
+        // Easy     10
+        // Medium   5
+        // Hard     3.33
+        mCurrentInterval = (int) (mElapsedTime - mStartTime) / (10000 * mDifficulty);
+
+        //  time to pass before next Ad is made   <   time that has passed since last Ad creation
+        if ((mAdTime - (mCurrentInterval * 20)) < ((System.nanoTime() / 1000000) - mTimeOfLastAd)) {
             ArrayList<Integer> imageID = getImageIDs();
             BitmapFactory.Options dimensions = new BitmapFactory.Options();
             dimensions.inScaled = false;
@@ -522,13 +523,14 @@ public class AdInfinitumActivity extends Activity {
         mScore = startingScore;
         mElapsedTime = 0;
         mTimeOfLastAd = 0;
+        mCurrentInterval = 0;
         mTimeOfRound = time;
         mTimerFinish = true;
         mLostRound = false;
         mRoundNumber = 0;
         mGameLoop = null;
-        mTimeTextView.setText(String.format("%04d", (time) / 1000));
-        mScoreTextView.setText("" + startingScore);
+        mTimeTextView.setText("Time Elapsed: " + String.format("%s04d", (time) / 1000));
+        mScoreTextView.setText("Score: " + startingScore);
         mGameView.invalidate();
 
         mCountdownTextView.setVisibility(View.VISIBLE);

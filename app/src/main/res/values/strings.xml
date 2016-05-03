@@ -40,7 +40,7 @@
     <string name="keep_going">Continue?</string>
 
     <!-- Strings related to About -->
-    <string name="how_to_play">HOW TO:\nDismiss the ads by clicking within their area. Clicking the wrong areas may have negative consequences.\nWill YOU give up in the face of ad-versity? </string>
+    <string name="how_to_play">HOW TO:\nDismiss the ads by clicking within the grey boxes on each one. Points are awarded based upon the area of the ad, with more points for littler ads. Clicking an ad outside of the grey box results in set point deductions.\nWill you falter in the face of ad-versity? </string>
     <string name="credits">CREATED BY / PROGRAMMED BY\n\nJoy Alam, Chrystian Bueno, Miguel Chavira</string>
     <string name="programmer_names">Joy Alam, Chrystian Bueno, Miguel Chavira</string>
 

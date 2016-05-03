@@ -94,42 +94,6 @@ public class PlayerProfileActivity extends Activity {
 
 
 
-
-//        final EditTextPreference victoryMessagePref = (EditTextPreference) findPreference("pref_profile_name");
-//        String victoryMessage = mPrefs.getString("pref_profile_name",
-//                getResources().getString(R.string.default_profile_name));
-//        victoryMessagePref.setSummary((CharSequence) victoryMessage);
-//
-//        victoryMessagePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-//            @Override
-//            public boolean onPreferenceChange(Preference preference, Object newValue) {
-//                victoryMessagePref.setSummary((CharSequence) newValue);
-//
-//                // Since we are handling the pref, we must save it
-//                SharedPreferences.Editor ed = mPrefs.edit();
-//                ed.putString("pref_profile_name", newValue.toString());
-//                ed.apply();
-//                return true;
-//            }
-//        });
-//        //show the current profile name summary
-//        Log.d("AD INFINITUM", "Profile Pref");
-//        final Preference profileNamePref = (Preference) findPreference("pref_profile_name");
-//        String profileName = mPrefs.getString("pref_profile_name",
-//                getResources().getString(R.string.default_profile_name));
-//        profileNamePref.setSummary(profileName);
-//        profileNamePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-//            @Override
-//            public boolean onPreferenceChange(Preference preference, Object newValue) {
-//                profileNamePref.setSummary((CharSequence) newValue);
-//
-//                SharedPreferences.Editor ed = mPrefs.edit();
-//                ed.putString("pref_profile_name", newValue.toString());
-//                ed.apply();
-//                return true;
-//            }
-//        });
-
         setTextViews();
         readData();
         displayViews();
@@ -233,9 +197,9 @@ public class PlayerProfileActivity extends Activity {
         mImageView = (ImageView) findViewById(R.id.player_image);
         mTitleTextView = (TextView) findViewById(R.id.profile_title);
 
-        mTotalTimeTV = (TextView) findViewById(R.id.total_time_played);
-        mLongestGameTV = (TextView) findViewById(R.id.longest_game_played);
-        mMostRoundsTV = (TextView) findViewById(R.id.most_rounds_beaten);
+        mTotalTimeTV = (TextView) findViewById(R.id.default_total_time_played);
+        mLongestGameTV = (TextView) findViewById(R.id.default_longest_game_played);
+        mMostRoundsTV = (TextView) findViewById(R.id.default_most_rounds_beaten);
 
         Animation blinkAnimation = AnimationUtils.loadAnimation(this, R.anim.blink);
         Animation blinkAnimation2 = AnimationUtils.loadAnimation(this, R.anim.blink2);
@@ -299,7 +263,9 @@ public class PlayerProfileActivity extends Activity {
 //        mHighScoreTextView.setText("High Score: " + mHighScore);
 
         mEditText.setText(mPlayerName);
-
+        mTotalTimeTV.setText(mTotalTime);
+        mLongestGameTV.setText(mLongestGame);
+        mMostRoundsTV.setText(mMostRounds);
 
         if (mImagePath == null) {
             mImageView.setImageResource(R.drawable.sheeple);
