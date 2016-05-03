@@ -1,6 +1,8 @@
 package com.example.cbueno01.adinfinitum;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.KeyguardManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -33,6 +35,7 @@ public class StartScreenActivity extends Activity {
 
     // bounded service
     private static MusicService mMusicService;
+    private int mMusicPosition;
 //
 //    // whether service is bounded or not
     private boolean mIsBound;
@@ -96,6 +99,23 @@ public class StartScreenActivity extends Activity {
         mContext = getApplicationContext();
         mCL = (CoordinatorLayout) findViewById(R.id.start_screen_layout);
         mSFV.init();
+
+
+        mIsSoundOn = mPrefs.getBoolean("pref_soundtrack_sound", true);
+        KeyguardManager myKM = (KeyguardManager) this.getSystemService(Context.KEYGUARD_SERVICE);
+        if( myKM.inKeyguardRestrictedInputMode()) {
+            //it is locked
+            if(mIsSoundOn) {
+                Intent svc = new Intent(this, MusicService.class);
+                stopService(svc);
+            }
+        } else {
+            //it is not locked
+            if(mIsSoundOn) {
+                Intent svc = new Intent(this, MusicService.class);
+                startService(svc);
+            }
+        }
 
 
 //        AttributeSet as = new AttributeSet() {
@@ -225,8 +245,6 @@ public class StartScreenActivity extends Activity {
 //            public void onClick(View arg0) {
 //                arg0.startAnimation(animScale);
 //            }});
-        Intent svc=new Intent(this, MusicService.class);
-        bindService(svc, sCon, Context.BIND_AUTO_CREATE);
 //        mMusicService.resumeMusic();
 //        doBindService();
 
@@ -295,47 +313,54 @@ public class StartScreenActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    protected void onProgressUpdate(Void... Progress) {
-//        mTimeTextView.setText(String.format("%04d", (int) (mElapsedTime / 1000)));
-//            mScoreTextView.setText(String.format("%07d", mScore));
-//        mScoreTextView.setText("" + mScore);
-//        mSFV.invalidate();
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mIsBound) {
-            unbindService(sCon);
-            mIsBound = false;
+        if (mIsSoundOn) {
+            Intent svc = new Intent(this, MusicService.class);
+            stopService(svc);
         }
-//        if(mIsSoundOn)
-//        {
-//        }
-//        doUnbindService();
     }
 
     public void onResume() {
         super.onResume();
 
-        mIsSoundOn = mPrefs.getBoolean("pref_soundtrack_sound", true);
-
-//        if(mIsSoundOn)
-//        {
-//            Intent svc=new Intent(this, MusicService.class);
-//            startService(svc); //OR stopService(svc);
-//        }
-//        StartScreenActivity.getService().musicStart();
-//        if (mBackgroundSound.isCancelled())
-//        if (mBackgroundSound.getStatus() == AsyncTask.Status.FINISHED)
-//            mBackgroundSound.doInBackground(null);
+//        if(mIsBound)
+//            mMusicService.resumeMusic();
     }
 
     public void onPause() {
         super.onPause();
+
+//        if(mIsBound)
+//            mMusicService.pauseMusic();
 //        StartScreenActivity.getService().musicPause();
 //        mBackgroundSound.cancel(true);
     }
+
+//    private ServiceConnection sCon = new ServiceConnection(){
+//
+//        public void onServiceConnected(ComponentName name, IBinder
+//                binder) {
+//            MusicService.ServiceBinder mBinder = (MusicService.ServiceBinder) binder;
+//            mMusicService = mBinder.getService();
+//            mIsBound = true;
+//        }
+//
+//        public void onServiceDisconnected(ComponentName name) {
+//            mIsBound = false;
+//        }
+//    };
+
+//    private boolean isMyServiceRunning(Class<?> serviceClass) {
+//        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+//        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+//            if (serviceClass.getName().equals(service.service.getClassName())) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
 
 //    private class StarFieldLoop extends AsyncTask<Integer, Void, Void> {
@@ -450,20 +475,6 @@ public class StartScreenActivity extends Activity {
 //        }
 //    }
 //
-    private ServiceConnection sCon = new ServiceConnection(){
-
-        public void onServiceConnected(ComponentName name, IBinder
-                binder) {
-            MusicService.ServiceBinder mBinder = (MusicService.ServiceBinder) binder;
-            mMusicService = mBinder.getService();
-            mIsBound = true;
-        }
-
-        public void onServiceDisconnected(ComponentName name) {
-            mMusicService = null;
-            mIsBound = false;
-        }
-    };
 //
 //    void doBindService(){
 //        bindService(new Intent(this,MusicService.class),

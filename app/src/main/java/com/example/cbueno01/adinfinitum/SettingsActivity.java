@@ -1,5 +1,7 @@
 package com.example.cbueno01.adinfinitum;
 
+import android.app.KeyguardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
@@ -183,10 +185,10 @@ public class SettingsActivity extends PreferenceActivity {
         //button sounds
         Log.d("AD INFINITUM", "Button Sounds Settings");
         final SwitchPreference soundButtonPref = (SwitchPreference) findPreference("pref_sound_button");
-        final Boolean soundButtonState = prefs.getBoolean("pref_sound_button",
+        mIsButtonSoundOn = prefs.getBoolean("pref_sound_button",
                 getResources().getBoolean(R.bool.default_sound_button_state));
 
-        soundButtonPref.setChecked(soundButtonState);
+        soundButtonPref.setChecked(mIsButtonSoundOn);
         soundButtonPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -224,6 +226,21 @@ public class SettingsActivity extends PreferenceActivity {
         // prefs.addPreference(botsPref );
         soundtrackPref.setOnPreferenceChangeListener( new PrefsSeekBarListener( soundtrackPref) );*/
 
+        mIsSoundtrackOn = prefs.getBoolean("pref_soundtrack_sound", true);
+        KeyguardManager myKM = (KeyguardManager) this.getSystemService(Context.KEYGUARD_SERVICE);
+        if( myKM.inKeyguardRestrictedInputMode()) {
+            //it is locked
+            if(mIsSoundtrackOn) {
+                Intent svc = new Intent(this, MusicService.class);
+                stopService(svc);
+            }
+        } else {
+            //it is not locked
+            if(mIsSoundtrackOn) {
+                Intent svc = new Intent(this, MusicService.class);
+                startService(svc);
+            }
+        }
     }
 
     private void playButtonSound() {

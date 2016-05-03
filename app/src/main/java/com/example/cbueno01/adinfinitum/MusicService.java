@@ -10,7 +10,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-public class MusicService extends Service  implements MediaPlayer.OnErrorListener {
+public class MusicService extends Service {
 
     private final IBinder mBinder = new ServiceBinder();
     MediaPlayer mPlayer;
@@ -51,7 +51,7 @@ public class MusicService extends Service  implements MediaPlayer.OnErrorListene
         }
 
         mPlayer = MediaPlayer.create(this, sound);
-        mPlayer.setOnErrorListener(this);
+//        mPlayer.setOnErrorListener(this);
 
         if (mPlayer != null) {
             mPlayer.setLooping(true);
@@ -63,6 +63,7 @@ public class MusicService extends Service  implements MediaPlayer.OnErrorListene
 
             public boolean onError(MediaPlayer mp, int what, int
                     extra) {
+//                Log.d("Ad Infinitum", "Creating player");
 
                 onError(mPlayer, what, extra);
                 return true;
@@ -95,6 +96,14 @@ public class MusicService extends Service  implements MediaPlayer.OnErrorListene
         mPlayer.stop();
         mPlayer.release();
         mPlayer = null;
+    }
+
+    public int getPosition() {
+        return mPlayer.getCurrentPosition();
+    }
+
+    public void setPosition(int pos) {
+        mPlayer.seekTo(pos);
     }
 
     @Override
