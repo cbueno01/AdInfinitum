@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -56,6 +57,9 @@ public class StartScreenActivity extends Activity {
     private Animation animScaleTL;
 
     private boolean mIsSoundOn;
+
+    private MediaPlayer mp;
+    private boolean mIsButtonSoundOn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -209,6 +213,12 @@ public class StartScreenActivity extends Activity {
 //        mCL.setBackground(mSFV);
 //        mCL.setBackground();
 
+        //button sound
+        mIsButtonSoundOn = mPrefs.getBoolean("prefs_sound_button", true);
+        if(mIsButtonSoundOn) {
+            mp = MediaPlayer.create(this, R.raw.button_click);
+        }
+
 //        btnScale.startAnimation(animScale);
 //        btnScale.setOnClickListener(new Button.OnClickListener(){
 //            @Override
@@ -308,7 +318,7 @@ public class StartScreenActivity extends Activity {
     public void onResume() {
         super.onResume();
 
-        mIsSoundOn = mPrefs.getBoolean("pref_soundtrack", true);
+        mIsSoundOn = mPrefs.getBoolean("pref_soundtrack_sound", true);
 
 //        if(mIsSoundOn)
 //        {
@@ -381,6 +391,9 @@ public class StartScreenActivity extends Activity {
     public void goToGame(View v){
         Log.d("AD INFINITUM", "Create Settings Activity");
         Intent intent = new Intent(this, AdInfinitumActivity.class);
+
+        playButtonSound();
+
         startActivity(intent);
     }
 
@@ -391,6 +404,9 @@ public class StartScreenActivity extends Activity {
 //        EditText editText = (EditText) findViewById(R.id.edit_message);
 //        String message = editText.getText().toString();
 //        intent.putExtra(EXTRA_MESSAGE, message);
+
+        playButtonSound();
+
         startActivity(intent);
     }
 
@@ -398,6 +414,9 @@ public class StartScreenActivity extends Activity {
     {
         Log.d("AD INFINITUM", "Create Settings Activity");
         Intent intent = new Intent(this, SettingsActivity.class);
+
+        playButtonSound();
+
         startActivity(intent);
     }
 
@@ -405,8 +424,19 @@ public class StartScreenActivity extends Activity {
     {
         Log.d("AD INFINITUM", "Attempt to create About Activity");
         Intent intent = new Intent(this, AboutScreenActivity.class);
-        startActivity(intent);
 
+        playButtonSound();
+
+        startActivity(intent);
+    }
+
+    private void playButtonSound() {
+        Log.d("AD INFINITUM", "In playButtonSound");
+
+        if (mIsButtonSoundOn) {
+            //play button sound
+            mp.start();
+        }
     }
 
 //    public class BackgroundSound extends AsyncTask<Void, Void, Void> {
