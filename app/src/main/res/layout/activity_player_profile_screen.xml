@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/blank_pop_up"
+    android:background="@drawable/blankpopup"
     android:orientation="vertical"
     android:weightSum="1"
     tools:context="com.example.cbueno01.adinfinitum.PlayerProfileActivity">
@@ -56,42 +56,46 @@
                     android:layout_height="30dp"
                     android:clickable="true"
                     android:onClick="getPicture"
-                    android:src="@drawable/camera" />
+                    android:src="@drawable/gallery" />
 
             </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_gravity="center_horizontal|top"
-            android:layout_marginLeft="10sp"
-            android:orientation="vertical"
-            android:gravity="center_horizontal|top">
+            android:layout_marginLeft="5sp"
+            android:gravity="center_horizontal|top"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/high_score_list"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:clickable="true"
-                android:gravity="center"
-                android:onClick="onClick"
-                android:text="@string/high_score_text"
-                android:textColor="@color/buttonTextColor"
-                android:textIsSelectable="true"
-                android:textSize="25sp" />
 
             <EditText
                 android:id="@+id/player_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginTop="17dp"
                 android:background="@android:color/transparent"
                 android:gravity="center_horizontal"
+                android:layout_centerHorizontal="true"
                 android:hint="Enter Name"
                 android:inputType="text"
+                android:textColor="@color/buttonTextColor"
+                android:textIsSelectable="true"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/high_score_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/player_name"
+                android:layout_gravity="left"
+                android:layout_marginTop="15dp"
+                android:clickable="true"
+                android:gravity="left"
+                android:onClick="onClick"
+                android:text="@string/high_score_text"
                 android:textColor="@color/buttonTextColor"
                 android:textIsSelectable="true"
                 android:textSize="25sp" />
@@ -100,7 +104,9 @@
                 android:id="@+id/total_time_played"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_below="@id/high_score_list"
+                android:layout_gravity="left"
+                android:layout_marginTop="7dp"
                 android:gravity="center"
                 android:text="@string/playtime"
                 android:textColor="@color/buttonTextColor"
@@ -108,13 +114,44 @@
                 android:textSize="25sp" />
 
             <TextView
+                android:id="@+id/default_total_time_played"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignBottom="@id/total_time_played"
+                android:layout_marginTop="7dp"
+                android:layout_toRightOf="@id/total_time_played"
+                android:gravity="right"
+                android:text="@string/default_playtime"
+                android:textColor="#555555"
+                android:textIsSelectable="true"
+                android:textSize="25sp" />
+
+            <TextView
                 android:id="@+id/longest_game_played"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:gravity="center"
+                android:layout_below="@id/total_time_played"
+                android:layout_gravity="left"
+                android:layout_marginTop="7dp"
                 android:text="@string/longest_game"
                 android:textColor="@color/buttonTextColor"
+                android:textIsSelectable="true"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/default_longest_game_played"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_alignParentRight="true"
+                android:layout_alignBottom="@id/longest_game_played"
+                android:layout_toRightOf="@id/longest_game_played"
+                android:gravity="right"
+                android:layout_marginTop="7dp"
+                android:layout_toEndOf="@id/longest_game_played"
+                android:text="@string/default_longest_game"
+                android:textColor="#555555"
                 android:textIsSelectable="true"
                 android:textSize="25sp" />
 
@@ -122,25 +159,43 @@
                 android:id="@+id/most_rounds_beaten"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_below="@id/longest_game_played"
+                android:layout_gravity="left"
+                android:layout_marginTop="7dp"
                 android:gravity="center"
                 android:text="@string/most_rounds"
                 android:textColor="@color/buttonTextColor"
                 android:textIsSelectable="true"
                 android:textSize="25sp" />
 
+            <TextView
+                android:id="@+id/default_most_rounds_beaten"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_alignParentRight="true"
+                android:layout_alignBottom="@id/most_rounds_beaten"
+                android:gravity="right"
+                android:layout_marginTop="7dp"
+                android:layout_toRightOf="@id/most_rounds_beaten"
+                android:text="@string/default_most_rounds"
+                android:textColor="#555555"
+                android:textIsSelectable="true"
+                android:textSize="25sp" />
 
             <Button
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="10dp"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_marginBottom="5dp"
                 android:background="@color/buttonColor"
                 android:onClick="resetScore"
                 android:text="@string/reset_text"
                 android:textColor="@color/buttonTextColor"
                 android:textSize="25dp" />
-        </LinearLayout>
+
+        </RelativeLayout>
     </LinearLayout>
 
 </LinearLayout>

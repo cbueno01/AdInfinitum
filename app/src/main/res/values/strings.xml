@@ -6,25 +6,32 @@
     <string name="high_score_text">High Scores </string>
     <string name="reset_text">Reset</string>
 
-    <string name="playtime">Time Played: 00:00</string>
-    <string name="longest_game">Longest Game (Continuous): 00:00</string>
-    <string name="most_rounds">Most Rounds (Round): 0</string>
+    <string name="playtime">Time Played(s):</string>
+    <string name="longest_game">Longest(Cont.):</string>
+    <string name="most_rounds">Most(Rounds):</string>
 
-    <string name="high_scores_title">Least Pitiful Scores</string>
-    <string name="high_score_one">1. [Player]\t\t[Score]</string>
-    <string name="high_score_two">2. [Player]\t\t[Score]</string>
-    <string name="high_score_three">3. [Player]\t\t[Score]</string>
-    <string name="high_score_four">4. [Player]\t\t[Score]</string>
-    <string name="high_score_five">5. [Player]\t\t[Score]</string>
-    <string name="high_score_six">6. [Player]\t\t[Score]</string>
-    <string name="high_score_seven">7. [Player]\t\t[Score]</string>
-    <string name="high_score_eight">8. [Player]\t\t[Score]</string>
-    <string name="high_score_nine">9. [Player]\t\t[Score]</string>
-    <string name="high_score_ten">10. [Player]\t\t[Score]</string>
+    <string name="default_playtime">0</string>
+    <string name="default_longest_game">0</string>
+    <string name="default_most_rounds">0</string>
+
+    <string name="default_high_scores_ranks">1. [Player]\t\t0,2. [Player]\t\t0,3. [Player]\t\t0,4. [Player]\t\t0,5. [Player]\t\t0,6. [Player]\t\t0,7. [Player]\t\t0,8. [Player]\t\t0,9. [Player]\t\t0,10. [Player]\t\t0</string>
+    <string name="default_high_scores">[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0</string>
+
+    <string name="high_scores_title">Least Embarrassing Scores</string>
+    <string name="high_score_one">[Player]\t\t0</string>
+    <string name="high_score_two">[Player]\t\t0</string>
+    <string name="high_score_three">[Player]\t\t0</string>
+    <string name="high_score_four">[Player]\t\t0</string>
+    <string name="high_score_five">[Player]\t\t0</string>
+    <string name="high_score_six">[Player]\t\t0</string>
+    <string name="high_score_seven">[Player]\t\t0</string>
+    <string name="high_score_eight">[Player]\t\t0</string>
+    <string name="high_score_nine">[Player]\t\t0</string>
+    <string name="high_score_ten">[Player]\t\t0</string>
 
     <!-- Strings related to Game Play -->
     <string name="default_score">0</string>
-    <string name="time_elapsed">0000</string>
+    <string name="time_elapsed">Time: 0000</string>
     <string name="play_again">Play Again?</string>
     <string name="give_up">Give Up,</string>
     <string name="okay">Okay</string>

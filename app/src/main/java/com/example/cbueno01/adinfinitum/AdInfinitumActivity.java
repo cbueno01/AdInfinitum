@@ -52,13 +52,12 @@ public class AdInfinitumActivity extends Activity {
     private String mPlayerName;
     private boolean mSoundEffectsOn;
 
+    private long mTotalTimePlayed;
+    private int mMostRoundsBeaten;
+    private int mLongestGame;
+
     // Variable to see if it was cancelled during countdown
     private boolean mTimerFinish;
-    // for preferences
-    //static final int DIALOG_DIFFICULTY_ID = 0;
-    //static final int DIALOG_QUIT_ID = 1;
-    //static final int DIALOG_ABOUT_ID = 2;
-    //static final int DIALOG_CLEAR_SCORES = 3;
 
     private int screenWidth;
     private int screenHeight;
@@ -99,15 +98,20 @@ public class AdInfinitumActivity extends Activity {
     private int dismissAdID2;
     private int gameOverID;
 
+    private String [] stringScores;
+    private long [] highScores;
+
     // Game mode
     private String mGameMode;
 
     // Time amount of round if round mode
     private int mTimeOfRound;
+    private int mRoundNumber;
     private boolean mLostRound;
 
     // to restore scores
     private SharedPreferences mPrefs;
+    private SharedPreferences mProfs;
 
     /**
      * Called when the activity is first created.
@@ -134,7 +138,21 @@ public class AdInfinitumActivity extends Activity {
         rand = new Random();
         mAdTime = 1000;
         mPrefs = getSharedPreferences("preferences", MODE_PRIVATE);
+        mProfs = getSharedPreferences("profile", MODE_PRIVATE);
 
+        mTotalTimePlayed = Long.parseLong(mProfs.getString("pref_total_time", "0"));
+        mLongestGame = Integer.parseInt(mProfs.getString("pref_longest_game", "0"));
+        mMostRoundsBeaten = Integer.parseInt(mProfs.getString("pref_most_rounds", "0"));
+
+        String temp = mProfs.getString("pref_high_scores", getString(R.string.default_high_scores));
+        stringScores = temp.split(",");
+
+        long[] tempArray = new long[stringScores.length];
+        for (int i = stringScores.length - 1; i >= 0; --i) {
+            String [] cur = stringScores[i].split("\t");
+            tempArray[i] = Long.parseLong(cur[cur.length - 1]);
+        }
+        highScores = tempArray;
 //        startGame();
 
 
@@ -231,17 +249,44 @@ public class AdInfinitumActivity extends Activity {
         protected void onProgressUpdate(Void... Progress) {
             mTimeTextView.setText(String.format("%04d", (int) (mElapsedTime / 1000)));
 //            mScoreTextView.setText(String.format("%07d", mScore));
-            mScoreTextView.setText("" + mScore);
+            mScoreTextView.setText("Score:"  + mScore);
             mGameView.invalidate();
         }
 
         protected void onPostExecute(Void result) {
-            SharedPreferences.Editor ed = mPrefs.edit();
-            long highscore = mPrefs.getLong("pref_high_score", 0);
-            if (highscore < mScore) {
-                ed.putLong("pref_high_score", mScore);
+            SharedPreferences.Editor ed = mProfs.edit();
+//            long highscore = mProfs.getLong("pref_high_scores", 0);
+//            String lowest = highScores[highScores.length - 1];
+//            String [] info = lowest.split("\t");
+//            Long lowestHighScore = Long.parseLong(info[info.length - 1]);
+
+            int length = highScores.length;
+
+            if (highScores[length - 1] < mScore) {
+                highScores[length - 1] = mScore;
+                Arrays.sort(highScores);
+                StringBuilder sb = new StringBuilder();
+
+                for (int i = length; i > 0; --i) {
+                    sb.append(highScores[i] + ",");
+                }
+                sb.append(highScores[0]);
+
+                ed.putString("pref_high_scores", sb.toString());
                 ed.apply();
             }
+
+            long elapsedSeconds = (mElapsedTime / 1000);
+
+            if (mLongestGame < elapsedSeconds) {
+                mLongestGame = (int) elapsedSeconds;
+                ed.putString("pref_longest_game", "" + mLongestGame);
+                ed.apply();
+            }
+
+            mTotalTimePlayed += elapsedSeconds;
+            ed.putString("pref_total_time", "" + mTotalTimePlayed);
+            ed.apply();
 
             if (!mGameLoop.isCancelled() && mTimerFinish) {
                 if (mSoundEffectsOn) {
@@ -289,12 +334,37 @@ public class AdInfinitumActivity extends Activity {
         }
 
         protected void onPostExecute(Void result) {
-            SharedPreferences.Editor ed = mPrefs.edit();
-            long highscore = mPrefs.getLong("pref_high_score", 0);
-            if (highscore < mScore) {
-                ed.putLong("pref_high_score", mScore);
+            SharedPreferences.Editor ed = mProfs.edit();
+//            long highscore = mProfs.getLong("pref_high_scores", 0);
+//            String lowest = highScores[highScores.length - 1];
+//            String [] info = lowest.split("\t");
+//            Long lowestHighScore = Long.parseLong(info[info.length - 1]);
+
+            int length = highScores.length;
+
+            if (highScores[length - 1] < mScore) {
+                highScores[length - 1] = mScore;
+                Arrays.sort(highScores);
+                StringBuilder sb = new StringBuilder();
+
+                for (int i = length; i > 0; --i) {
+                    sb.append(highScores[i] + ",");
+                }
+                sb.append(highScores[0]);
+
+                ed.putString("pref_high_scores", sb.toString());
                 ed.apply();
             }
+
+            if (mMostRoundsBeaten < mRoundNumber) {
+                mMostRoundsBeaten = (int) mRoundNumber;
+                ed.putString("pref_most_rounds", "" + mMostRoundsBeaten);
+                ed.apply();
+            }
+
+            mTotalTimePlayed += mElapsedTime;
+            ed.putString("pref_total_time", "" + mTotalTimePlayed);
+            ed.apply();
 
             if (!mGameLoop.isCancelled() && mTimerFinish) {
                 if (mSoundEffectsOn) {
@@ -455,6 +525,7 @@ public class AdInfinitumActivity extends Activity {
         mTimeOfRound = time;
         mTimerFinish = true;
         mLostRound = false;
+        mRoundNumber = 0;
         mGameLoop = null;
         mTimeTextView.setText(String.format("%04d", (time) / 1000));
         mScoreTextView.setText("" + startingScore);

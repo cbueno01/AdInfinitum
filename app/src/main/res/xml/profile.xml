@@ -2,12 +2,36 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ListPreference
-        android:key="pref_high_scores"
+        android:key="listpref_high_scores"
         android:title="High Scores"
         android:summary=""
         android:defaultValue="test value"
         android:entries="@array/high_scores"
         android:entryValues="@array/high_scores"/>
+
+    <Preference
+        android:key="pref_high_scores"
+        android:title="High Scores"
+        android:summary=""
+        android:defaultValue="@string/default_high_scores" />
+
+    <Preference
+        android:key="pref_total_time"
+        android:title="Total Time Played"
+        android:summary=""
+        android:defaultValue="@string/default_playtime" />
+
+    <Preference
+        android:key="pref_longest_game"
+        android:title="Longest Game"
+        android:summary=""
+        android:defaultValue="@string/default_longest_game" />
+
+    <Preference
+        android:key="pref_most_rounds"
+        android:title="Most Rounds Beaten"
+        android:summary=""
+        android:defaultValue="@string/default_most_rounds" />
 
     <EditTextPreference
         android:key="pref_profile_name"
