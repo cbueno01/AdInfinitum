@@ -130,7 +130,7 @@ public class SettingsActivity extends PreferenceActivity {
         //show the sound fx volume
         Log.d("AD INFINITUM", "Sound FX Volume Settings");
         final SwitchPreference soundfxPref = (SwitchPreference) findPreference("pref_sound_fx");
-        final Boolean soundfxState = prefs.getBoolean("pref_soundfx",
+        Boolean soundfxState = prefs.getBoolean("pref_soundfx",
                 getResources().getBoolean(R.bool.default_soundfx_state));
         Log.d("AD INFINITUM", soundfxState.toString());
         soundfxPref.setChecked(soundfxState);
@@ -141,11 +141,9 @@ public class SettingsActivity extends PreferenceActivity {
                 playButtonSound();
 
                 soundfxPref.setChecked((boolean) newValue);
-
                 SharedPreferences.Editor ed = prefs.edit();
-                ed.putBoolean("pref_sound_fx", (boolean) newValue);
+                ed.putBoolean("pref_soundfx", (boolean) newValue);
                 ed.apply();
-
                 return true;
             }
         });
@@ -238,19 +236,14 @@ public class SettingsActivity extends PreferenceActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_start_screen, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }

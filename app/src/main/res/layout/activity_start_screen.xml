@@ -4,9 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:background="@drawable/starfield_black1"
     tools:context="com.example.cbueno01.adinfinitum.StartScreenActivity"
-    >
+    android:id="@+id/start_screen_layout" >
 
     <TextView
         android:id="@+id/title"

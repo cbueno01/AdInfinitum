@@ -40,7 +40,7 @@ public class AboutScreenActivity extends Activity implements View.OnClickListene
     private int mInterval = 5000;
     private Point mScreenSize;
 
-    private TransitionDrawable drawable;;
+    private TransitionDrawable drawable;
     private GradientGenerator mGradientGenerator;
     private GradientDrawable mStartGradient;
     private GradientDrawable mEndGradient;
@@ -126,7 +126,7 @@ public class AboutScreenActivity extends Activity implements View.OnClickListene
 //        };
 //        // Play animation immediately after button click
 //        mHandler.postDelayed(mRunnable, 100);
-
+//
     }
 
 //    @Override
