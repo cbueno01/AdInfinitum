@@ -17,7 +17,9 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.Layout;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -222,28 +224,53 @@ public class PlayerProfileActivity extends Activity {
         Animation blinkAnimation = AnimationUtils.loadAnimation(this, R.anim.blink);
         Animation blinkAnimation2 = AnimationUtils.loadAnimation(this, R.anim.blink2);
         mTitleTextView.startAnimation(blinkAnimation);
-        mNameTextView.startAnimation(blinkAnimation2);
+//        mNameTextView.startAnimation(blinkAnimation2);
 //        mHighScoreTextView.startAnimation(blinkAnimation2);
 
-        mEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        mEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
-                    SharedPreferences.Editor ed = mPrefs.edit();
-                    String name = mPrefs.getString("pref_profile_name", "");
-                    ed.putString("pref_profile_name", mEditText.getText().toString());
-                    ed.apply();
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+            }
 
-                    return true;
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.charAt(s.length() - 1) == '\n') {
+                    Log.d("TEST RESPONSE", "Enter was pressed");
                 }
-                return false;
+
+                SharedPreferences.Editor ed = mPrefs.edit();
+                String name = mPrefs.getString("pref_profile_name", "");
+                ed.putString("pref_profile_name", mEditText.getText().toString());
+                ed.apply();
             }
         });
+
+//        mEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                if (actionId == EditorInfo.IME_ACTION_DONE) {
+//
+//                    SharedPreferences.Editor ed = mPrefs.edit();
+//                    String name = mPrefs.getString("pref_profile_name", "");
+//                    ed.putString("pref_profile_name", mEditText.getText().toString());
+//                    ed.apply();
+//
+//                    return true;
+//                }
+//                return false;
+//            }
+//
+//
+//        });
     }
 
     public void readData() {
-        mPlayerName = mPrefs.getString("pref_profile_name", "Sheeple");
+        mPlayerName = mPrefs.getString("pref_profile_name", "<Player>");
         mHighScore = mPrefs.getLong("pref_high_score", 0);
 
         mImagePath = mPrefs.getString("pref_reset_picture", null);

@@ -35,7 +35,7 @@ public class StartScreenActivity extends Activity {
 
     private Context mContext;
     private CoordinatorLayout mCL;
-//    private StarFieldView mSFV;
+    private StarFieldView mSFV;
 
     private TextView title;
     private Animation animScaleC;
@@ -82,7 +82,13 @@ public class StartScreenActivity extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         Rect viewBounds = new Rect(0, 0, displaymetrics.heightPixels, displaymetrics.widthPixels);
 
-//        mSFV.init();
+        mContext = getApplicationContext();
+        mSFV= new StarFieldView(mContext, viewBounds);
+        mCL = (CoordinatorLayout) findViewById(R.id.start_screen_layout);
+
+        mContext = getApplicationContext();
+        mCL = (CoordinatorLayout) findViewById(R.id.start_screen_layout);
+        mSFV.init();
 
 
 //        AttributeSet as = new AttributeSet() {
@@ -196,10 +202,6 @@ public class StartScreenActivity extends Activity {
 //                return 0;
 //            }
 //        }
-
-        mContext = getApplicationContext();
-//        StarFieldView mSFV= new StarFieldView(mContext, viewBounds);
-        mCL = (CoordinatorLayout) findViewById(R.id.start_screen_layout);
 
 //        mCL.setBackground(mSFV);
 //        mCL.setBackground();
