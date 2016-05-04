@@ -17,7 +17,7 @@
     <string name="default_high_scores_ranks">1. [Player]\t\t0,2. [Player]\t\t0,3. [Player]\t\t0,4. [Player]\t\t0,5. [Player]\t\t0,6. [Player]\t\t0,7. [Player]\t\t0,8. [Player]\t\t0,9. [Player]\t\t0,10. [Player]\t\t0</string>
     <string name="default_high_scores">[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0</string>
 
-    <string name="high_scores_title">Least Embarrassing Scores\n(Continuous)\t\t\t(Rounds)</string>
+    <string name="high_scores_title">Least Embarrassing Scores\n</string>
     <string name="high_score_one">[Player]\t\t0</string>
     <string name="high_score_two">[Player]\t\t0</string>
     <string name="high_score_three">[Player]\t\t0</string>

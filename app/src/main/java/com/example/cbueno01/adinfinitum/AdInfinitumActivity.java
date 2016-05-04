@@ -533,11 +533,12 @@ public class AdInfinitumActivity extends Activity {
                                     startGame(0, 0);
                                 }
                             });
+                    break;
                 } else {
-                    builder.setMessage(getResources().getString(R.string.rounds_lose_message) + ", " + mPlayerName + "?").setCancelable(false)
+                    builder.setMessage(getResources().getString(R.string.rounds_lose_message) + " " + mPlayerName + "?").setCancelable(false)
                             .setPositiveButton(R.string.okay, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    startGame(0, 0);
+                                    startGame(0, 15000);
                                 }
                             })
                             .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
