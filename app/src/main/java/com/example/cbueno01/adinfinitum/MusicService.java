@@ -46,13 +46,13 @@ public class MusicService extends Service  implements MediaPlayer.OnErrorListene
         switch (soundtrack)
         {
             case "Rave":
-                sound = R.raw.tickclock;
+                sound = R.raw.aviator;
                 break;
             case "Chill":
                 sound = R.raw.pretty_lights;
                 break;
             default:
-                sound = R.raw.tickclock;
+                sound = R.raw.aviator;
         }
 
         mPlayer = MediaPlayer.create(this, sound);

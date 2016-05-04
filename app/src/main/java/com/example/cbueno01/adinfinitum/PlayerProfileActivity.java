@@ -211,20 +211,20 @@ public class PlayerProfileActivity extends Activity {
 
     private Dialog createHighScoresDialog(AlertDialog.Builder builder) {
         String chs = mPrefs.getString("pref_high_scores", getResources().getString(R.string.default_high_scores));
-        String rhs = mPrefs.getString("pref_rounds_high_scores", getResources().getString(R.string.default_high_scores));
+//        String rhs = mPrefs.getString("pref_rounds_high_scores", getResources().getString(R.string.default_high_scores));
 
-        Log.d(TAG, "");
-        Log.d(TAG, "");
-        Log.d("Profile", "*^&*%%($(%)#(%)#$#%*)$*)&@$(@&#)#$%)(&%(#)@$               " + rhs);
-        Log.d(TAG, "");
-        Log.d(TAG, "");
+//        Log.d(TAG, "");
+//        Log.d(TAG, "");
+//        Log.d("Profile", "*^&*%%($(%)#(%)#$#%*)$*)&@$(@&#)#$%)(&%(#)@$               " + rhs);
+//        Log.d(TAG, "");
+//        Log.d(TAG, "");
 
         String[] cScores = chs.split(",");
-        String[] rScores = rhs.split(",");
+//        String[] rScores = rhs.split(",");
 //        ListView lv = (ListView) findViewById(R.id.high_scores_dialog_list);
 
-        ArrayAdapter<String> itemsAdapterC = new ArrayAdapter<>(this, R.layout.listview_item_two, cScores);
-        ArrayAdapter<String> itemsAdapterR = new ArrayAdapter<>(this, R.layout.listview_item_two, rScores);
+        ArrayAdapter<String> itemsAdapterC = new ArrayAdapter<>(this, R.layout.listview_item, cScores);
+//        ArrayAdapter<String> itemsAdapterR = new ArrayAdapter<>(this, R.layout.listview_item_two, rScores);
 
 
 //        ListView listView = (ListView) findViewById(R.id.high_scores_dialog_list);
@@ -238,8 +238,8 @@ public class PlayerProfileActivity extends Activity {
         mListViewC = (ListView) layout.findViewById(R.id.high_scores_dialog_list);
         mListViewC.setAdapter(itemsAdapterC);
 
-        mListViewC = (ListView) layout.findViewById(R.id.rounds_high_scores_dialog_list);
-        mListViewC.setAdapter(itemsAdapterR);
+//        mListViewR = (ListView) layout.findViewById(R.id.rounds_high_scores_dialog_list);
+//        mListViewR.setAdapter(itemsAdapterR);
 
         builder.setView(layout);
         builder.setTitle(R.string.high_scores_title);

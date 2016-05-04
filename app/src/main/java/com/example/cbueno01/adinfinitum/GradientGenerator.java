@@ -172,11 +172,11 @@ public class GradientGenerator {
     // Custom method to generate a random color
     protected int getRandomColor() {
         // 256 is excluded, so random number is between 0 to 255
-        int red = mRandom.nextInt(200);
-        int green = red;
-        int blue = red;
-//        int green = mRandom.nextInt(100);
-//        int blue = mRandom.nextInt(100);
+        int red = mRandom.nextInt(150);
+//        int green = red;
+//        int blue = red;
+        int green = mRandom.nextInt(150);
+        int blue = mRandom.nextInt(150);
         int color = Color.argb(255, red, green, blue);
         // Return the random argb color
         return color;
