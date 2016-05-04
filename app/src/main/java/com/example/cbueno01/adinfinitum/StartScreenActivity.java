@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.graphics.Rect;
 import android.os.AsyncTask;
@@ -26,6 +27,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 public class StartScreenActivity extends Activity {
 
@@ -64,6 +67,12 @@ public class StartScreenActivity extends Activity {
     private MediaPlayer mp;
     private boolean mIsButtonSoundOn;
 
+    private StarFieldLoop mStarFieldLoop;
+    private StarList mSL;
+
+    int mScreenWidth;
+    int mScreenHeight;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,15 +98,19 @@ public class StartScreenActivity extends Activity {
 
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        Rect viewBounds = new Rect(0, 0, displaymetrics.heightPixels, displaymetrics.widthPixels);
+        mScreenWidth = displaymetrics.widthPixels;
+        mScreenHeight = displaymetrics.heightPixels;
+
+        mSL = new StarList(25, mScreenWidth, mScreenHeight);
 
         mContext = getApplicationContext();
-        mSFV= new StarFieldView(mContext, viewBounds);
-        mCL = (CoordinatorLayout) findViewById(R.id.start_screen_layout);
-
-        mContext = getApplicationContext();
-        mCL = (CoordinatorLayout) findViewById(R.id.start_screen_layout);
-        mSFV.init();
+        mSFV = (StarFieldView) findViewById(R.id.start_screen_view);
+        mSFV.setDataMembers(mSL);
+//        mCL = (CoordinatorLayout) findViewById(R.id.start_screen_layout);
+//
+//        mContext = getApplicationContext();
+//        mCL = (CoordinatorLayout) findViewById(R.id.start_screen_layout);
+//        mSFV.init();
 
         mIsSoundOn = mPrefs.getBoolean("pref_soundtrack_sound", true);
 
@@ -270,8 +283,12 @@ public class StartScreenActivity extends Activity {
     public void onDestroy() {
         super.onDestroy();
         doUnbindService();
-//        Intent music = new Intent(this, MusicService.class);
-//        stopService(music);
+    }
+
+    public void onStop() {
+        super.onStop();
+        if(mStarFieldLoop != null)
+            mStarFieldLoop.cancel(true);
     }
 
     public void onResume() {
@@ -289,6 +306,9 @@ public class StartScreenActivity extends Activity {
 
         if (mIsBound && mIsSoundOn)
             mMusicService.resumeMusic();
+
+        mStarFieldLoop = new StarFieldLoop();
+        mStarFieldLoop.execute(30);
     }
     public void onPause() {
         super.onPause();
@@ -329,36 +349,33 @@ public class StartScreenActivity extends Activity {
     }
 
 
-//    private class StarFieldLoop extends AsyncTask<Integer, Void, Void> {
+    private class StarFieldLoop extends AsyncTask<Integer, Void, Void> {
+
+        public StarFieldLoop() {
+        }
+
+        @Override
+        protected Void doInBackground(Integer... args) {
+            while (true) {
+                if (mStarFieldLoop.isCancelled())
+                    return null;
+
+                int fps = args[0];
 //
-//        public StarFieldLoop() {
-//        }
+                try {
+                    Thread.sleep(1000 / fps);
+                } catch (InterruptedException ie) {}
 //
-//        @Override
-//        protected Void doInBackground(Integer... args) {
-//            while (true) {
-//
-//                mElapsedTime = (System.nanoTime() / 1000000) - mStartTime;
-//                int fps = args[0];
-//
-//                try {
-//                    Thread.sleep(1000 / fps);
-//                } catch (InterruptedException ie) {
-//                }
-//
-//                updateGame();
-//                publishProgress();
-//            }
+                calculateStarMovement(mSL);
+                publishProgress();
+            }
 //
 //            return null;
-//        }
+        }
 //
-//        protected void onProgressUpdate(Void... Progress) {
-//            mTimeTextView.setText(String.format("%04d", (int) (mElapsedTime / 1000)));
-////            mScoreTextView.setText(String.format("%07d", mScore));
-//            mScoreTextView.setText("" + mScore);
-//            mGameView.invalidate();
-//        }
+        protected void onProgressUpdate(Void... Progress) {
+            mSFV.invalidate();
+        }
 //
 //        protected void onPostExecute(Void result) {
 //            SharedPreferences.Editor ed = mPrefs.edit();
@@ -375,7 +392,7 @@ public class StartScreenActivity extends Activity {
 //                }
 //            }
 //        }
-//    }
+    }
 
 
 
@@ -429,6 +446,29 @@ public class StartScreenActivity extends Activity {
             mp.start();
         }
     }
+
+    public void calculateStarMovement (StarList list)
+    {
+        Point c = new Point(mScreenWidth / 2, mScreenHeight / 2);
+
+        for (StarList.Star s : list.mStarList)
+        {
+            Point currentP = s.getPoint();
+
+            // divides each half of the screen into eighths
+//            int newX = c.x - currentP.x + mScreenWidth / 120;
+            int newX = c.x + (int)(1.1 * (currentP.x - c.x));
+            int newY = c.y + (int)(1.1 * (currentP.y - c.y));
+            if (newX < 0 || newX > mScreenWidth || newY < 0 || newY > mScreenHeight) {
+                Point newS = mSL.generateStar();
+                s.setPoint(newS);
+            }
+            else {
+                s.setPoint(new Point(newX, newY));
+            }
+        }
+    }
+
 
 //    public class BackgroundSound extends AsyncTask<Void, Void, Void> {
 //        @Override
