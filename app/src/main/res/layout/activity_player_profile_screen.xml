@@ -48,15 +48,8 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:clickable="true"
-                    android:onClick="takePicture"
+                    android:onClick="selectImage"
                     android:src="@drawable/camera" />
-
-                <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:clickable="true"
-                    android:onClick="getPicture"
-                    android:src="@drawable/gallery" />
 
             </LinearLayout>
         </LinearLayout>

@@ -3,15 +3,22 @@ package com.example.cbueno01.adinfinitum;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.IBinder;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -39,7 +46,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.List;
+import java.util.*;
+import java.io.*;
 import java.util.Set;
 
 /**
@@ -48,9 +56,10 @@ import java.util.Set;
 public class PlayerProfileActivity extends Activity {
 
     private static final String TAG = "Player Profile";
-    private static final int SELECT_PICTURE = 1;
-    private static final int CAMERA_REQUEST = 1313;
+
     private static final int DIALOG = 0;
+    private static final int SELECT_FILE = 1;
+    private static final int REQUEST_CAMERA = 1313;
 
     private String mPlayerName;
     private long mHighScore;
@@ -63,6 +72,7 @@ public class PlayerProfileActivity extends Activity {
 
     // to restore scores
     private SharedPreferences mPrefs;
+    private SharedPreferences mSettingsPref;
 
     private String [] highScores;
     private Dialog mDialog;
@@ -76,9 +86,15 @@ public class PlayerProfileActivity extends Activity {
     private EditText mEditText;
 
     private Button mResetButton;
+    private boolean mIsBound;
+    private MusicService mMusicService;
+    private boolean mIsSoundOn;
     private TextView mTotalTimeTV;
     private TextView mLongestGameTV;
     private TextView mMostRoundsTV;
+
+    private boolean mIsButtonSoundOn;
+    private MediaPlayer mp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,13 +105,20 @@ public class PlayerProfileActivity extends Activity {
 //        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 //        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_player_profile_screen);
-
+        ActivityHelper.initialize(this);
 //        getPreferenceManager().setSharedPreferencesName("preferences");
 //        addPreferencesFromResource(R.xml.preferences);
         mPrefs = getSharedPreferences("profile", MODE_PRIVATE);
-//        mProfs = getSharedPreferences("")
+        mSettingsPref = getSharedPreferences("preferences", MODE_PRIVATE);
 
 //        highScores = getResources().getStringArray(R.array.high_scores);
+
+        mIsSoundOn = mSettingsPref.getBoolean("pref_soundtrack_sound", true);
+
+        mIsButtonSoundOn = mSettingsPref.getBoolean("prefs_sound_button", true);
+        if (mIsButtonSoundOn) {
+            mp = MediaPlayer.create(this, R.raw.button_click);
+        }
 
         mEditText = (EditText) findViewById(R.id.player_name);
         mEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -116,6 +139,7 @@ public class PlayerProfileActivity extends Activity {
         setTextViews();
         readData();
         displayViews();
+        doBindService();
     }
 
     @Override
@@ -210,7 +234,6 @@ public class PlayerProfileActivity extends Activity {
         ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(this, R.layout.listview_item, scores);
 
 
-
 //        ListView listView = (ListView) findViewById(R.id.high_scores_dialog_list);
 //        mListView.setAdapter(itemsAdapter);
         Context context = getApplicationContext();
@@ -253,7 +276,8 @@ public class PlayerProfileActivity extends Activity {
 
         mEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -295,7 +319,7 @@ public class PlayerProfileActivity extends Activity {
         mPlayerName = mPrefs.getString("pref_profile_name", null);
         mHighScore = mPrefs.getLong("pref_high_score", 0);
 
-        mImagePath = mPrefs.getString("pref_reset_picture", null);
+        mImagePath = mSettingsPref.getString("pref_reset_picture", null);
 
 
         mTotalTime = mPrefs.getString("pref_total_time", "0");
@@ -321,13 +345,25 @@ public class PlayerProfileActivity extends Activity {
             if (bmp == null)
                 mImageView.setImageResource(R.drawable.sheeple);
             else
-                mImageView.setImageBitmap(bmp);
+            {
+                Matrix matrix = new Matrix();
+                matrix.postRotate(90);
+                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bmp,bmp.getWidth(),bmp.getHeight(),true);
+                Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap , 0, 0, scaledBitmap .getWidth(), scaledBitmap .getHeight(), matrix, true);
+
+                mImageView.setImageBitmap(rotatedBitmap);
+            }
         }
 
     }
 
     public void resetScore(View v) {
         SharedPreferences.Editor ed = mPrefs.edit();
+
+        if (mIsButtonSoundOn) {
+            mp.start();
+        }
+
         ed.putString("pref_high_scores", getString(R.string.default_high_scores));
 //        ed.putString("pref_total_time", getString(R.string.default_playtime));
         ed.putString("pref_longest_game", getString(R.string.default_longest_game));
@@ -359,44 +395,44 @@ public class PlayerProfileActivity extends Activity {
 
     }
 
-    public void getPicture(View v) {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent,
-                "Select Picture"), SELECT_PICTURE);
-    }
+//    public void getPicture(View v) {
+//        Intent intent = new Intent();
+//        intent.setType("image/*");
+//        intent.setAction(Intent.ACTION_GET_CONTENT);
+//        startActivityForResult(Intent.createChooser(intent,
+//                "Select Picture"), SELECT_PICTURE);
+//    }
 
-    public void takePicture(View v) {
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(cameraIntent, CAMERA_REQUEST);
-    }
-
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            if (requestCode == SELECT_PICTURE) {
-                Uri selectedImageUri = data.getData();
-//                mImageView.setImageURI(selectedImageUri);
-                String selectedImagePath = getPath(selectedImageUri);
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inSampleSize = 4;
-
-                Bitmap bmp = BitmapFactory.decodeFile(selectedImagePath, options);
-                mImageView.setImageBitmap(bmp);
-
-                SharedPreferences.Editor ed = mPrefs.edit();
-                ed.putString("pref_reset_picture", selectedImagePath);
-                ed.apply();
-            } else if (requestCode == CAMERA_REQUEST) {
-                Bitmap bmp = (Bitmap) data.getExtras().get("data");
-                mImageView.setImageBitmap(bmp);
-
-                SharedPreferences.Editor ed = mPrefs.edit();
-                ed.putString("pref_reset_picture", getPath(data.getData()));
-                ed.apply();
-            }
-        }
-    }
+//    public void takePicture(View v) {
+//        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        startActivityForResult(cameraIntent, CAMERA_REQUEST);
+//    }
+//
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        if (resultCode == RESULT_OK) {
+//            if (requestCode == SELECT_PICTURE) {
+//                Uri selectedImageUri = data.getData();
+////                mImageView.setImageURI(selectedImageUri);
+//                String selectedImagePath = getPath(selectedImageUri);
+//                BitmapFactory.Options options = new BitmapFactory.Options();
+//                options.inSampleSize = 4;
+//
+//                Bitmap bmp = BitmapFactory.decodeFile(selectedImagePath, options);
+//                mImageView.setImageBitmap(bmp);
+//
+//                SharedPreferences.Editor ed = mPrefs.edit();
+//                ed.putString("pref_reset_picture", selectedImagePath);
+//                ed.apply();
+//            } else if (requestCode == CAMERA_REQUEST) {
+//                Bitmap bmp = (Bitmap) data.getExtras().get("data");
+//                mImageView.setImageBitmap(bmp);
+//
+//                SharedPreferences.Editor ed = mPrefs.edit();
+//                ed.putString("pref_reset_picture", getPath(data.getData()));
+//                ed.apply();
+//            }
+//        }
+//    }
 
     public String getPath(Uri uri) {
         // just some safety built in
@@ -416,5 +452,146 @@ public class PlayerProfileActivity extends Activity {
         }
         // this is our fallback here
         return uri.getPath();
+    }
+
+    public void onResume() {
+        super.onResume();
+        if (mIsBound && mIsSoundOn)
+            mMusicService.resumeMusic();
+    }
+
+    public void onPause() {
+        super.onPause();
+        if (mIsBound && mIsSoundOn)
+            mMusicService.pauseMusic();
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        doUnbindService();
+    }
+
+    private ServiceConnection Scon = new ServiceConnection() {
+
+        public void onServiceConnected(ComponentName name, IBinder
+                binder) {
+            mMusicService = ((MusicService.ServiceBinder) binder).getService();
+            if (mIsSoundOn)
+                mMusicService.resumeMusic();
+            mIsBound = true;
+        }
+
+        public void onServiceDisconnected(ComponentName name) {
+//            mMusicService.pauseMusic();
+            mMusicService = null;
+        }
+    };
+
+    void doBindService() {
+        bindService(new Intent(this, MusicService.class),
+                Scon, Context.BIND_AUTO_CREATE);
+    }
+
+    void doUnbindService() {
+        if (mIsBound) {
+            unbindService(Scon);
+            mIsBound = false;
+        }
+    }
+
+    public void selectImage(View v) {
+        final CharSequence[] items = {"Take Photo", "Choose from Library", "Cancel"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Change Photo!");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (items[item].equals("Take Photo")) {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(intent, REQUEST_CAMERA);
+                } else if (items[item].equals("Choose from Library")) {
+                    Intent intent = new Intent(
+                            Intent.ACTION_PICK,
+                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    intent.setType("image/*");
+                    startActivityForResult(
+                            Intent.createChooser(intent, "Select File"),
+                            SELECT_FILE);
+                } else if (items[item].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_CAMERA) {
+                Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
+
+                File destination = new File(Environment.getExternalStorageDirectory(),
+                        System.currentTimeMillis() + ".jpg");
+
+                FileOutputStream fo;
+                try {
+                    destination.createNewFile();
+                    fo = new FileOutputStream(destination);
+                    fo.write(bytes.toByteArray());
+                    fo.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+//                String filePath = destination.getAbsolutePath();
+                SharedPreferences.Editor ed = mSettingsPref.edit();
+                ed.putString("pref_reset_picture", getPath(data.getData()));
+                ed.apply();
+
+                mImageView.setImageBitmap(thumbnail);
+
+            } else if (requestCode == SELECT_FILE) {
+                Uri selectedImageUri = data.getData();
+                String[] projection = {MediaStore.MediaColumns.DATA};
+                CursorLoader cursorLoader = new CursorLoader(this, selectedImageUri, projection, null, null,
+                        null);
+                Cursor cursor = cursorLoader.loadInBackground();
+                int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+                cursor.moveToFirst();
+
+                String selectedImagePath = cursor.getString(column_index);
+
+                Bitmap bm;
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+                BitmapFactory.decodeFile(selectedImagePath, options);
+                final int REQUIRED_SIZE = 200;
+                int scale = 1;
+                while (options.outWidth / scale / 2 >= REQUIRED_SIZE
+                        && options.outHeight / scale / 2 >= REQUIRED_SIZE)
+                    scale *= 2;
+                options.inSampleSize = scale;
+                options.inJustDecodeBounds = false;
+                bm = BitmapFactory.decodeFile(selectedImagePath, options);
+
+                SharedPreferences.Editor ed = mSettingsPref.edit();
+                ed.putString("pref_reset_picture", getPath(data.getData()));
+                ed.apply();
+
+                Matrix matrix = new Matrix();
+                matrix.postRotate(90);
+                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm,bm.getWidth(),bm.getHeight(),true);
+                Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap , 0, 0, scaledBitmap .getWidth(), scaledBitmap .getHeight(), matrix, true);
+
+
+                mImageView.setImageBitmap(rotatedBitmap);
+            }
+        }
     }
 }

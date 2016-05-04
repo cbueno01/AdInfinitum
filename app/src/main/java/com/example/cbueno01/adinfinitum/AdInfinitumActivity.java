@@ -3,7 +3,11 @@ package com.example.cbueno01.adinfinitum;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,6 +18,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
@@ -91,6 +97,9 @@ public class AdInfinitumActivity extends Activity {
     private int dismissAdID1;
     private int dismissAdID2;
     private int gameOverID;
+    private boolean mIsBound = false;
+    private MusicService mMusicService;
+    private boolean mIsSoundOn;
 
     private String [] stringScores;
     private long [] highScores;
@@ -116,6 +125,7 @@ public class AdInfinitumActivity extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_game_screen);
+        ActivityHelper.initialize(this);
 
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
@@ -133,6 +143,7 @@ public class AdInfinitumActivity extends Activity {
         mAdTime = 800;
         mRoundNumber = 0;
         mPrefs = getSharedPreferences("preferences", MODE_PRIVATE);
+        doBindService();
         mProfs = getSharedPreferences("profile", MODE_PRIVATE);
 
         mTotalTimePlayed = Long.parseLong(mProfs.getString("pref_total_time", "0"));
@@ -168,9 +179,13 @@ public class AdInfinitumActivity extends Activity {
         // Setting game preferences
         mPlayerName = mProfs.getString("pref_profile_name", "<Player>");
         mSoundEffectsOn = mPrefs.getBoolean("pref_soundfx", true);
+        mIsSoundOn = mPrefs.getBoolean("pref_soundtrack_sound", true);
         mGameMode = mPrefs.getString("pref_modes", getResources().getString(R.string.mode_continuous));
         String difficultyLevel = mPrefs.getString("pref_difficulty_level", getResources().getString(R.string.difficulty_level_easy));
         String[] levels = getResources().getStringArray(R.array.difficulty_level);
+
+        if (mIsBound && mIsSoundOn)
+            mMusicService.resumeMusic();
 
         int i = 0;
         while(i < levels.length) {
@@ -203,6 +218,9 @@ public class AdInfinitumActivity extends Activity {
             mSounds.release();
             mSounds = null;
         }
+
+        if(mIsBound && mIsSoundOn)
+            mMusicService.pauseMusic();
     }
 
     @Override
@@ -212,6 +230,11 @@ public class AdInfinitumActivity extends Activity {
             mGameLoop.cancel(true);
         else
             mTimerFinish = false;
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        doUnbindService();
     }
 
     private abstract class GameLoop extends AsyncTask<Integer, Void, Void> {}
@@ -583,5 +606,34 @@ public class AdInfinitumActivity extends Activity {
             }
         }.start();
 
+    }
+
+    private ServiceConnection Scon =new ServiceConnection(){
+
+        public void onServiceConnected(ComponentName name, IBinder
+                binder) {
+            mMusicService = ((MusicService.ServiceBinder)binder).getService();
+            if(mIsSoundOn)
+                mMusicService.resumeMusic();
+            mIsBound = true;
+        }
+
+        public void onServiceDisconnected(ComponentName name) {
+            mMusicService = null;
+        }
+    };
+
+    void doBindService() {
+        bindService(new Intent(this, MusicService.class),
+                Scon, Context.BIND_AUTO_CREATE);
+    }
+
+    void doUnbindService()
+    {
+        if(mIsBound)
+        {
+            unbindService(Scon);
+            mIsBound = false;
+        }
     }
 }

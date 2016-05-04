@@ -38,7 +38,7 @@ public class StartScreenActivity extends Activity {
     private int mMusicPosition;
 //
 //    // whether service is bounded or not
-    private boolean mIsBound;
+    private boolean mIsBound = false;
 
     private Context mContext;
     private CoordinatorLayout mCL;
@@ -70,7 +70,6 @@ public class StartScreenActivity extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_start_screen);
-
 //        animScaleC = AnimationUtils.loadAnimation(this, R.anim.anim_scale_fromc);
 //        title = (TextView)findViewById(R.id.title);
 //
@@ -100,22 +99,9 @@ public class StartScreenActivity extends Activity {
         mCL = (CoordinatorLayout) findViewById(R.id.start_screen_layout);
         mSFV.init();
 
-
         mIsSoundOn = mPrefs.getBoolean("pref_soundtrack_sound", true);
-        KeyguardManager myKM = (KeyguardManager) this.getSystemService(Context.KEYGUARD_SERVICE);
-        if( myKM.inKeyguardRestrictedInputMode()) {
-            //it is locked
-            if(mIsSoundOn) {
-                Intent svc = new Intent(this, MusicService.class);
-                stopService(svc);
-            }
-        } else {
-            //it is not locked
-            if(mIsSoundOn) {
-                Intent svc = new Intent(this, MusicService.class);
-                startService(svc);
-            }
-        }
+
+        doBindService();
 
 
 //        AttributeSet as = new AttributeSet() {
@@ -234,10 +220,7 @@ public class StartScreenActivity extends Activity {
 //        mCL.setBackground();
 
         //button sound
-        mIsButtonSoundOn = mPrefs.getBoolean("prefs_sound_button", true);
-        if(mIsButtonSoundOn) {
-            mp = MediaPlayer.create(this, R.raw.button_click);
-        }
+
 
 //        btnScale.startAnimation(animScale);
 //        btnScale.setOnClickListener(new Button.OnClickListener(){
@@ -245,39 +228,9 @@ public class StartScreenActivity extends Activity {
 //            public void onClick(View arg0) {
 //                arg0.startAnimation(animScale);
 //            }});
-//        mMusicService.resumeMusic();
-//        doBindService();
 
 
-        // HOW TO WORK WITH THE SERVICE:
-        // call the following methods whenever
-        // you want to interact with you
-        // music player
-        // ===================================
 
-        // call this e.g. in onPause() of your Activities
-        //StartScreenActivity.getService().musicPause();
-
-        // call this e.g. in onStop() of your Activities
-        //StartScreenActivity.getService().musicStop();
-
-        // call this e.g. in onResume() of your Activities
-        //StartScreenActivity.getService().musicStart();
-
-        // remove title
-//        requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
     }
 
     @Override
@@ -316,51 +269,64 @@ public class StartScreenActivity extends Activity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mIsSoundOn) {
-            Intent svc = new Intent(this, MusicService.class);
-            stopService(svc);
-        }
+        doUnbindService();
+//        Intent music = new Intent(this, MusicService.class);
+//        stopService(music);
     }
 
     public void onResume() {
         super.onResume();
+        ActivityHelper.initialize(this);
+        mIsSoundOn = mPrefs.getBoolean("pref_soundtrack_sound", true);
+        mIsButtonSoundOn = mPrefs.getBoolean("prefs_sound_button", true);
+        if(mIsButtonSoundOn) {
+            mp = MediaPlayer.create(this, R.raw.button_click);
+        }
+        else
+        {
+            mp = null;
+        }
 
-//        if(mIsBound)
-//            mMusicService.resumeMusic();
+        if (mIsBound && mIsSoundOn)
+            mMusicService.resumeMusic();
     }
-
     public void onPause() {
         super.onPause();
-
-//        if(mIsBound)
-//            mMusicService.pauseMusic();
-//        StartScreenActivity.getService().musicPause();
-//        mBackgroundSound.cancel(true);
+        if (mIsBound && mIsSoundOn)
+            mMusicService.pauseMusic();
     }
 
-//    private ServiceConnection sCon = new ServiceConnection(){
-//
-//        public void onServiceConnected(ComponentName name, IBinder
-//                binder) {
-//            MusicService.ServiceBinder mBinder = (MusicService.ServiceBinder) binder;
-//            mMusicService = mBinder.getService();
-//            mIsBound = true;
-//        }
-//
-//        public void onServiceDisconnected(ComponentName name) {
-//            mIsBound = false;
-//        }
-//    };
+//    private MusicService mServ;
+    private ServiceConnection Scon =new ServiceConnection(){
 
-//    private boolean isMyServiceRunning(Class<?> serviceClass) {
-//        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-//        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-//            if (serviceClass.getName().equals(service.service.getClassName())) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
+        public void onServiceConnected(ComponentName name, IBinder
+                binder) {
+            mMusicService = ((MusicService.ServiceBinder)binder).getService();
+            if (mIsSoundOn)
+                mMusicService.resumeMusic();
+            mIsBound = true;
+        }
+
+        public void onServiceDisconnected(ComponentName name) {
+            if(mIsSoundOn)
+                mMusicService.stopMusic();
+            mMusicService = null;
+        }
+};
+
+    void doBindService() {
+        bindService(new Intent(this,MusicService.class),
+                Scon,Context.BIND_AUTO_CREATE);
+    }
+
+    void doUnbindService()
+    {
+        if(mIsBound)
+        {
+            unbindService(Scon);
+            mIsBound = false;
+        }
+    }
 
 
 //    private class StarFieldLoop extends AsyncTask<Integer, Void, Void> {
@@ -476,26 +442,4 @@ public class StartScreenActivity extends Activity {
 //    }
 //
 //
-//    void doBindService(){
-//        bindService(new Intent(this,MusicService.class),
-//                sCon,Context.BIND_AUTO_CREATE);
-//        mIsBound = true;
-//    }
-//
-//    void doUnbindService()
-//    {
-//        if(mIsBound)
-//        {
-//            unbindService(sCon);
-//            mIsBound = false;
-//        }
-//    }
-//
-//    public static MusicService getService() {
-//        return mBoundService;
-//    }
-//
-//    private static void setService(MusicService mBoundService) {
-//        StartScreenActivity.mBoundService = mBoundService;
-//    }
 }

@@ -1,7 +1,10 @@
 package com.example.cbueno01.adinfinitum;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.drawable.GradientDrawable;
@@ -9,6 +12,7 @@ import android.graphics.drawable.TransitionDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -48,6 +52,12 @@ public class AboutScreenActivity extends Activity implements View.OnClickListene
     private TextView tvAboutTitle;
     private TextView tvHowTo;
     private TextView tvCredits;
+
+    private boolean mIsBound = false;
+    private MusicService mMusicService;
+    private boolean mIsSoundOn;
+
+    private SharedPreferences mPrefs;
 
     //private GradientGeneration gg;
 
@@ -109,6 +119,11 @@ public class AboutScreenActivity extends Activity implements View.OnClickListene
         // Set the RelativeLayout background
         mRL.setBackground(mStartGradient);
 
+        mPrefs = getSharedPreferences("preferences", MODE_PRIVATE);
+        mIsSoundOn = mPrefs.getBoolean("pref_soundtrack_sound", true);
+
+        doBindService();
+
 
 //        // Initialize a new Runnable
 //        mRunnable = new Runnable() {
@@ -127,6 +142,51 @@ public class AboutScreenActivity extends Activity implements View.OnClickListene
 //        // Play animation immediately after button click
 //        mHandler.postDelayed(mRunnable, 100);
 //
+    }
+
+    public void onResume() {
+        super.onResume();
+        if (mIsBound && mIsSoundOn)
+            mMusicService.resumeMusic();
+    }
+    public void onPause() {
+        super.onPause();
+        if(mIsBound && mIsSoundOn)
+            mMusicService.pauseMusic();
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        doUnbindService();
+    }
+
+    private ServiceConnection Scon =new ServiceConnection(){
+
+        public void onServiceConnected(ComponentName name, IBinder
+                binder) {
+            mMusicService = ((MusicService.ServiceBinder)binder).getService();
+            if(mIsSoundOn)
+                mMusicService.resumeMusic();
+            mIsBound = true;
+        }
+
+        public void onServiceDisconnected(ComponentName name) {
+            mMusicService = null;
+        }
+    };
+
+    void doBindService() {
+        bindService(new Intent(this, MusicService.class),
+                Scon, Context.BIND_AUTO_CREATE);
+    }
+
+    void doUnbindService()
+    {
+        if(mIsBound)
+        {
+            unbindService(Scon);
+            mIsBound = false;
+        }
     }
 
 //    @Override
