@@ -205,7 +205,9 @@ public class SettingsActivity extends PreferenceActivity {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
 
-                playButtonSound();
+                if (mIsButtonSoundOn) {
+                    playButtonSound();
+                }
 
                 soundButtonPref.setChecked((boolean) newValue);
 

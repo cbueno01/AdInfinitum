@@ -129,10 +129,16 @@ public class StarFieldView extends View {
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-//        starPaint.setARGB(255, 255, 0, 255);
-//        canvas.drawCircle(mSL.mScreenWidth / 2, mSL.mScreenHeight / 2, 175, starPaint);
+//        starPaint.setARGB(200, 255, 255, 255);
+//        canvas.drawCircle(mSL.mScreenWidth / 2, mSL.mScreenHeight / 2, 200, starPaint);
+//
+//        starPaint.setARGB(150, 0, 0, 0);
+//        canvas.drawCircle(mSL.mScreenWidth / 2, mSL.mScreenHeight / 2, 90, starPaint);
+//
+//        starPaint.setARGB(255, 0, 0, 0);
+//        canvas.drawCircle(mSL.mScreenWidth / 2, mSL.mScreenHeight / 2, 50, starPaint);
 
-        starPaint.setARGB(255, 255, 255, 255);
+        starPaint.setARGB(200, 200, 200, 200);
         for (StarList.Star s : mSL.mStarList) {
             Point p = s.getPoint();
             int radius = s.getRadius();

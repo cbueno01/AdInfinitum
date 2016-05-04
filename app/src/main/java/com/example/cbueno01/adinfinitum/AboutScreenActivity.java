@@ -66,8 +66,12 @@ public class AboutScreenActivity extends Activity implements View.OnClickListene
         Log.d("AD INFINITUM", "In About activity");
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+//        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_about_screen);
+
+        mPrefs = getSharedPreferences("preferences", MODE_PRIVATE);
+        ActivityHelper.initialize(this);
+
 
         tvAboutTitle = (TextView) findViewById(R.id.about_title);
         tvHowTo = (TextView) findViewById(R.id.how_to_play);
@@ -119,7 +123,7 @@ public class AboutScreenActivity extends Activity implements View.OnClickListene
         // Set the RelativeLayout background
         mRL.setBackground(mStartGradient);
 
-        mPrefs = getSharedPreferences("preferences", MODE_PRIVATE);
+//        mPrefs = getSharedPreferences("preferences", MODE_PRIVATE);
         mIsSoundOn = mPrefs.getBoolean("pref_soundtrack_sound", true);
 
         doBindService();

@@ -17,7 +17,7 @@
     <string name="default_high_scores_ranks">1. [Player]\t\t0,2. [Player]\t\t0,3. [Player]\t\t0,4. [Player]\t\t0,5. [Player]\t\t0,6. [Player]\t\t0,7. [Player]\t\t0,8. [Player]\t\t0,9. [Player]\t\t0,10. [Player]\t\t0</string>
     <string name="default_high_scores">[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0</string>
 
-    <string name="high_scores_title">Least Embarrassing Scores</string>
+    <string name="high_scores_title">Least Embarrassing Scores\n(Continuous)\t\t\t(Rounds)</string>
     <string name="high_score_one">[Player]\t\t0</string>
     <string name="high_score_two">[Player]\t\t0</string>
     <string name="high_score_three">[Player]\t\t0</string>
@@ -34,16 +34,16 @@
     <string name="time_elapsed">Time: 0000</string>
     <string name="play_again">Play Again?</string>
     <string name="give_up">Give Up,</string>
+    <string name="rounds_lose_message">Restart at Round 1,</string>
     <string name="okay">Okay</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
-    <string name="keep_going">Continue?</string>
+    <string name="keep_going">Continue to the next round?</string>
 
     <!-- Strings related to About -->
-    <string name="how_to_play">HOW TO:\nDismiss the ads by clicking within the grey boxes on each one. Points are awarded based upon the area of the ad, with more points for littler ads. Clicking anywhere outside the grey boxes results in fixed amount point deductions.\n\nWill you falter in the face of ad-versity? </string>
-    <string name="credits">CREATED BY / PROGRAMMED BY\n\nJoy Alam, Chrystian Bueno, Miguel Chavira</string>
+    <string name="how_to_play">HOW TO:\n\nDismiss the ads by clicking within the grey boxes on each one. Points are awarded based upon the area of the ad, with more points for littler ads. Clicking anywhere outside the grey boxes results in fixed amount point deductions.You lose Continuous mode if too many ads are active on screen. You lose Rounds mode if too many ads are left when the time runs out.\n\nBut will you falter in the face of ad-versity? </string>
+    <string name="credits">CREATED BY / PROGRAMMED BY\nJoy Alam, Chrystian Bueno, Miguel Chavira\n\nClick these windows to view your prize!</string>
     <string name="programmer_names">Joy Alam, Chrystian Bueno, Miguel Chavira</string>
-
 
     <!-- Strings related to Settings -->
     <string name="settings_title">Settings</string>

@@ -30,6 +30,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -112,6 +113,7 @@ public class AdInfinitumActivity extends Activity {
     private int mRoundNumber;
     private boolean mLostRound;
 
+    private Map<Long, String> mPlayerScores;
     // to restore scores
     private SharedPreferences mPrefs;
     private SharedPreferences mProfs;
@@ -152,11 +154,13 @@ public class AdInfinitumActivity extends Activity {
 
         String temp = mProfs.getString("pref_high_scores", getString(R.string.default_high_scores));
         stringScores = temp.split(",");
+        mPlayerScores = new HashMap<>();
 
         long[] tempArray = new long[stringScores.length];
         for (int i = stringScores.length - 1; i >= 0; --i) {
             String [] cur = stringScores[i].split("\t");
             tempArray[i] = Long.parseLong(cur[cur.length - 1]);
+            mPlayerScores.put(tempArray[i], cur[0]);
         }
         highScores = tempArray;
 //        startGame();
@@ -278,21 +282,7 @@ public class AdInfinitumActivity extends Activity {
 //            String [] info = lowest.split("\t");
 //            Long lowestHighScore = Long.parseLong(info[info.length - 1]);
 
-            int length = highScores.length;
-
-            if (highScores[length - 1] < mScore) {
-                highScores[length - 1] = mScore;
-                Arrays.sort(highScores);
-                StringBuilder sb = new StringBuilder();
-
-                for (int i = length - 1; i > 0; --i) {
-                    sb.append(highScores[i] + ",");
-                }
-                sb.append(highScores[0]);
-
-                ed.putString("pref_high_scores", sb.toString());
-                ed.apply();
-            }
+            updateHighScores();
 
             long elapsedSeconds = (mElapsedTime / 1000);
 
@@ -322,7 +312,7 @@ public class AdInfinitumActivity extends Activity {
         @Override
         protected Void doInBackground(Integer... args) {
             int fps = args[0];
-            while (!mGame.isGameOver() && mTimeOfRound - mElapsedTime > 0) {
+            while (mTimeOfRound - mElapsedTime > 0) {
 //                if (mGameLoop.isCancelled() || !mTimerFinish) {
 //                    return null;
 //                }
@@ -333,15 +323,15 @@ public class AdInfinitumActivity extends Activity {
                     Thread.sleep(1000 / fps);
                 } catch (InterruptedException ie) {}
 
-                if ((mTimeOfRound - mElapsedTime) > 4000) {
+                if ((mTimeOfRound - mElapsedTime) > 3000) {
                     updateRoundsGame();
                 }
                 publishProgress();
             }
 
-            if (mGame.getNumActiveAds() > numAdsAllowed)
+            if (mGame.getNumActiveAds() > numAdsAllowed) {
                 mLostRound = true;
-
+            }
 //            Log.d(TAG, "isGameOver: " + !mGame.isGameOver() + " Enough Time: " + (mTimeOfRound - mElapsedTime > 0));
             return null;
         }
@@ -372,11 +362,11 @@ public class AdInfinitumActivity extends Activity {
             ed.apply();
 
             if (!mGameLoop.isCancelled() && mTimerFinish) {
-                if (mSoundEffectsOn) {
-                    mSounds.play(gameOverID, 1, 1, 1, 0, 1);
-                }
                 if (mLostRound) {
                     mRoundNumber = 0;
+                    if (mSoundEffectsOn) {
+                        mSounds.play(gameOverID, 1, 1, 1, 0, 1);
+                    }
                     showDialog(DIALOG_REPLAY_ID);
                 }
                 else {
@@ -391,13 +381,17 @@ public class AdInfinitumActivity extends Activity {
         int length = highScores.length;
 
         if (highScores[length - 1] < mScore) {
+            mPlayerScores.remove(highScores[length -1]);
             highScores[length - 1] = mScore;
+            mPlayerScores.put(mScore, mPlayerName);
             Arrays.sort(highScores);
             StringBuilder sb = new StringBuilder();
 
             for (int i = length - 1; i > 0; --i) {
+                sb.append(mPlayerScores.remove(highScores[i]) + "\t\t");
                 sb.append(highScores[i] + ",");
             }
+            sb.append(mPlayerScores.remove(highScores[0]) + "\t\t");
             sb.append(highScores[0]);
 
             ed.putString("pref_high_scores", sb.toString());
@@ -450,7 +444,7 @@ public class AdInfinitumActivity extends Activity {
                 Point boxBottomRight = new Point((rand.nextInt(Math.abs(width + x - boxLeftTop.x - 50)) + boxLeftTop.x + 50), (rand.nextInt(Math.abs(height + y - boxLeftTop.y - 50)) + boxLeftTop.y + 50));
 
                 // AD POINTAGE ALGORITHM
-                long points = (long) (mBase * mDifficulty * (mConstant - (4 * (width + height) * scalingFactor)));
+                long points = (long) (mBase * (mDifficulty + 1) / 2 * (mConstant - (4 * (width + height) * scalingFactor)));
                 Ad ad = new Ad(imageID.get(index), mBitmap, width, height, new Point(x, y), boxLeftTop, boxBottomRight, points);
 //                    Log.d("Ad Infinitum", "points: " + ad.getPointage());
                 mGame.addAd(ad);
@@ -525,31 +519,38 @@ public class AdInfinitumActivity extends Activity {
     protected Dialog onCreateDialog(int id) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        switch (id)
-        {
-            case DIALOG_REPLAY_ID:
-            {
-                builder.setMessage( getResources().getString(R.string.give_up) + " " + mPlayerName).setCancelable(false)
-                        .setPositiveButton(R.string.okay, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                AdInfinitumActivity.this.finish();
-                            }
-                        })
-                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                if (mGameMode.equals(getResources().getString(R.string.mode_continuous))) {
-                                    startGame(0, 0);
-                                } else {
-                                    startGame(0, 15000);
+        switch (id) {
+            case DIALOG_REPLAY_ID: {
+                if (mGameMode.equals(getResources().getString(R.string.mode_continuous))) {
+                    builder.setMessage(getResources().getString(R.string.give_up) + " " + mPlayerName).setCancelable(false)
+                            .setPositiveButton(R.string.okay, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    AdInfinitumActivity.this.finish();
                                 }
-                            }
-                        });
-                break;
+                            })
+                            .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    startGame(0, 0);
+                                }
+                            });
+                } else {
+                    builder.setMessage(getResources().getString(R.string.rounds_lose_message) + ", " + mPlayerName + "?").setCancelable(false)
+                            .setPositiveButton(R.string.okay, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    startGame(0, 0);
+                                }
+                            })
+                            .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    AdInfinitumActivity.this.finish();
+                                }
+                            });
+                    break;
+                }
             }
-
             case DIALOG_CONTINUE_ID:
             {
-                builder.setMessage( getResources().getString(R.string.keep_going)).setCancelable(false)
+                builder.setMessage(getResources().getString(R.string.keep_going)).setCancelable(false)
                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 startGame(mScore, 15000);
@@ -566,7 +567,7 @@ public class AdInfinitumActivity extends Activity {
         }
 
         return builder.create();
-    }
+        }
 
     public void startGame(long startingScore, int time) {
 
@@ -600,6 +601,10 @@ public class AdInfinitumActivity extends Activity {
                 } else {
                     ++mRoundNumber;
                     mGameLoop = new RoundGameLoop();
+                    for (int i = (int) (mRoundNumber / 2) * 2; i > 0; --i) {
+                        generateAd();
+                    }
+                    mGameView.invalidate();
                 }
                 mStartTime = System.nanoTime() / 1000000;
                 mGameLoop.execute(30);

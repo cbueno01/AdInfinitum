@@ -14,6 +14,7 @@ import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Vibrator;
 import android.support.design.widget.CoordinatorLayout;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -29,6 +30,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class StartScreenActivity extends Activity {
 
@@ -66,9 +68,11 @@ public class StartScreenActivity extends Activity {
 
     private MediaPlayer mp;
     private boolean mIsButtonSoundOn;
+    private Vibrator mVibe;
 
     private StarFieldLoop mStarFieldLoop;
     private StarList mSL;
+    private Random mRand;
 
     int mScreenWidth;
     int mScreenHeight;
@@ -79,20 +83,21 @@ public class StartScreenActivity extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_start_screen);
-//        animScaleC = AnimationUtils.loadAnimation(this, R.anim.anim_scale_fromc);
-//        title = (TextView)findViewById(R.id.title);
-//
-//        animScaleBR = AnimationUtils.loadAnimation(this, R.anim.anim_scale_frombr);
-//        btnPlay = (Button)findViewById(R.id.play);
-//
-//        animScaleBL = AnimationUtils.loadAnimation(this, R.anim.anim_scale_frombl);
-//        btnProfile = (Button)findViewById(R.id.profile);
-//
-//        animScaleTR = AnimationUtils.loadAnimation(this, R.anim.anim_scale_fromtr);
-//        btnSettings = (Button)findViewById(R.id.settings);
-//
-//        animScaleTL = AnimationUtils.loadAnimation(this, R.anim.anim_scale_fromtl);
-//        btnAbout = (Button)findViewById(R.id.about);
+
+        animScaleC = AnimationUtils.loadAnimation(this, R.anim.anim_scale_fromc);
+        title = (TextView)findViewById(R.id.title);
+
+        animScaleBR = AnimationUtils.loadAnimation(this, R.anim.anim_scale_frombr);
+        btnPlay = (Button)findViewById(R.id.play);
+
+        animScaleBL = AnimationUtils.loadAnimation(this, R.anim.anim_scale_frombl);
+        btnProfile = (Button)findViewById(R.id.profile);
+
+        animScaleTR = AnimationUtils.loadAnimation(this, R.anim.anim_scale_fromtr);
+        btnSettings = (Button)findViewById(R.id.settings);
+
+        animScaleTL = AnimationUtils.loadAnimation(this, R.anim.anim_scale_fromtl);
+        btnAbout = (Button)findViewById(R.id.about);
 
         mPrefs = getSharedPreferences("preferences", MODE_PRIVATE);
 
@@ -101,7 +106,9 @@ public class StartScreenActivity extends Activity {
         mScreenWidth = displaymetrics.widthPixels;
         mScreenHeight = displaymetrics.heightPixels;
 
-        mSL = new StarList(25, mScreenWidth, mScreenHeight);
+        mVibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        mSL = new StarList(40, mScreenWidth, mScreenHeight);
+        mRand = new Random();
 
         mContext = getApplicationContext();
         mSFV = (StarFieldView) findViewById(R.id.start_screen_view);
@@ -116,134 +123,6 @@ public class StartScreenActivity extends Activity {
 
         doBindService();
 
-
-//        AttributeSet as = new AttributeSet() {
-//            @Override
-//            public int getAttributeCount() {
-//                return 0;
-//            }
-//
-//            @Override
-//            public String getAttributeName(int index) {
-//                return null;
-//            }
-//
-//            @Override
-//            public String getAttributeValue(int index) {
-//                return null;
-//            }
-//
-//            @Override
-//            public String getAttributeValue(String namespace, String name) {
-//                return null;
-//            }
-//
-//            @Override
-//            public String getPositionDescription() {
-//                return null;
-//            }
-//
-//            @Override
-//            public int getAttributeNameResource(int index) {
-//                return 0;
-//            }
-//
-//            @Override
-//            public int getAttributeListValue(String namespace, String attribute, String[] options, int defaultValue) {
-//                return 0;
-//            }
-//
-//            @Override
-//            public boolean getAttributeBooleanValue(String namespace, String attribute, boolean defaultValue) {
-//                return false;
-//            }
-//
-//            @Override
-//            public int getAttributeResourceValue(String namespace, String attribute, int defaultValue) {
-//                return 0;
-//            }
-//
-//            @Override
-//            public int getAttributeIntValue(String namespace, String attribute, int defaultValue) {
-//                return 0;
-//            }
-//
-//            @Override
-//            public int getAttributeUnsignedIntValue(String namespace, String attribute, int defaultValue) {
-//                return 0;
-//            }
-//
-//            @Override
-//            public float getAttributeFloatValue(String namespace, String attribute, float defaultValue) {
-//                return 0;
-//            }
-//
-//            @Override
-//            public int getAttributeListValue(int index, String[] options, int defaultValue) {
-//                return 0;
-//            }
-//
-//            @Override
-//            public boolean getAttributeBooleanValue(int index, boolean defaultValue) {
-//                return false;
-//            }
-//
-//            @Override
-//            public int getAttributeResourceValue(int index, int defaultValue) {
-//                return 0;
-//            }
-//
-//            @Override
-//            public int getAttributeIntValue(int index, int defaultValue) {
-//                return 0;
-//            }
-//
-//            @Override
-//            public int getAttributeUnsignedIntValue(int index, int defaultValue) {
-//                return 0;
-//            }
-//
-//            @Override
-//            public float getAttributeFloatValue(int index, float defaultValue) {
-//                return 0;
-//            }
-//
-//            @Override
-//            public String getIdAttribute() {
-//                return null;
-//            }
-//
-//            @Override
-//            public String getClassAttribute() {
-//                return null;
-//            }
-//
-//            @Override
-//            public int getIdAttributeResourceValue(int defaultValue) {
-//                return 0;
-//            }
-//
-//            @Override
-//            public int getStyleAttribute() {
-//                return 0;
-//            }
-//        }
-
-//        mCL.setBackground(mSFV);
-//        mCL.setBackground();
-
-        //button sound
-
-
-//        btnScale.startAnimation(animScale);
-//        btnScale.setOnClickListener(new Button.OnClickListener(){
-//            @Override
-//            public void onClick(View arg0) {
-//                arg0.startAnimation(animScale);
-//            }});
-
-
-
     }
 
     @Override
@@ -256,11 +135,11 @@ public class StartScreenActivity extends Activity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         if(hasFocus){
-//            title.startAnimation(animScaleC);
-//            btnPlay.startAnimation(animScaleBR);
-//            btnProfile.startAnimation(animScaleBL);
-//            btnSettings.startAnimation(animScaleTR);
-//            btnAbout.startAnimation(animScaleTL);
+            title.startAnimation(animScaleC);
+            btnPlay.startAnimation(animScaleBR);
+            btnProfile.startAnimation(animScaleBL);
+            btnSettings.startAnimation(animScaleTR);
+            btnAbout.startAnimation(animScaleTL);
         }
     }
 
@@ -400,7 +279,8 @@ public class StartScreenActivity extends Activity {
         Log.d("AD INFINITUM", "Create Settings Activity");
         Intent intent = new Intent(this, AdInfinitumActivity.class);
 
-        playButtonSound();
+        mVibe.vibrate(150);
+//        playButtonSound();
 
         startActivity(intent);
     }
@@ -413,7 +293,8 @@ public class StartScreenActivity extends Activity {
 //        String message = editText.getText().toString();
 //        intent.putExtra(EXTRA_MESSAGE, message);
 
-        playButtonSound();
+        mVibe.vibrate(150);
+//        playButtonSound();
 
         startActivity(intent);
     }
@@ -423,18 +304,19 @@ public class StartScreenActivity extends Activity {
         Log.d("AD INFINITUM", "Create Settings Activity");
         Intent intent = new Intent(this, SettingsActivity.class);
 
-        playButtonSound();
+        mVibe.vibrate(150);
+//        playButtonSound();
 
         startActivity(intent);
     }
 
-    public void goToAbout (View v)
-    {
+    public void goToAbout (View v) {
         Log.d("AD INFINITUM", "Attempt to create About Activity");
         Intent intent = new Intent(this, AboutScreenActivity.class);
 
-        playButtonSound();
+        mVibe.vibrate(150);
 
+//        playButtonSound();
         startActivity(intent);
     }
 
@@ -459,12 +341,15 @@ public class StartScreenActivity extends Activity {
 //            int newX = c.x - currentP.x + mScreenWidth / 120;
             int newX = c.x + (int)(1.1 * (currentP.x - c.x));
             int newY = c.y + (int)(1.1 * (currentP.y - c.y));
+            int newR = (int) (s.getRadius() + 1);
             if (newX < 0 || newX > mScreenWidth || newY < 0 || newY > mScreenHeight) {
                 Point newS = mSL.generateStar();
                 s.setPoint(newS);
+                s.setRadius(mRand.nextInt(4) + 1);
             }
             else {
                 s.setPoint(new Point(newX, newY));
+                s.setRadius(newR);
             }
         }
     }

@@ -8,6 +8,12 @@
         android:defaultValue="@string/default_high_scores" />
 
     <Preference
+        android:key="pref_rounds_high_scores"
+        android:title="Round High Scores"
+        android:summary=""
+        android:defaultValue="@string/default_high_scores" />
+
+    <Preference
         android:key="pref_total_time"
         android:title="Total Time Played"
         android:summary=""
