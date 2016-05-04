@@ -10,14 +10,19 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-public class MusicService extends Service {
+import android.media.MediaPlayer.OnErrorListener;
+import android.os.Binder;
+import android.os.IBinder;
+import android.widget.Toast;
+
+public class MusicService extends Service  implements MediaPlayer.OnErrorListener {
 
     private final IBinder mBinder = new ServiceBinder();
     MediaPlayer mPlayer;
-    private int length = 0;
+    int length = 0;
 
-//    public MusicService() {
-//    }
+    public MusicService() {
+    }
 
     public class ServiceBinder extends Binder {
         MusicService getService() {
@@ -51,7 +56,7 @@ public class MusicService extends Service {
         }
 
         mPlayer = MediaPlayer.create(this, sound);
-//        mPlayer.setOnErrorListener(this);
+        mPlayer.setOnErrorListener(this);
 
         if (mPlayer != null) {
             mPlayer.setLooping(true);
@@ -63,7 +68,6 @@ public class MusicService extends Service {
 
             public boolean onError(MediaPlayer mp, int what, int
                     extra) {
-//                Log.d("Ad Infinitum", "Creating player");
 
                 onError(mPlayer, what, extra);
                 return true;
@@ -98,14 +102,6 @@ public class MusicService extends Service {
         mPlayer = null;
     }
 
-    public int getPosition() {
-        return mPlayer.getCurrentPosition();
-    }
-
-    public void setPosition(int pos) {
-        mPlayer.seekTo(pos);
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -118,6 +114,23 @@ public class MusicService extends Service {
             }
         }
     }
+
+//    public void changeSong(String soundtrack) {
+//        int sound;
+//        switch (soundtrack)
+//        {
+//            case "Rave":
+//                sound = R.raw.aviator;
+//                break;
+//            case "Chill":
+//                sound = R.raw.pretty_lights;
+//                break;
+//            default:
+//                sound = R.raw.aviator;
+//        }
+//
+//        mPlayer.setDataSource(this, sound);
+//    }
 
     public boolean onError(MediaPlayer mp, int what, int extra) {
 

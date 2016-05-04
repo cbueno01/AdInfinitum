@@ -1,11 +1,15 @@
 package com.example.cbueno01.adinfinitum;
 
+import android.app.ActivityManager;
 import android.app.KeyguardManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -23,6 +27,8 @@ public class SettingsActivity extends PreferenceActivity {
     private MediaPlayer mp;
     private boolean mIsButtonSoundOn;
     private boolean mIsSoundtrackOn;
+    private MusicService mMusicService;
+    private boolean mIsBound;
 
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -36,6 +42,7 @@ public class SettingsActivity extends PreferenceActivity {
         addPreferencesFromResource(R.xml.preferences);
 
         prefs = getSharedPreferences("preferences", MODE_PRIVATE);
+        mIsSoundtrackOn = prefs.getBoolean("pref_soundtrack_sound", true);
 
         //game mode setting
         Log.d("AD INFINITUM", "Game mode pref");
@@ -76,37 +83,39 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
-        //soundtrack choice
-        Log.d("AD INFINITUM", "Soundtrack Pref");
-        final ListPreference soundtrackPref = (ListPreference) findPreference("pref_soundtrack");
-        String soundtrack = prefs.getString("pref_soundtrack",
-                getResources().getString(R.string.default_soundtrack));
-        soundtrackPref.setSummary( soundtrack);
-        soundtrackPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                playButtonSound();
-
-                soundtrackPref.setSummary((CharSequence) newValue);
-
-                Log.d("AD INFINITUM", (String) newValue);
-
-                SharedPreferences.Editor ed = prefs.edit();
-                ed.putString("pref_soundtrack", newValue.toString());
-                ed.apply();
-
-                if ( mIsSoundtrackOn) {
-                    Intent svc = new Intent(getApplicationContext(), MusicService.class);
-                    stopService(svc);
-
-                    Intent svc1 = new Intent(getApplicationContext(), MusicService.class);
-                    startService(svc1);
-                }
-
-
-                return true;
-            }
-        });
+//        //soundtrack choice
+//        Log.d("AD INFINITUM", "Soundtrack Pref");
+//        final ListPreference soundtrackPref = (ListPreference) findPreference("pref_soundtrack");
+//        String soundtrack = prefs.getString("pref_soundtrack",
+//                getResources().getString(R.string.default_soundtrack));
+//        soundtrackPref.setSummary( soundtrack);
+//        soundtrackPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+//            @Override
+//            public boolean onPreferenceChange(Preference preference, Object newValue) {
+//                playButtonSound();
+//
+//                soundtrackPref.setSummary((CharSequence) newValue);
+//
+//                Log.d("AD INFINITUM", (String) newValue);
+//
+//                SharedPreferences.Editor ed = prefs.edit();
+//                ed.putString("pref_soundtrack", newValue.toString());
+//                ed.apply();
+//
+//                if (mIsSoundtrackOn) {
+//                    mMusicService.pauseMusic();
+//                }
+//
+//                mMusicService.changeSong(newValue.toString());
+//
+//                if(mIsSoundtrackOn) {
+//                    mMusicService.resumeMusic();
+//                }
+//
+//
+//                return true;
+//            }
+//        });
 
 
         /*//show the current profile name summary
@@ -165,13 +174,11 @@ public class SettingsActivity extends PreferenceActivity {
                 soundtrackSoundPref.setChecked(mIsSoundtrackOn);
 
                 if(mIsSoundtrackOn) {
-                    Intent svc = new Intent(getApplicationContext(), MusicService.class);
-                    startService(svc);
+                    mMusicService.resumeMusic();
                 }
                 else
                 {
-                    Intent svc = new Intent(getApplicationContext(), MusicService.class);
-                    stopService(svc);
+                    mMusicService.pauseMusic();
                 }
 
                 SharedPreferences.Editor ed = prefs.edit();
@@ -226,21 +233,40 @@ public class SettingsActivity extends PreferenceActivity {
         // prefs.addPreference(botsPref );
         soundtrackPref.setOnPreferenceChangeListener( new PrefsSeekBarListener( soundtrackPref) );*/
 
-        mIsSoundtrackOn = prefs.getBoolean("pref_soundtrack_sound", true);
-        KeyguardManager myKM = (KeyguardManager) this.getSystemService(Context.KEYGUARD_SERVICE);
-        if( myKM.inKeyguardRestrictedInputMode()) {
-            //it is locked
-            if(mIsSoundtrackOn) {
-                Intent svc = new Intent(this, MusicService.class);
-                stopService(svc);
-            }
-        } else {
-            //it is not locked
-            if(mIsSoundtrackOn) {
-                Intent svc = new Intent(this, MusicService.class);
-                startService(svc);
-            }
-        }
+//        mIsSoundtrackOn = prefs.getBoolean("pref_soundtrack_sound", true);
+//        KeyguardManager myKM = (KeyguardManager) this.getSystemService(Context.KEYGUARD_SERVICE);
+//        if( myKM.inKeyguardRestrictedInputMode()) {
+//            //it is locked
+//            if(mIsSoundtrackOn) {
+//                Intent svc = new Intent(this, MusicService.class);
+//                stopService(svc);
+//            }
+//        } else {
+//            //it is not locked
+//            if(mIsSoundtrackOn) {
+//                Intent svc = new Intent(this, MusicService.class);
+//                startService(svc);
+//            }
+//        }
+        doBindService();
+
+
+    }
+
+    public void onResume() {
+        super.onResume();
+        if (mIsBound && mIsSoundtrackOn)
+            mMusicService.resumeMusic();
+    }
+    public void onPause() {
+        super.onPause();
+        if(mIsBound && mIsSoundtrackOn)
+            mMusicService.pauseMusic();
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        doUnbindService();
     }
 
     private void playButtonSound() {
@@ -267,5 +293,33 @@ public class SettingsActivity extends PreferenceActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private ServiceConnection Scon =new ServiceConnection(){
+
+        public void onServiceConnected(ComponentName name, IBinder
+                binder) {
+            mMusicService = ((MusicService.ServiceBinder)binder).getService();
+            if(mIsSoundtrackOn)
+                mMusicService.resumeMusic();
+            mIsBound = true;
+        }
+
+        public void onServiceDisconnected(ComponentName name) {
+            mMusicService = null;
+        }
+    };
+
+    void doBindService() {
+        bindService(new Intent(this, MusicService.class),
+                Scon,Context.BIND_AUTO_CREATE);
+    }
+
+    void doUnbindService()
+    {
+        if(mIsBound)
+        {
+            unbindService(Scon);
+            mIsBound = false;
+        }
+    }
 
 }

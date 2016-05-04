@@ -3,15 +3,18 @@ package com.example.cbueno01.adinfinitum;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -56,6 +59,7 @@ public class PlayerProfileActivity extends Activity {
 
     // to restore scores
     private SharedPreferences mPrefs;
+    private SharedPreferences mSettingsPref;
 
     private String [] highScores;
 
@@ -66,6 +70,10 @@ public class PlayerProfileActivity extends Activity {
     private TextView mTitleTextView;
     private ListView mListView;
     private EditText mEditText;
+
+    private boolean mIsBound;
+    private MusicService mMusicService;
+    private boolean mIsSoundOn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,9 +88,11 @@ public class PlayerProfileActivity extends Activity {
 //        getPreferenceManager().setSharedPreferencesName("preferences");
 //        addPreferencesFromResource(R.xml.preferences);
         mPrefs = getSharedPreferences("profile", MODE_PRIVATE);
+        mSettingsPref = getSharedPreferences("preferences", MODE_PRIVATE);
 
         highScores = getResources().getStringArray(R.array.high_scores);
         mListView = (ListView) findViewById(R.id.high_scores_dialog_list);
+        mIsSoundOn = mSettingsPref.getBoolean("pref_soundtrack_sound", true);
 
 
 
@@ -124,6 +134,7 @@ public class PlayerProfileActivity extends Activity {
         setTextViews();
         readData();
         displayViews();
+        doBindService();
     }
 
     @Override
@@ -359,5 +370,51 @@ public class PlayerProfileActivity extends Activity {
         }
         // this is our fallback here
         return uri.getPath();
+    }
+
+    public void onResume() {
+        super.onResume();
+        if (mIsBound && mIsSoundOn)
+            mMusicService.resumeMusic();
+    }
+    public void onPause() {
+        super.onPause();
+        if(mIsBound && mIsSoundOn)
+            mMusicService.pauseMusic();
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        doUnbindService();
+    }
+
+    private ServiceConnection Scon =new ServiceConnection(){
+
+        public void onServiceConnected(ComponentName name, IBinder
+                binder) {
+            mMusicService = ((MusicService.ServiceBinder)binder).getService();
+            if(mIsSoundOn)
+                mMusicService.resumeMusic();
+            mIsBound = true;
+        }
+
+        public void onServiceDisconnected(ComponentName name) {
+//            mMusicService.pauseMusic();
+            mMusicService = null;
+        }
+    };
+
+    void doBindService() {
+        bindService(new Intent(this, MusicService.class),
+                Scon, Context.BIND_AUTO_CREATE);
+    }
+
+    void doUnbindService()
+    {
+        if(mIsBound)
+        {
+            unbindService(Scon);
+            mIsBound = false;
+        }
     }
 }
