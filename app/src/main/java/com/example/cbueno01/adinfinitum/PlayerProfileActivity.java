@@ -207,10 +207,10 @@ public class PlayerProfileActivity extends Activity {
         {
             case DIALOG:
             {
+                removeDialog(DIALOG);
+//                AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-                dialog = createHighScoresDialog(builder);
+//                dialog = createHighScoresDialog(builder);
 //                dialog.setTitle("Custom dialog 1");
 //
 //                EditText cdField1Edit = (EditText)dialog.findViewById(R.id.cdField1Edit);
