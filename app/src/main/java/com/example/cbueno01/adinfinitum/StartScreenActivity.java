@@ -70,7 +70,6 @@ public class StartScreenActivity extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_start_screen);
-
 //        animScaleC = AnimationUtils.loadAnimation(this, R.anim.anim_scale_fromc);
 //        title = (TextView)findViewById(R.id.title);
 //
@@ -275,17 +274,9 @@ public class StartScreenActivity extends Activity {
 //        stopService(music);
     }
 
-
-    public void onStop() {
-        super.onStop();
-        Log.d("Ad Infinitum", "StartScreen onstop");
-//        doUnbindService();
-//        if(mIsBound)
-//            mMusicService.pauseMusic();
-    }
-
     public void onResume() {
         super.onResume();
+        ActivityHelper.initialize(this);
         mIsSoundOn = mPrefs.getBoolean("pref_soundtrack_sound", true);
         mIsButtonSoundOn = mPrefs.getBoolean("prefs_sound_button", true);
         if(mIsButtonSoundOn) {

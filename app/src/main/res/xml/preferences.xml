@@ -45,6 +45,11 @@
         <!--android:entries="@array/soundtracks"-->
         <!--android:entryValues="@array/soundtracks"/>-->
 
+    <CheckBoxPreference
+        android:key="pref_orientation"
+        android:title="Screen Orientation"
+        android:defaultValue="@bool/default_orientation"/>
+
 <!--    <com.sileria.android.view.SeekBarPreference
         android:key="pref_sound_fx"
         android:title="Sound FX Volume"

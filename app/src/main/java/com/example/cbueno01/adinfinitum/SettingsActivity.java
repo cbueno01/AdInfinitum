@@ -7,9 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -29,6 +31,7 @@ public class SettingsActivity extends PreferenceActivity {
     private boolean mIsSoundtrackOn;
     private MusicService mMusicService;
     private boolean mIsBound;
+    private boolean mIsLandscape;
 
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -43,6 +46,8 @@ public class SettingsActivity extends PreferenceActivity {
 
         prefs = getSharedPreferences("preferences", MODE_PRIVATE);
         mIsSoundtrackOn = prefs.getBoolean("pref_soundtrack_sound", true);
+        ActivityHelper.initialize(this);
+
 
         //game mode setting
         Log.d("AD INFINITUM", "Game mode pref");
@@ -210,6 +215,35 @@ public class SettingsActivity extends PreferenceActivity {
 
                 mIsButtonSoundOn = (boolean) newValue;
 
+                return true;
+            }
+        });
+
+        //orientation checkbox
+        Log.d("AD INFINITUM", "Checkbox settings");
+        final CheckBoxPreference orientationPref = (CheckBoxPreference) findPreference("pref_orientation");
+        mIsLandscape = prefs.getBoolean("pref_orientation",
+                getResources().getBoolean(R.bool.default_orientation));
+
+        orientationPref.setChecked(mIsLandscape);
+        orientationPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+                mIsLandscape = (boolean) newValue;
+                orientationPref.setChecked((boolean) newValue);
+
+
+                SharedPreferences.Editor ed = prefs.edit();
+                ed.putBoolean("pref_orientation", (boolean) newValue);
+                ed.apply();
+
+
+                if(mIsLandscape) {
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                } else {
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+                }
                 return true;
             }
         });

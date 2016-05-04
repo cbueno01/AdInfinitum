@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -57,6 +58,10 @@ public class PlayerProfileActivity extends Activity {
     private List<Long> mHighScores;
     private String mImagePath;
 
+    private String mLongestGame;
+    private String mMostRounds;
+    private String mTotalTime;
+
     // to restore scores
     private SharedPreferences mPrefs;
     private SharedPreferences mSettingsPref;
@@ -74,6 +79,12 @@ public class PlayerProfileActivity extends Activity {
     private boolean mIsBound;
     private MusicService mMusicService;
     private boolean mIsSoundOn;
+    private TextView mTotalTimeTV;
+    private TextView mLongestGameTV;
+    private TextView mMostRoundsTV;
+
+    private boolean mIsButtonSoundOn;
+    private MediaPlayer mp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +95,7 @@ public class PlayerProfileActivity extends Activity {
 //        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 //        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_player_profile_screen);
-
+        ActivityHelper.initialize(this);
 //        getPreferenceManager().setSharedPreferencesName("preferences");
 //        addPreferencesFromResource(R.xml.preferences);
         mPrefs = getSharedPreferences("profile", MODE_PRIVATE);
@@ -94,42 +105,13 @@ public class PlayerProfileActivity extends Activity {
         mListView = (ListView) findViewById(R.id.high_scores_dialog_list);
         mIsSoundOn = mSettingsPref.getBoolean("pref_soundtrack_sound", true);
 
+        mIsButtonSoundOn = mSettingsPref.getBoolean("prefs_sound_button", true);
+        if (mIsButtonSoundOn) {
+            mp = MediaPlayer.create(this, R.raw.button_click);
+        }
 
 
-//        final EditTextPreference victoryMessagePref = (EditTextPreference) findPreference("pref_profile_name");
-//        String victoryMessage = mPrefs.getString("pref_profile_name",
-//                getResources().getString(R.string.default_profile_name));
-//        victoryMessagePref.setSummary((CharSequence) victoryMessage);
-//
-//        victoryMessagePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-//            @Override
-//            public boolean onPreferenceChange(Preference preference, Object newValue) {
-//                victoryMessagePref.setSummary((CharSequence) newValue);
-//
-//                // Since we are handling the pref, we must save it
-//                SharedPreferences.Editor ed = mPrefs.edit();
-//                ed.putString("pref_profile_name", newValue.toString());
-//                ed.apply();
-//                return true;
-//            }
-//        });
-//        //show the current profile name summary
-//        Log.d("AD INFINITUM", "Profile Pref");
-//        final Preference profileNamePref = (Preference) findPreference("pref_profile_name");
-//        String profileName = mPrefs.getString("pref_profile_name",
-//                getResources().getString(R.string.default_profile_name));
-//        profileNamePref.setSummary(profileName);
-//        profileNamePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-//            @Override
-//            public boolean onPreferenceChange(Preference preference, Object newValue) {
-//                profileNamePref.setSummary((CharSequence) newValue);
-//
-//                SharedPreferences.Editor ed = mPrefs.edit();
-//                ed.putString("pref_profile_name", newValue.toString());
-//                ed.apply();
-//                return true;
-//            }
-//        });
+
 
         setTextViews();
         readData();
@@ -201,26 +183,29 @@ public class PlayerProfileActivity extends Activity {
     }
 
     private Dialog createHighScoresDialog(AlertDialog.Builder builder) {
+        String hs = mPrefs.getString("pref_high_scores", "@string/default_high_scores");
+        String[] scores = hs.split(",");
+//        ListView lv = (ListView) findViewById(R.id.high_scores_dialog_list);
 
+        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(this, R.layout.listview_item, scores);
+
+
+
+//        ListView listView = (ListView) findViewById(R.id.high_scores_dialog_list);
+//        mListView.setAdapter(itemsAdapter);
         Context context = getApplicationContext();
+
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
         View layout = inflater.inflate(R.layout.highscores_dialog, null);
+//        mListView = inflater.inflate(R.layout.highscores_dialog, null);
+
+        mListView = (ListView) layout.findViewById(R.id.high_scores_dialog_list);
+        mListView.setAdapter(itemsAdapter);
+
         builder.setView(layout);
         builder.setTitle(R.string.high_scores_title);
 
 
-//        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.highscores_dialog, highScores);
-//        if (adapter == null) {
-//            System.out.println();
-//            System.out.println();
-//            System.out.println("Hello");
-//            System.out.println();
-//            System.out.println();
-//
-//        }
-//        mListView.setAdapter(adapter);
-
-//        ListView lv = (ListView) layout.findViewById(R.id.high_scores_listview);
         builder.setPositiveButton("Okay", null);
         return builder.create();
     }
@@ -232,6 +217,10 @@ public class PlayerProfileActivity extends Activity {
         mImageView = (ImageView) findViewById(R.id.player_image);
         mTitleTextView = (TextView) findViewById(R.id.profile_title);
 
+        mTotalTimeTV = (TextView) findViewById(R.id.default_total_time_played);
+        mLongestGameTV = (TextView) findViewById(R.id.default_longest_game_played);
+        mMostRoundsTV = (TextView) findViewById(R.id.default_most_rounds_beaten);
+
         Animation blinkAnimation = AnimationUtils.loadAnimation(this, R.anim.blink);
         Animation blinkAnimation2 = AnimationUtils.loadAnimation(this, R.anim.blink2);
         mTitleTextView.startAnimation(blinkAnimation);
@@ -240,17 +229,15 @@ public class PlayerProfileActivity extends Activity {
 
         mEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                                          int after) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (s.charAt(s.length() - 1) == '\n') {
+                if (s.length() > 0 && s.charAt(s.length() - 1) == '\n') {
                     Log.d("TEST RESPONSE", "Enter was pressed");
                 }
 
@@ -281,10 +268,14 @@ public class PlayerProfileActivity extends Activity {
     }
 
     public void readData() {
-        mPlayerName = mPrefs.getString("pref_profile_name", "<Player>");
+        mPlayerName = mPrefs.getString("pref_profile_name", null);
         mHighScore = mPrefs.getLong("pref_high_score", 0);
 
         mImagePath = mPrefs.getString("pref_reset_picture", null);
+
+        mTotalTime = mPrefs.getString("pref_total_time", "0");
+        mLongestGame = mPrefs.getString("pref_longest_game", "0");
+        mMostRounds = mPrefs.getString("pref_most_rounds", "0");
     }
 
     public void displayViews() {
@@ -292,6 +283,10 @@ public class PlayerProfileActivity extends Activity {
 //        mHighScoreTextView.setText("High Score: " + mHighScore);
 
         mEditText.setText(mPlayerName);
+        mTotalTimeTV.setText(mTotalTime);
+        mLongestGameTV.setText(mLongestGame);
+        mMostRoundsTV.setText(mMostRounds);
+
         if (mImagePath == null) {
             mImageView.setImageResource(R.drawable.sheeple);
         } else {
@@ -307,9 +302,16 @@ public class PlayerProfileActivity extends Activity {
     }
 
     public void resetScore(View v) {
-        mHighScoreTextView.setText("HighScore: 0");
         SharedPreferences.Editor ed = mPrefs.edit();
-        ed.putLong("pref_high_score", 0);
+
+        if(mIsButtonSoundOn) {
+            mp.start();
+        }
+
+        ed.putString("pref_high_scores", getString(R.string.default_high_scores));
+//        ed.putString("pref_total_time", getString(R.string.default_playtime));
+        ed.putString("pref_longest_game", getString(R.string.default_longest_game));
+        ed.putString("pref_most_rounds", getString(R.string.default_most_rounds));
         ed.apply();
     }
 
