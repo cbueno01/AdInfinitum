@@ -4,8 +4,10 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -23,6 +25,7 @@ public class SettingsActivity extends PreferenceActivity {
     private MediaPlayer mp;
     private boolean mIsButtonSoundOn;
     private boolean mIsSoundtrackOn;
+    private boolean mIsLandscape;
 
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -36,6 +39,7 @@ public class SettingsActivity extends PreferenceActivity {
         addPreferencesFromResource(R.xml.preferences);
 
         prefs = getSharedPreferences("preferences", MODE_PRIVATE);
+        ActivityHelper.initialize(this);
 
         //game mode setting
         Log.d("AD INFINITUM", "Game mode pref");
@@ -207,6 +211,35 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
+        //orientation checkbox
+        Log.d("AD INFINITUM", "Checkbox settings");
+        final CheckBoxPreference orientationPref = (CheckBoxPreference) findPreference("pref_orientation");
+        mIsLandscape = prefs.getBoolean("pref_orientation",
+                getResources().getBoolean(R.bool.default_orientation));
+
+        orientationPref.setChecked(mIsLandscape);
+        orientationPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+                mIsLandscape = (boolean) newValue;
+                orientationPref.setChecked((boolean) newValue);
+
+
+                SharedPreferences.Editor ed = prefs.edit();
+                ed.putBoolean("pref_orientation", (boolean) newValue);
+                ed.apply();
+
+
+                if(mIsLandscape) {
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                } else {
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+                }
+                return true;
+            }
+        });
+
 
 /*        //show the seek bar sound fx summary
         Log.d("AD INFINITUM", "Sound FX Pref");
@@ -241,6 +274,7 @@ public class SettingsActivity extends PreferenceActivity {
                 startService(svc);
             }
         }
+
     }
 
     private void playButtonSound() {

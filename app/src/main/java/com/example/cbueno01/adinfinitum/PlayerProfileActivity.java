@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
@@ -75,6 +76,9 @@ public class PlayerProfileActivity extends Activity {
     private TextView mLongestGameTV;
     private TextView mMostRoundsTV;
 
+    private boolean mIsButtonSoundOn;
+    private MediaPlayer mp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 //      Log.d("Ad Infinitum", "In player profile activity");
@@ -84,10 +88,14 @@ public class PlayerProfileActivity extends Activity {
 //        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 //        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_player_profile_screen);
-
+        ActivityHelper.initialize(this);
 //        getPreferenceManager().setSharedPreferencesName("preferences");
 //        addPreferencesFromResource(R.xml.preferences);
         mPrefs = getSharedPreferences("profile", MODE_PRIVATE);
+        mIsButtonSoundOn = mPrefs.getBoolean("prefs_sound_button", true);
+        if (mIsButtonSoundOn) {
+            mp = MediaPlayer.create(this, R.raw.button_click);
+        }
 //        mProfs = getSharedPreferences("")
 
         highScores = getResources().getStringArray(R.array.high_scores);
@@ -283,6 +291,11 @@ public class PlayerProfileActivity extends Activity {
 
     public void resetScore(View v) {
         SharedPreferences.Editor ed = mPrefs.edit();
+
+        if(mIsButtonSoundOn) {
+            mp.start();
+        }
+
         ed.putString("pref_high_scores", getString(R.string.default_high_scores));
 //        ed.putString("pref_total_time", getString(R.string.default_playtime));
         ed.putString("pref_longest_game", getString(R.string.default_longest_game));
