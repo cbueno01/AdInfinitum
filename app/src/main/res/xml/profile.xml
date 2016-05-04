@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ListPreference
-        android:key="listpref_high_scores"
-        android:title="High Scores"
-        android:summary=""
-        android:defaultValue="test value"
-        android:entries="@array/high_scores"
-        android:entryValues="@array/high_scores"/>
-
     <Preference
         android:key="pref_high_scores"
         android:title="High Scores"

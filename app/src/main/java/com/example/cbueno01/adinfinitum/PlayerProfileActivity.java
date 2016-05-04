@@ -38,7 +38,9 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -54,6 +56,8 @@ import java.util.Set;
 public class PlayerProfileActivity extends Activity {
 
     private static final String TAG = "Player Profile";
+
+    private static final int DIALOG = 0;
     private static final int SELECT_FILE = 1;
     private static final int REQUEST_CAMERA = 1313;
 
@@ -70,7 +74,8 @@ public class PlayerProfileActivity extends Activity {
     private SharedPreferences mPrefs;
     private SharedPreferences mSettingsPref;
 
-    private String[] highScores;
+    private String [] highScores;
+    private Dialog mDialog;
 
     private TextView mNameTextView;
     private TextView mHighScoreTextView;
@@ -80,6 +85,7 @@ public class PlayerProfileActivity extends Activity {
     private ListView mListView;
     private EditText mEditText;
 
+    private Button mResetButton;
     private boolean mIsBound;
     private MusicService mMusicService;
     private boolean mIsSoundOn;
@@ -105,8 +111,8 @@ public class PlayerProfileActivity extends Activity {
         mPrefs = getSharedPreferences("profile", MODE_PRIVATE);
         mSettingsPref = getSharedPreferences("preferences", MODE_PRIVATE);
 
-        highScores = getResources().getStringArray(R.array.high_scores);
-        mListView = (ListView) findViewById(R.id.high_scores_dialog_list);
+//        highScores = getResources().getStringArray(R.array.high_scores);
+
         mIsSoundOn = mSettingsPref.getBoolean("pref_soundtrack_sound", true);
 
         mIsButtonSoundOn = mSettingsPref.getBoolean("prefs_sound_button", true);
@@ -114,6 +120,21 @@ public class PlayerProfileActivity extends Activity {
             mp = MediaPlayer.create(this, R.raw.button_click);
         }
 
+        mEditText = (EditText) findViewById(R.id.player_name);
+        mEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+//                    imm.showSoftInputFromInputMethod(mEditText.getWindowToken(), 0);
+                } else {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(mEditText.getWindowToken(),0);
+                }
+            }
+        });
 
         setTextViews();
         readData();
@@ -142,7 +163,7 @@ public class PlayerProfileActivity extends Activity {
     public void onClick(View view) {
 
         if (view.equals(mHighScoreTextView)) {
-            showDialog(0);
+            showDialog(DIALOG);
 //            Context context = getApplicationContext();
 //            Dialog dlg = new Dialog(context);
 //            LayoutInflater li = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -157,35 +178,56 @@ public class PlayerProfileActivity extends Activity {
 
     @Override
     protected Dialog onCreateDialog(int id) {
-        Dialog dialog = null;
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        switch(id) {
 
-//        switch(id) {
-//            //case DIALOG_DIFFICULTY_ID:
-//            //	dialog = createDifficultyDialog(builder);
-//            //	break;    // this case
-//            case DIALOG_QUIT_ID:
-//                dialog = this.createQuitDialog(builder);
-//                break;
-//            case DIALOG_ABOUT_ID:
-//                dialog = createAboutDialog(builder);
-//                break;
-//            case DIALOG_CLEAR_SCORES:
-//                dialog = createClearScoresDialog(builder);
-//                break;
-//        }
+            case DIALOG: {
+                Dialog dialog = null;
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        dialog = createHighScoresDialog(builder);
+                dialog = createHighScoresDialog(builder);
 
-        if (dialog == null)
-            Log.d(TAG, "Uh oh! Dialog is null");
-        else
-            Log.d(TAG, "Dialog created: " + id + ", dialog: " + dialog);
-        return dialog;
+
+
+                if (dialog == null)
+                    Log.d(TAG, "Uh oh! Dialog is null");
+                else
+                    Log.d(TAG, "Dialog created: " + id + ", dialog: " + dialog);
+                return dialog;
+            }
+            default:
+                return null;
+
+        }
+    }
+
+    @Override
+    protected void onPrepareDialog(int id, Dialog dialog)
+    {
+        switch (id)
+        {
+            case DIALOG:
+            {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+                dialog = createHighScoresDialog(builder);
+//                dialog.setTitle("Custom dialog 1");
+//
+//                EditText cdField1Edit = (EditText)dialog.findViewById(R.id.cdField1Edit);
+//                EditText cdField2Edit = (EditText)dialog.findViewById(R.id.cdField2Edit);
+//
+//                // Set the default values for Field 1 and 2
+//                cdField1Edit.setText("");
+//                cdField2Edit.setText(cdField2DefaultValue != null ? cdField2DefaultValue : "");
+            }
+            break;
+        }
     }
 
     private Dialog createHighScoresDialog(AlertDialog.Builder builder) {
-        String hs = mPrefs.getString("pref_high_scores", "@string/default_high_scores");
+        String hs = mPrefs.getString("pref_high_scores", getResources().getString(R.string.default_high_scores));
+
+        Log.d("Profile", "*^&*%%($(%)#(%)#$#%*)$*)&@$(@&#)#$%)(&%(#)@$               " + hs);
         String[] scores = hs.split(",");
 //        ListView lv = (ListView) findViewById(R.id.high_scores_dialog_list);
 
@@ -213,7 +255,7 @@ public class PlayerProfileActivity extends Activity {
 
 
     public void setTextViews() {
-        mEditText = (EditText) findViewById(R.id.player_name);
+//        mEditText = (EditText) findViewById(R.id.player_name);
         mHighScoreTextView = (TextView) findViewById(R.id.high_score_list);
         mImageView = (ImageView) findViewById(R.id.player_image);
         mTitleTextView = (TextView) findViewById(R.id.profile_title);
@@ -222,11 +264,15 @@ public class PlayerProfileActivity extends Activity {
         mLongestGameTV = (TextView) findViewById(R.id.default_longest_game_played);
         mMostRoundsTV = (TextView) findViewById(R.id.default_most_rounds_beaten);
 
+        mResetButton = (Button) findViewById(R.id.reset_button);
+
         Animation blinkAnimation = AnimationUtils.loadAnimation(this, R.anim.blink);
         Animation blinkAnimation2 = AnimationUtils.loadAnimation(this, R.anim.blink2);
         mTitleTextView.startAnimation(blinkAnimation);
 //        mNameTextView.startAnimation(blinkAnimation2);
 //        mHighScoreTextView.startAnimation(blinkAnimation2);
+
+
 
         mEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -275,6 +321,7 @@ public class PlayerProfileActivity extends Activity {
 
         mImagePath = mSettingsPref.getString("pref_reset_picture", null);
 
+
         mTotalTime = mPrefs.getString("pref_total_time", "0");
         mLongestGame = mPrefs.getString("pref_longest_game", "0");
         mMostRounds = mPrefs.getString("pref_most_rounds", "0");
@@ -321,7 +368,31 @@ public class PlayerProfileActivity extends Activity {
 //        ed.putString("pref_total_time", getString(R.string.default_playtime));
         ed.putString("pref_longest_game", getString(R.string.default_longest_game));
         ed.putString("pref_most_rounds", getString(R.string.default_most_rounds));
+
         ed.apply();
+
+//        mTotalTimeTV.setText(mPrefs.getString("pref_total_time", "0"));
+        mLongestGameTV.setText(mPrefs.getString("pref_longest_game", "0"));
+        mMostRoundsTV.setText(mPrefs.getString("pref_most_rounds", "0"));
+
+//        removeDialog(mDialog);
+
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        createHighScoresDialog(builder);
+
+//        String hs = mPrefs.getString("pref_high_scores", getResources().getString(R.string.default_high_scores));
+//        String[] scores = hs.split(",");
+//
+//        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(this, R.layout.listview_item, scores);
+//
+//        Context context = getApplicationContext();
+//
+//        LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+//        View layout = inflater.inflate(R.layout.highscores_dialog, null);
+//
+//        mListView = (ListView) layout.findViewById(R.id.high_scores_dialog_list);
+//        mListView.setAdapter(itemsAdapter);
+
     }
 
 //    public void getPicture(View v) {

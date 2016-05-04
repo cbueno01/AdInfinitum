@@ -37,7 +37,7 @@
         android:onClick="OnClick"
         android:clickable="true"
         android:text="@string/how_to_play"
-        android:textSize="18sp"
+        android:textSize="13sp"
         android:textStyle="bold"
         android:textColor="@color/primary_material_light_1"/>
 

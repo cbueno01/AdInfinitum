@@ -14,7 +14,7 @@ import java.util.Timer;
  */
 public class AdInfinitumGame {
     // Characters used to represent the human, computer, and open spots
-    private static final int MAX_ADS_ONSCREEN = 10;
+    private static final int MAX_ADS_ONSCREEN = 15;
 
 
     // Ads are created and populated into tis lost in game
@@ -68,6 +68,8 @@ public class AdInfinitumGame {
     public ArrayList<Ad> getActiveAds() {
         return activeAds;
     }
+
+    public int getNumActiveAds() {return activeAds.size();}
 
     // why would this be necessary to do?
     public void setActiveAds(ArrayList<Ad> ads) {

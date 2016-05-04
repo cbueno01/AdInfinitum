@@ -43,6 +43,8 @@ public class AdInfinitumActivity extends Activity {
     private static final int DIALOG_REPLAY_ID = 1;
     private static final int DIALOG_CONTINUE_ID = 2;
 
+    private static final int numAdsAllowed = 3;
+
     // Preference variables
     private int mDifficulty;
     private String mPlayerName;
@@ -138,7 +140,8 @@ public class AdInfinitumActivity extends Activity {
         mGameView.setOnTouchListener(mTouchListener);
 
         rand = new Random();
-        mAdTime = 1000;
+        mAdTime = 800;
+        mRoundNumber = 0;
         mPrefs = getSharedPreferences("preferences", MODE_PRIVATE);
         doBindService();
         mProfs = getSharedPreferences("profile", MODE_PRIVATE);
@@ -204,7 +207,7 @@ public class AdInfinitumActivity extends Activity {
         if (mGameMode.equals(getResources().getString(R.string.mode_continuous)))
             startGame(0, 0);
         else
-            startGame(0, 10000);
+            startGame(0, 15000);
     }
 
     @Override
@@ -254,7 +257,7 @@ public class AdInfinitumActivity extends Activity {
                 } catch (InterruptedException ie) {
                 }
 
-                updateGame();
+                updateContinuousGame();
                 publishProgress();
             }
 
@@ -262,7 +265,7 @@ public class AdInfinitumActivity extends Activity {
         }
 
         protected void onProgressUpdate(Void... Progress) {
-            mTimeTextView.setText("Time Elapsed: " + String.format("%s04d", (int) (mElapsedTime / 1000)));
+            mTimeTextView.setText(String.format("Time Elapsed: %04d", (int) (mElapsedTime / 1000)));
 //            mScoreTextView.setText(String.format("%07d", mScore));
             mScoreTextView.setText("Score: "  + mScore);
             mGameView.invalidate();
@@ -320,9 +323,9 @@ public class AdInfinitumActivity extends Activity {
         protected Void doInBackground(Integer... args) {
             int fps = args[0];
             while (!mGame.isGameOver() && mTimeOfRound - mElapsedTime > 0) {
-                if (mGameLoop.isCancelled() || !mTimerFinish) {
-                    return null;
-                }
+//                if (mGameLoop.isCancelled() || !mTimerFinish) {
+//                    return null;
+//                }
 
                 mElapsedTime = (System.nanoTime() / 1000000) - mStartTime;
 
@@ -330,11 +333,13 @@ public class AdInfinitumActivity extends Activity {
                     Thread.sleep(1000 / fps);
                 } catch (InterruptedException ie) {}
 
-                updateGame();
+                if ((mTimeOfRound - mElapsedTime) > 4000) {
+                    updateRoundsGame();
+                }
                 publishProgress();
             }
 
-            if (mGame.isGameOver())
+            if (mGame.getNumActiveAds() > numAdsAllowed)
                 mLostRound = true;
 
 //            Log.d(TAG, "isGameOver: " + !mGame.isGameOver() + " Enough Time: " + (mTimeOfRound - mElapsedTime > 0));
@@ -342,7 +347,7 @@ public class AdInfinitumActivity extends Activity {
         }
 
         protected void onProgressUpdate(Void... Progress) {
-            mTimeTextView.setText(String.format("%04d", (mTimeOfRound - (int) mElapsedTime) / 1000));
+            mTimeTextView.setText(String.format("Time Remaining: %04d", (mTimeOfRound - (int) mElapsedTime) / 1000));
 //            mScoreTextView.setText(String.format("%07d", mScore));
             mScoreTextView.setText("Score: " + mScore);
             mGameView.invalidate();
@@ -350,25 +355,9 @@ public class AdInfinitumActivity extends Activity {
 
         protected void onPostExecute(Void result) {
             SharedPreferences.Editor ed = mProfs.edit();
-//            long highscore = mProfs.getLong("pref_high_scores", 0);
-//            String lowest = highScores[highScores.length - 1];
-//            String [] info = lowest.split("\t");
-//            Long lowestHighScore = Long.parseLong(info[info.length - 1]);
 
-            int length = highScores.length;
-
-            if (highScores[length - 1] < mScore) {
-                highScores[length - 1] = mScore;
-                Arrays.sort(highScores);
-                StringBuilder sb = new StringBuilder();
-
-                for (int i = length - 1; i > 0; --i) {
-                    sb.append(highScores[i] + ",");
-                }
-                sb.append(highScores[0]);
-
-                ed.putString("pref_high_scores", sb.toString());
-                ed.apply();
+            if (mLostRound) {
+                updateHighScores();
             }
 
             if (mMostRoundsBeaten < mRoundNumber) {
@@ -386,54 +375,91 @@ public class AdInfinitumActivity extends Activity {
                 if (mSoundEffectsOn) {
                     mSounds.play(gameOverID, 1, 1, 1, 0, 1);
                 }
-                if (mLostRound)
+                if (mLostRound) {
+                    mRoundNumber = 0;
                     showDialog(DIALOG_REPLAY_ID);
-                else
+                }
+                else {
                     showDialog(DIALOG_CONTINUE_ID);
+                }
             }
         }
     }
 
-    public void updateGame() {
+    private void updateHighScores() {
+        SharedPreferences.Editor ed = mProfs.edit();
+        int length = highScores.length;
+
+        if (highScores[length - 1] < mScore) {
+            highScores[length - 1] = mScore;
+            Arrays.sort(highScores);
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = length - 1; i > 0; --i) {
+                sb.append(highScores[i] + ",");
+            }
+            sb.append(highScores[0]);
+
+            ed.putString("pref_high_scores", sb.toString());
+            ed.apply();
+        }
+    }
+
+    public void updateContinuousGame() {
         // AD GENERATION FREQUENCY ALGORITHM
 
         // calculate how many discrete difficulty intervals have passed in current game
-        // Easy     10
-        // Medium   5
-        // Hard     3.33
-        mCurrentInterval = (int) (mElapsedTime - mStartTime) / (10000 * mDifficulty);
+        // Easy     6 sec
+        // Medium   4 sec
+        // Hard     3 sec
+        mCurrentInterval = (int) (mElapsedTime  / (12000 * (mDifficulty + 1)));
 
         //  time to pass before next Ad is made   <   time that has passed since last Ad creation
-        if ((mAdTime - (mCurrentInterval * 20)) < ((System.nanoTime() / 1000000) - mTimeOfLastAd)) {
-            ArrayList<Integer> imageID = getImageIDs();
-            BitmapFactory.Options dimensions = new BitmapFactory.Options();
-            dimensions.inScaled = false;
-
-            int index = rand.nextInt(imageID.size());
-            Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), imageID.get(index), dimensions);
-
-            while (true) {
-                float scalingFactor = rand.nextFloat() + rand.nextInt(1) + (float) 0.6;
-                int width = (int) (mBitmap.getWidth() * scalingFactor);
-                int height = (int) (mBitmap.getHeight() * scalingFactor);
-                int x = rand.nextInt(Math.abs(screenWidth - width) + 1);
-                int y = rand.nextInt(Math.abs(screenHeight - height) + 1);
-                if (x + width < screenWidth && y + height < screenHeight) {
-                    Point boxLeftTop = new Point((rand.nextInt(Math.abs(width - 50)) + x), (rand.nextInt(Math.abs(height - 50)) + y));
-//                    Log.d(TAG, "X; " + (width + x - boxLeftTop.x) + "  Y: " + (height + y - boxLeftTop.y));
-                    Point boxBottomRight = new Point((rand.nextInt(Math.abs(width + x - boxLeftTop.x - 50)) + boxLeftTop.x + 50), (rand.nextInt(Math.abs(height + y - boxLeftTop.y - 50)) + boxLeftTop.y + 50));
-
-                    // AD POINTAGE ALGORITHM
-                    long points = (long) (mBase * mDifficulty * (mConstant - (4 * (width + height) * scalingFactor)));
-                    Ad ad = new Ad(imageID.get(index), mBitmap, width, height, new Point(x, y), boxLeftTop, boxBottomRight, points);
-//                    Log.d("Ad Infinitum", "points: " + ad.getPointage());
-                    mGame.addAd(ad);
-                    break;
-                }
-            }
-            mTimeOfLastAd = System.nanoTime() / 1000000;
+        if ((mAdTime - (mCurrentInterval * 10)) < ((System.nanoTime() / 1000000) - mTimeOfLastAd)) {
+            generateAd();
         }
     }
+
+
+    public void updateRoundsGame() {
+        // AD GENERATION FREQUENCY ALGORITHM
+
+        //  time to pass before next Ad is made   <   time that has passed since last Ad creation
+        if ((mAdTime - ((mRoundNumber + 10) * mDifficulty)) < ((System.nanoTime() / 1000000) - mTimeOfLastAd)) {
+            generateAd();
+        }
+    }
+
+    private void generateAd() {
+        ArrayList<Integer> imageID = getImageIDs();
+        BitmapFactory.Options dimensions = new BitmapFactory.Options();
+        dimensions.inScaled = false;
+
+        int index = rand.nextInt(imageID.size());
+        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), imageID.get(index), dimensions);
+
+        while (true) {
+            float scalingFactor = rand.nextFloat() + rand.nextInt(1) + (float) 0.6;
+            int width = (int) (mBitmap.getWidth() * scalingFactor);
+            int height = (int) (mBitmap.getHeight() * scalingFactor);
+            int x = rand.nextInt(Math.abs(screenWidth - width) + 1);
+            int y = rand.nextInt(Math.abs(screenHeight - height) + 1);
+            if (x + width < screenWidth && y + height < screenHeight) {
+                Point boxLeftTop = new Point((rand.nextInt(Math.abs(width - 50)) + x), (rand.nextInt(Math.abs(height - 50)) + y));
+//                    Log.d(TAG, "X; " + (width + x - boxLeftTop.x) + "  Y: " + (height + y - boxLeftTop.y));
+                Point boxBottomRight = new Point((rand.nextInt(Math.abs(width + x - boxLeftTop.x - 50)) + boxLeftTop.x + 50), (rand.nextInt(Math.abs(height + y - boxLeftTop.y - 50)) + boxLeftTop.y + 50));
+
+                // AD POINTAGE ALGORITHM
+                long points = (long) (mBase * mDifficulty * (mConstant - (4 * (width + height) * scalingFactor)));
+                Ad ad = new Ad(imageID.get(index), mBitmap, width, height, new Point(x, y), boxLeftTop, boxBottomRight, points);
+//                    Log.d("Ad Infinitum", "points: " + ad.getPointage());
+                mGame.addAd(ad);
+                break;
+            }
+        }
+        mTimeOfLastAd = System.nanoTime() / 1000000;
+    }
+
 
     private ArrayList<Integer> getImageIDs() {
         String[] adNames = getResources().getStringArray(R.array.advertisements);
@@ -511,7 +537,11 @@ public class AdInfinitumActivity extends Activity {
                         })
                         .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                startGame(0, 10000);
+                                if (mGameMode.equals(getResources().getString(R.string.mode_continuous))) {
+                                    startGame(0, 0);
+                                } else {
+                                    startGame(0, 15000);
+                                }
                             }
                         });
                 break;
@@ -522,18 +552,18 @@ public class AdInfinitumActivity extends Activity {
                 builder.setMessage( getResources().getString(R.string.keep_going)).setCancelable(false)
                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                startGame(mScore, (mTimeOfRound + 5000));
+                                startGame(mScore, 15000);
                             }
                         })
                         .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
+                                updateHighScores();
                                 AdInfinitumActivity.this.finish();
                             }
                         });
                 break;
             }
         }
-
 
         return builder.create();
     }
@@ -550,9 +580,8 @@ public class AdInfinitumActivity extends Activity {
         mTimeOfRound = time;
         mTimerFinish = true;
         mLostRound = false;
-        mRoundNumber = 0;
         mGameLoop = null;
-        mTimeTextView.setText("Time Elapsed: " + String.format("%s04d", (time) / 1000));
+        mTimeTextView.setText(String.format("Time: %04d", (time) / 1000));
         mScoreTextView.setText("Score: " + startingScore);
         mGameView.invalidate();
 
@@ -566,11 +595,13 @@ public class AdInfinitumActivity extends Activity {
             public void onFinish() {
                 mCountdownTextView.setVisibility(View.GONE);
                 mGameView.setOnTouchListener(mTouchListener);
-                mStartTime = System.nanoTime() / 1000000;
-                if (mGameMode.equals(getResources().getString(R.string.mode_continuous)))
+                if (mGameMode.equals(getResources().getString(R.string.mode_continuous))) {
                     mGameLoop = new ContinuousGameLoop();
-                else
+                } else {
+                    ++mRoundNumber;
                     mGameLoop = new RoundGameLoop();
+                }
+                mStartTime = System.nanoTime() / 1000000;
                 mGameLoop.execute(30);
             }
         }.start();

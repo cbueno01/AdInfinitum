@@ -59,6 +59,8 @@
             android:layout_height="fill_parent"
             android:layout_gravity="center_horizontal|top"
             android:layout_marginLeft="5sp"
+            android:layout_marginRight="5sp"
+            android:layout_marginBottom="5sp"
             android:gravity="center_horizontal|top"
             android:orientation="vertical">
 
@@ -84,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/player_name"
                 android:layout_gravity="left"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="12dp"
                 android:clickable="true"
                 android:gravity="left"
                 android:onClick="onClick"
@@ -177,6 +179,7 @@
                 android:textSize="25sp" />
 
             <Button
+                android:id="@+id/reset_button"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
