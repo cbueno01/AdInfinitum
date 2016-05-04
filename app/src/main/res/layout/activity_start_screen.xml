@@ -7,6 +7,12 @@
     tools:context="com.example.cbueno01.adinfinitum.StartScreenActivity"
     android:id="@+id/start_screen_layout" >
 
+    <com.example.cbueno01.adinfinitum.StarFieldView
+        android:id="@+id/start_screen_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"/>
+
     <TextView
         android:id="@+id/title"
         android:layout_width="fill_parent"
