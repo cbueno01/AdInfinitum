@@ -533,7 +533,6 @@ public class AdInfinitumActivity extends Activity {
                                     startGame(0, 0);
                                 }
                             });
-                    break;
                 } else {
                     builder.setMessage(getResources().getString(R.string.rounds_lose_message) + " " + mPlayerName + "?").setCancelable(false)
                             .setPositiveButton(R.string.okay, new DialogInterface.OnClickListener() {
@@ -546,8 +545,9 @@ public class AdInfinitumActivity extends Activity {
                                     AdInfinitumActivity.this.finish();
                                 }
                             });
-                    break;
                 }
+
+                break;
             }
             case DIALOG_CONTINUE_ID:
             {
