@@ -13,6 +13,7 @@
 
     <string-array name="soundtracks">
         <item>Rave</item>
+        <item>Pulsate</item>
         <item>Chill</item>
     </string-array>
 </resources>

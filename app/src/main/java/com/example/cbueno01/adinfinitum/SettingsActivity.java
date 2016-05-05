@@ -11,12 +11,14 @@ import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.SwitchPreference;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -32,6 +34,7 @@ public class SettingsActivity extends PreferenceActivity {
     private MusicService mMusicService;
     private boolean mIsBound;
     private boolean mIsLandscape;
+    private boolean inApp = false;
 
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -40,7 +43,6 @@ public class SettingsActivity extends PreferenceActivity {
         Log.d("AD INFINITUM", "In Settings");
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getPreferenceManager().setSharedPreferencesName("preferences");
         addPreferencesFromResource(R.xml.preferences);
 
@@ -88,60 +90,39 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
-//        //soundtrack choice
-//        Log.d("AD INFINITUM", "Soundtrack Pref");
-//        final ListPreference soundtrackPref = (ListPreference) findPreference("pref_soundtrack");
-//        String soundtrack = prefs.getString("pref_soundtrack",
-//                getResources().getString(R.string.default_soundtrack));
-//        soundtrackPref.setSummary( soundtrack);
-//        soundtrackPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-//            @Override
-//            public boolean onPreferenceChange(Preference preference, Object newValue) {
-//                playButtonSound();
-//
-//                soundtrackPref.setSummary((CharSequence) newValue);
-//
-//                Log.d("AD INFINITUM", (String) newValue);
-//
-//                SharedPreferences.Editor ed = prefs.edit();
-//                ed.putString("pref_soundtrack", newValue.toString());
-//                ed.apply();
-//
-//                if (mIsSoundtrackOn) {
-//                    mMusicService.pauseMusic();
-//                }
-//
-//                mMusicService.changeSong(newValue.toString());
-//
-//                if(mIsSoundtrackOn) {
-//                    mMusicService.resumeMusic();
-//                }
-//
-//
-//                return true;
-//            }
-//        });
-
-
-        /*//show the current profile name summary
-        Log.d("AD INFINITUM", "Profile Pref");
-        final Preference profileNamePref = (Preference) findPreference("pref_reset_profile");
-        String profileName = prefs.getString("pref_reset_profile",
-                getResources().getString(R.string.default_profile_name));
-        profileNamePref.setSummary(profileName);
-        profileNamePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        //soundtrack choice
+        Log.d("AD INFINITUM", "Soundtrack Pref");
+        final ListPreference soundtrackPref = (ListPreference) findPreference("pref_soundtrack");
+        String soundtrack = prefs.getString("pref_soundtrack",
+                getResources().getString(R.string.default_soundtrack));
+        soundtrackPref.setSummary( soundtrack);
+        soundtrackPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                profileNamePref.setSummary((CharSequence) newValue);
                 playButtonSound();
 
+                soundtrackPref.setSummary((CharSequence) newValue);
+
+                Log.d("AD INFINITUM", (String) newValue);
+
                 SharedPreferences.Editor ed = prefs.edit();
-                ed.putString("pref_reset_profile", newValue.toString());
+                ed.putString("pref_soundtrack", newValue.toString());
                 ed.apply();
+
+                if (mIsSoundtrackOn) {
+                    mMusicService.pauseMusic();
+                }
+
+                mMusicService.changeSong(newValue.toString());
+
+                if(mIsSoundtrackOn ) {
+                    mMusicService.resumeMusic();
+                }
+
+
                 return true;
             }
         });
-*/
 
         //show the sound fx volume
         Log.d("AD INFINITUM", "Sound FX Volume Settings");
@@ -178,7 +159,7 @@ public class SettingsActivity extends PreferenceActivity {
 
                 soundtrackSoundPref.setChecked(mIsSoundtrackOn);
 
-                if(mIsSoundtrackOn) {
+                if(mIsSoundtrackOn ) {
                     mMusicService.resumeMusic();
                 }
                 else
@@ -250,54 +231,32 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
-
-/*        //show the seek bar sound fx summary
-        Log.d("AD INFINITUM", "Sound FX Pref");
-        SeekBarPreference soundfxPref = new SeekBarPreference( this );
-        soundfxPref.setTitle(R.string.settings_sound_fx_volume);
-        soundfxPref.setDefaultValue(R.string.default_sound);
-        soundfxPref.setMax(R.string.max_sound);
-        //prefs.addPreference(botsPref);
-        soundfxPref.setOnPreferenceChangeListener( new PrefsSeekBarListener( soundfxPref) );
-
-        //show the seek bar soundtrack summary
-        Log.d("AD INFINITUM", "Soundtrack Pref");
-        SeekBarPreference soundtrackPref = new SeekBarPreference( this );
-        soundtrackPref.setTitle(R.string.settings_soundtrack_volume);
-        soundtrackPref.setDefaultValue(R.string.default_sound);
-        soundtrackPref.setMax(R.string.max_sound);
-        // prefs.addPreference(botsPref );
-        soundtrackPref.setOnPreferenceChangeListener( new PrefsSeekBarListener( soundtrackPref) );*/
-
-//        mIsSoundtrackOn = prefs.getBoolean("pref_soundtrack_sound", true);
-//        KeyguardManager myKM = (KeyguardManager) this.getSystemService(Context.KEYGUARD_SERVICE);
-//        if( myKM.inKeyguardRestrictedInputMode()) {
-//            //it is locked
-//            if(mIsSoundtrackOn) {
-//                Intent svc = new Intent(this, MusicService.class);
-//                stopService(svc);
-//            }
-//        } else {
-//            //it is not locked
-//            if(mIsSoundtrackOn) {
-//                Intent svc = new Intent(this, MusicService.class);
-//                startService(svc);
-//            }
-//        }
         doBindService();
+    }
 
-
+    public void onBackPressed() {
+        Log.d("AD INFINITUM", "In onBackPressed");
+        inApp = true;
+        finish();
     }
 
     public void onResume() {
+        Log.d("AD INFINITUM", "In onResume");
         super.onResume();
-        if (mIsBound && mIsSoundtrackOn)
+
+        if (mIsBound && mIsSoundtrackOn) {
             mMusicService.resumeMusic();
+        }
     }
+
+
     public void onPause() {
+
+        Log.d("AD INFINITUM", "In onPause");
         super.onPause();
-        if(mIsBound && mIsSoundtrackOn)
+        if((mIsBound && mIsSoundtrackOn && !inApp)) {
             mMusicService.pauseMusic();
+        }
     }
 
     public void onDestroy() {
@@ -329,13 +288,15 @@ public class SettingsActivity extends PreferenceActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private ServiceConnection Scon =new ServiceConnection(){
+    private ServiceConnection Scon = new ServiceConnection(){
 
         public void onServiceConnected(ComponentName name, IBinder
                 binder) {
             mMusicService = ((MusicService.ServiceBinder)binder).getService();
-            if(mIsSoundtrackOn)
+            if(mIsSoundtrackOn) {
+                Log.d("AD INFINITUM", "onServiceConnected");
                 mMusicService.resumeMusic();
+            }
             mIsBound = true;
         }
 

@@ -38,12 +38,12 @@
         android:title="Button Sounds"
         android:defaultValue="@bool/default_sound_button_state"/>
 
-    <!--<ListPreference-->
-        <!--android:key="pref_soundtrack"-->
-        <!--android:title="Soundtrack"-->
-        <!--android:summary=""-->
-        <!--android:entries="@array/soundtracks"-->
-        <!--android:entryValues="@array/soundtracks"/>-->
+    <ListPreference
+        android:key="pref_soundtrack"
+        android:title="Soundtrack"
+        android:summary=""
+        android:entries="@array/soundtracks"
+        android:entryValues="@array/soundtracks"/>
 
     <CheckBoxPreference
         android:key="pref_orientation"

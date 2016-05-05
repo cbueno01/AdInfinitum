@@ -89,6 +89,7 @@ public class PlayerProfileActivity extends Activity {
     private Vibrator mVibe;
 
     private boolean mIsButtonSoundOn;
+    private boolean inApp = false;
     private MediaPlayer mp;
 
     @Override
@@ -403,9 +404,15 @@ public class PlayerProfileActivity extends Activity {
             mMusicService.resumeMusic();
     }
 
+    public void onBackPressed() {
+        Log.d("AD INFINITUM", "In onBackPressed");
+        inApp = true;
+        finish();
+    }
+
     public void onPause() {
         super.onPause();
-        if (mIsBound && mIsSoundOn)
+        if (mIsBound && mIsSoundOn && !inApp)
             mMusicService.pauseMusic();
     }
 

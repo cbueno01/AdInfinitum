@@ -21,6 +21,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -51,6 +52,7 @@ public class AdInfinitumActivity extends Activity {
     private String mPlayerName;
     private boolean mSoundEffectsOn;
 
+    private boolean inApp = false;
     private long mTotalTimePlayed;
     private int mMostRoundsBeaten;
     private int mLongestGame;
@@ -214,6 +216,12 @@ public class AdInfinitumActivity extends Activity {
             startGame(0, 15000);
     }
 
+    public void onBackPressed() {
+        Log.d("AD INFINITUM", "In onBackPressed");
+        inApp = true;
+        finish();
+    }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -223,7 +231,7 @@ public class AdInfinitumActivity extends Activity {
             mSounds = null;
         }
 
-        if(mIsBound && mIsSoundOn)
+        if(mIsBound && mIsSoundOn && !inApp)
             mMusicService.pauseMusic();
     }
 
