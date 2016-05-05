@@ -41,9 +41,11 @@ public class StartScreenActivity extends Activity {
     // bounded service
     private static MusicService mMusicService;
     private int mMusicPosition;
+
 //
 //    // whether service is bounded or not
     private boolean mIsBound = false;
+    private boolean inApp = false;
 
     private Context mContext;
     private CoordinatorLayout mCL;
@@ -64,7 +66,7 @@ public class StartScreenActivity extends Activity {
     private Button btnAbout;
     private Animation animScaleTL;
 
-    private boolean mIsSoundOn;
+    private boolean mIsSoundtrackOn;
 
     private MediaPlayer mp;
     private boolean mIsButtonSoundOn;
@@ -119,7 +121,7 @@ public class StartScreenActivity extends Activity {
 //        mCL = (CoordinatorLayout) findViewById(R.id.start_screen_layout);
 //        mSFV.init();
 
-        mIsSoundOn = mPrefs.getBoolean("pref_soundtrack_sound", true);
+        mIsSoundtrackOn = mPrefs.getBoolean("pref_soundtrack_sound", true);
 
         doBindService();
 
@@ -173,8 +175,9 @@ public class StartScreenActivity extends Activity {
     public void onResume() {
         super.onResume();
         ActivityHelper.initialize(this);
-        mIsSoundOn = mPrefs.getBoolean("pref_soundtrack_sound", true);
+        mIsSoundtrackOn = mPrefs.getBoolean("pref_soundtrack_sound", true);
         mIsButtonSoundOn = mPrefs.getBoolean("prefs_sound_button", true);
+       inApp = false;
         if(mIsButtonSoundOn) {
             mp = MediaPlayer.create(this, R.raw.button_click);
         }
@@ -183,7 +186,7 @@ public class StartScreenActivity extends Activity {
             mp = null;
         }
 
-        if (mIsBound && mIsSoundOn)
+        if (mIsBound && mIsSoundtrackOn)
             mMusicService.resumeMusic();
 
         mStarFieldLoop = new StarFieldLoop();
@@ -191,7 +194,7 @@ public class StartScreenActivity extends Activity {
     }
     public void onPause() {
         super.onPause();
-        if (mIsBound && mIsSoundOn)
+        if (mIsBound && mIsSoundtrackOn && !inApp)
             mMusicService.pauseMusic();
     }
 
@@ -201,13 +204,13 @@ public class StartScreenActivity extends Activity {
         public void onServiceConnected(ComponentName name, IBinder
                 binder) {
             mMusicService = ((MusicService.ServiceBinder)binder).getService();
-            if (mIsSoundOn)
+            if (mIsSoundtrackOn)
                 mMusicService.resumeMusic();
             mIsBound = true;
         }
 
         public void onServiceDisconnected(ComponentName name) {
-            if(mIsSoundOn)
+            if(mIsSoundtrackOn)
                 mMusicService.stopMusic();
             mMusicService = null;
         }
@@ -278,7 +281,7 @@ public class StartScreenActivity extends Activity {
     public void goToGame(View v){
         Log.d("AD INFINITUM", "Create Settings Activity");
         Intent intent = new Intent(this, AdInfinitumActivity.class);
-
+        inApp = true;
         mVibe.vibrate(150);
 //        playButtonSound();
 
@@ -289,6 +292,7 @@ public class StartScreenActivity extends Activity {
     {
         Log.d("AD INFINITUM", "Trying to create new activity");
         Intent intent = new Intent(this, PlayerProfileActivity.class);
+        inApp = true;
 //        EditText editText = (EditText) findViewById(R.id.edit_message);
 //        String message = editText.getText().toString();
 //        intent.putExtra(EXTRA_MESSAGE, message);
@@ -303,7 +307,7 @@ public class StartScreenActivity extends Activity {
     {
         Log.d("AD INFINITUM", "Create Settings Activity");
         Intent intent = new Intent(this, SettingsActivity.class);
-
+        inApp = true;
         mVibe.vibrate(150);
 //        playButtonSound();
 
@@ -313,7 +317,7 @@ public class StartScreenActivity extends Activity {
     public void goToAbout (View v) {
         Log.d("AD INFINITUM", "Attempt to create About Activity");
         Intent intent = new Intent(this, AboutScreenActivity.class);
-
+        inApp = true;
         mVibe.vibrate(150);
 
 //        playButtonSound();

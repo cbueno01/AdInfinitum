@@ -38,6 +38,7 @@ public class AboutScreenActivity extends Activity implements View.OnClickListene
     private Context mContext;
     private RelativeLayout mRL;
 //    private LinearLayout mLL;
+    private boolean inApp = false;
 
     private Handler mHandler;
     private Runnable mRunnable;
@@ -153,9 +154,16 @@ public class AboutScreenActivity extends Activity implements View.OnClickListene
         if (mIsBound && mIsSoundOn)
             mMusicService.resumeMusic();
     }
+
+    public void onBackPressed() {
+        Log.d("AD INFINITUM", "In onBackPressed");
+        inApp = true;
+        finish();
+    }
+
     public void onPause() {
         super.onPause();
-        if(mIsBound && mIsSoundOn)
+        if(mIsBound && mIsSoundOn && !inApp)
             mMusicService.pauseMusic();
     }
 
