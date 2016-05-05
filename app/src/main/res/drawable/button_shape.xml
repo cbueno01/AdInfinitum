@@ -10,6 +10,6 @@
         android:centerY=".50" />
     <corners android:radius="10dip" />
     <stroke
-        android:width="10px"
+        android:width="6px"
         android:color="#cccccc" />
 </shape>

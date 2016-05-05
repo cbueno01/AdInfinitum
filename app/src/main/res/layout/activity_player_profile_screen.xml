@@ -35,7 +35,6 @@
                 android:layout_width="200dp"
                 android:layout_height="260dp"
                 android:layout_gravity="top"
-                android:gravity="top"
                 android:src="@drawable/sheeple" />
 
             <LinearLayout
@@ -80,21 +79,39 @@
                 android:textIsSelectable="true"
                 android:textSize="30sp" />
 
-            <TextView
+            <Button
+                android:id="@+id/rounds_high_score_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/player_name"
+                android:layout_alignParentRight="true"
+                android:layout_gravity="right"
+                android:paddingRight="20dp"
+                android:paddingLeft="20dp"
+                android:layout_marginTop="7dp"
+                android:layout_marginLeft="3dp"
+                android:onClick="onClick"
+                android:text="@string/rounds_high_score_text"
+                android:textColor="@color/buttonTextColor"
+                android:background="@drawable/button_layer_list"
+                android:textSize="15sp" />
+
+            <Button
                 android:id="@+id/continuous_high_score_list"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/player_name"
-                android:layout_gravity="center"
-                android:layout_marginTop="12dp"
-                android:clickable="true"
-                android:gravity="center"
+                android:layout_gravity="left"
+                android:layout_marginTop="5dp"
+                android:layout_toLeftOf="@id/rounds_high_score_list"
+                android:layout_alignParentLeft="true"
+                android:paddingRight="10dp"
+                android:paddingLeft="10dp"
                 android:onClick="onClick"
-                android:text="@string/high_score_text"
+                android:background="@drawable/button_layer_list"
+                android:text="@string/continuous_high_score_text"
                 android:textColor="@color/buttonTextColor"
-                android:textIsSelectable="true"
-                android:textSize="25sp" />
-
+                android:textSize="15sp" />
 
 
             <TextView
@@ -108,7 +125,7 @@
                 android:text="@string/playtime"
                 android:textColor="@color/buttonTextColor"
                 android:textIsSelectable="true"
-                android:textSize="25sp" />
+                android:textSize="22sp" />
 
             <TextView
                 android:id="@+id/default_total_time_played"
@@ -122,7 +139,7 @@
                 android:text="@string/default_playtime"
                 android:textColor="#555555"
                 android:textIsSelectable="true"
-                android:textSize="25sp" />
+                android:textSize="22sp" />
 
             <TextView
                 android:id="@+id/longest_game_played"
@@ -134,7 +151,7 @@
                 android:text="@string/longest_game"
                 android:textColor="@color/buttonTextColor"
                 android:textIsSelectable="true"
-                android:textSize="25sp" />
+                android:textSize="22sp" />
 
             <TextView
                 android:id="@+id/default_longest_game_played"
@@ -150,7 +167,7 @@
                 android:text="@string/default_longest_game"
                 android:textColor="#555555"
                 android:textIsSelectable="true"
-                android:textSize="25sp" />
+                android:textSize="22sp" />
 
             <TextView
                 android:id="@+id/most_rounds_beaten"
@@ -163,7 +180,7 @@
                 android:text="@string/most_rounds"
                 android:textColor="@color/buttonTextColor"
                 android:textIsSelectable="true"
-                android:textSize="25sp" />
+                android:textSize="22sp" />
 
             <TextView
                 android:id="@+id/default_most_rounds_beaten"
@@ -178,7 +195,7 @@
                 android:text="@string/default_most_rounds"
                 android:textColor="#555555"
                 android:textIsSelectable="true"
-                android:textSize="25sp" />
+                android:textSize="22sp" />
 
             <Button
                 android:id="@+id/reset_button"

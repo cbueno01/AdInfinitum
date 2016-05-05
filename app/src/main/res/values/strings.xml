@@ -3,7 +3,8 @@
     <string name="action_settings">Settings</string>
     <string name="title_player">PROFILE</string>
     <string name="player_name">Name: Sheeple</string>
-    <string name="high_score_text">High Scores </string>
+    <string name="continuous_high_score_text">Continuous High Scores </string>
+    <string name="rounds_high_score_text">Rounds High Scores </string>
     <string name="reset_text">Reset</string>
 
     <string name="playtime">Time Played(s):</string>
@@ -17,7 +18,8 @@
     <string name="default_high_scores_ranks">1. [Player]\t\t0,2. [Player]\t\t0,3. [Player]\t\t0,4. [Player]\t\t0,5. [Player]\t\t0,6. [Player]\t\t0,7. [Player]\t\t0,8. [Player]\t\t0,9. [Player]\t\t0,10. [Player]\t\t0</string>
     <string name="default_high_scores">[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0,[Player]\t\t0</string>
 
-    <string name="high_scores_title">Least Embarrassing Scores\n</string>
+    <string name="continuous_high_scores_title">Least Pitiful Continuous Scores\n</string>
+    <string name="rounds_high_scores_title">Least Pitiful Rounds Scores\n</string>
     <string name="high_score_one">[Player]\t\t0</string>
     <string name="high_score_two">[Player]\t\t0</string>
     <string name="high_score_three">[Player]\t\t0</string>

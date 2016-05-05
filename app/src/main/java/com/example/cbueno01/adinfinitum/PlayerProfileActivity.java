@@ -49,7 +49,8 @@ public class PlayerProfileActivity extends Activity {
 
     private static final String TAG = "Player Profile";
 
-    private static final int DIALOG = 0;
+    private static final int CONTINUOUS_DIALOG = 0;
+    private static final int ROUNDS_DIALOG = 1;
     private static final int SELECT_FILE = 1;
     private static final int REQUEST_CAMERA = 1313;
 
@@ -66,11 +67,13 @@ public class PlayerProfileActivity extends Activity {
     private SharedPreferences mPrefs;
     private SharedPreferences mSettingsPref;
 
-    private String [] highScores;
+    private String[] highScores;
     private Dialog mDialog;
 
     private TextView mNameTextView;
-    private TextView mHighScoreTextView;
+    private TextView mContinuousHighScoresB;
+    private Button mRoundsHighScoresB;
+
     private ImageView mImageView;
     private ImageView mCameraImageView;
     private TextView mTitleTextView;
@@ -87,6 +90,8 @@ public class PlayerProfileActivity extends Activity {
     private TextView mMostRoundsTV;
 
     private Vibrator mVibe;
+
+    private boolean mIsContinuous;
 
     private boolean mIsButtonSoundOn;
     private MediaPlayer mp;
@@ -126,7 +131,7 @@ public class PlayerProfileActivity extends Activity {
 //                    imm.showSoftInputFromInputMethod(mEditText.getWindowToken(), 0);
                 } else {
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(mEditText.getWindowToken(),0);
+                    imm.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
                 }
             }
         });
@@ -157,30 +162,31 @@ public class PlayerProfileActivity extends Activity {
 
     public void onClick(View view) {
 
-        if (view.equals(mHighScoreTextView)) {
-            showDialog(DIALOG);
-//            Context context = getApplicationContext();
-//            Dialog dlg = new Dialog(context);
-//            LayoutInflater li = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
-//            View v = li.inflate(R.layout.highscores_dialog, null, false);
-//            dlg.setContentView(v);
-//            dlg.show();
+        if (view.equals(mContinuousHighScoresB)) {
+            showDialog(CONTINUOUS_DIALOG);
+        } else if (view.equals(mRoundsHighScoresB)) {
+            showDialog(ROUNDS_DIALOG);
+
         }
 
 //        v.setVisibility(View.GONE);
 //        v.setClickable(false);
     }
 
+//    public void showHighScores (){
+//
+//    }
+
+
     @Override
     protected Dialog onCreateDialog(int id) {
-        switch(id) {
+        switch (id) {
 
-            case DIALOG: {
+            case CONTINUOUS_DIALOG: {
                 Dialog dialog = null;
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-                dialog = createHighScoresDialog(builder);
-
+                dialog = createContinuousHighScoresDialog(builder);
 
 
                 if (dialog == null)
@@ -189,28 +195,23 @@ public class PlayerProfileActivity extends Activity {
                     Log.d(TAG, "Dialog created: " + id + ", dialog: " + dialog);
                 return dialog;
             }
+            case ROUNDS_DIALOG: {
+                Dialog dialog = null;
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                dialog = createRoundsHighScoresDialog(builder);
+                return dialog;
+            }
             default:
                 return null;
 
         }
     }
 
-//    @Override
-//    protected void onPrepareDialog(int id, Dialog dialog)
-//    {
-//        switch (id)
-//        {
-//            case DIALOG:
-//            {
-//
-//
-//            }
-//            break;
-//        }
-//    }
 
-    private Dialog createHighScoresDialog(AlertDialog.Builder builder) {
-        String chs = mPrefs.getString("pref_high_scores", getResources().getString(R.string.default_high_scores));
+    private Dialog createContinuousHighScoresDialog(AlertDialog.Builder builder) {
+
+        String hs = mPrefs.getString("pref_continuous_high_scores", getResources().getString(R.string.default_high_scores));
+
 //        String rhs = mPrefs.getString("pref_rounds_high_scores", getResources().getString(R.string.default_high_scores));
 
 //        Log.d(TAG, "");
@@ -219,30 +220,56 @@ public class PlayerProfileActivity extends Activity {
 //        Log.d(TAG, "");
 //        Log.d(TAG, "");
 
-        String[] cScores = chs.split(",");
-//        String[] rScores = rhs.split(",");
-//        ListView lv = (ListView) findViewById(R.id.high_scores_dialog_list);
+        String[] scores = hs.split(",");
 
-        ArrayAdapter<String> itemsAdapterC = new ArrayAdapter<>(this, R.layout.listview_item, cScores);
-//        ArrayAdapter<String> itemsAdapterR = new ArrayAdapter<>(this, R.layout.listview_item_two, rScores);
+        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(this, R.layout.continuous_listview_item, scores);
 
-
-//        ListView listView = (ListView) findViewById(R.id.high_scores_dialog_list);
-//        mListViewC.setAdapter(itemsAdapter);
         Context context = getApplicationContext();
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
-        View layout = inflater.inflate(R.layout.highscores_dialog, null);
-//        mListViewC = inflater.inflate(R.layout.highscores_dialog, null);
-
-        mListViewC = (ListView) layout.findViewById(R.id.high_scores_dialog_list);
-        mListViewC.setAdapter(itemsAdapterC);
-
-//        mListViewR = (ListView) layout.findViewById(R.id.rounds_high_scores_dialog_list);
-//        mListViewR.setAdapter(itemsAdapterR);
+        View layout;
+        layout = inflater.inflate(R.layout.continuous_high_scores_dialog, null);
+        mListViewC = (ListView) layout.findViewById(R.id.continuous_high_scores_dialog_list);
+        mListViewC.setAdapter(itemsAdapter);
 
         builder.setView(layout);
-        builder.setTitle(R.string.high_scores_title);
+
+
+        builder.setTitle(R.string.continuous_high_scores_title);
+
+
+        builder.setPositiveButton("Okay", null);
+        return builder.create();
+    }
+
+    private Dialog createRoundsHighScoresDialog(AlertDialog.Builder builder) {
+
+        String hs = mPrefs.getString("pref_rounds_high_scores", getResources().getString(R.string.default_high_scores));
+
+
+//        Log.d(TAG, "");
+//        Log.d(TAG, "");
+//        Log.d("Profile", "*^&*%%($(%)#(%)#$#%*)$*)&@$(@&#)#$%)(&%(#)@$               " + rhs);
+//        Log.d(TAG, "");
+//        Log.d(TAG, "");
+
+        String[] scores = hs.split(",");
+
+        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(this, R.layout.rounds_listview_item, scores);
+
+        Context context = getApplicationContext();
+
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+        View layout;
+
+        layout = inflater.inflate(R.layout.rounds_high_scores_dialog, null);
+        mListViewR = (ListView) layout.findViewById(R.id.rounds_high_scores_dialog_list);
+        mListViewR.setAdapter(itemsAdapter);
+
+
+        builder.setView(layout);
+
+        builder.setTitle(R.string.rounds_high_scores_title);
 
         builder.setPositiveButton("Okay", null);
         return builder.create();
@@ -251,7 +278,8 @@ public class PlayerProfileActivity extends Activity {
 
     public void setTextViews() {
 //        mEditText = (EditText) findViewById(R.id.player_name);
-        mHighScoreTextView = (TextView) findViewById(R.id.continuous_high_score_list);
+        mContinuousHighScoresB = (TextView) findViewById(R.id.continuous_high_score_list);
+        mRoundsHighScoresB = (Button) findViewById(R.id.rounds_high_score_list);
         mImageView = (ImageView) findViewById(R.id.player_image);
         mTitleTextView = (TextView) findViewById(R.id.profile_title);
 
@@ -267,8 +295,7 @@ public class PlayerProfileActivity extends Activity {
         Animation blinkAnimation2 = AnimationUtils.loadAnimation(this, R.anim.blink2);
         mTitleTextView.startAnimation(blinkAnimation);
 //        mNameTextView.startAnimation(blinkAnimation2);
-//        mHighScoreTextView.startAnimation(blinkAnimation2);
-
+//        mContinuousHighScoreB.startAnimation(blinkAnimation2);
 
 
         mEditText.addTextChangedListener(new TextWatcher() {
@@ -326,7 +353,7 @@ public class PlayerProfileActivity extends Activity {
 
     public void displayViews() {
 //        mNameTextView.setText("Name: " + mPlayerName);
-//        mHighScoreTextView.setText("High Score: " + mHighScore);
+//        mContinuousHighScoreB.setText("High Score: " + mHighScore);
 
         mEditText.setText(mPlayerName);
         mTotalTimeTV.setText(mTotalTime);
@@ -341,12 +368,11 @@ public class PlayerProfileActivity extends Activity {
             Bitmap bmp = BitmapFactory.decodeFile(mImagePath, options);
             if (bmp == null)
                 mImageView.setImageResource(R.drawable.sheeple);
-            else
-            {
+            else {
                 Matrix matrix = new Matrix();
                 matrix.postRotate(90);
-                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bmp,bmp.getWidth(),bmp.getHeight(),true);
-                Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap , 0, 0, scaledBitmap .getWidth(), scaledBitmap .getHeight(), matrix, true);
+                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bmp, bmp.getWidth(), bmp.getHeight(), true);
+                Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
 
                 mImageView.setImageBitmap(rotatedBitmap);
             }
@@ -362,7 +388,7 @@ public class PlayerProfileActivity extends Activity {
 //            mp.start();
 //        }
 
-        ed.putString("pref_high_scores", getString(R.string.default_high_scores));
+        ed.putString("pref_continuous_high_scores", getString(R.string.default_high_scores));
         ed.putString("pref_rounds_high_scores", getString(R.string.default_high_scores));
 //        ed.putString("pref_total_time", getString(R.string.default_playtime));
         ed.putString("pref_longest_game", getString(R.string.default_longest_game));
@@ -374,7 +400,8 @@ public class PlayerProfileActivity extends Activity {
         mLongestGameTV.setText(mPrefs.getString("pref_longest_game", "0"));
         mMostRoundsTV.setText(mPrefs.getString("pref_most_rounds", "0"));
 
-        removeDialog(DIALOG);
+        removeDialog(CONTINUOUS_DIALOG);
+        removeDialog(ROUNDS_DIALOG);
     }
 
     public String getPath(Uri uri) {
@@ -529,8 +556,8 @@ public class PlayerProfileActivity extends Activity {
 
                 Matrix matrix = new Matrix();
                 matrix.postRotate(90);
-                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm,bm.getWidth(),bm.getHeight(),true);
-                Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap , 0, 0, scaledBitmap .getWidth(), scaledBitmap .getHeight(), matrix, true);
+                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm, bm.getWidth(), bm.getHeight(), true);
+                Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
 
 
                 mImageView.setImageBitmap(rotatedBitmap);

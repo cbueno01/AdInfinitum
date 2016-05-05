@@ -5,7 +5,7 @@
     android:orientation="horizontal" >
 
     <ListView
-        android:id="@+id/high_scores_dialog_list"
+        android:id="@+id/rounds_high_scores_dialog_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:entries="@array/high_scores"

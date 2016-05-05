@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <Preference
-        android:key="pref_high_scores"
+        android:key="pref_continuous_high_scores"
         android:title="High Scores"
         android:summary=""
         android:defaultValue="@string/default_high_scores" />
